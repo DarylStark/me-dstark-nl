@@ -1,0 +1,33 @@
+#-------------------------------------------------------------------------------
+# app.yaml
+#
+# Date: 2018-12-20
+#
+# Main configuration file for the application.
+#-------------------------------------------------------------------------------
+# Google App Engine environment
+#-------------------------------------------------------------------------------
+# We set the environment to standard since that is the only available
+# environment for Python 3.7 (as of 2018-12-20)
+env: standard
+#-------------------------------------------------------------------------------
+# Python runtime
+#-------------------------------------------------------------------------------
+runtime: python37
+#-------------------------------------------------------------------------------
+# Environment variables
+#-------------------------------------------------------------------------------
+env_variables:
+  
+  # Production credentials for Google Cloud SQL
+  PROD_SQL_SERVER: 127.0.0.1
+  PROD_SQL_USERNAME: username
+  PROD_SQL_PASSWORD: password
+  PROD_SQL_DATABASE: database
+
+  # Development credentials for Google Cloud SQL
+  DEV_SQL_SERVER: 127.0.0.1
+  DEV_SQL_USERNAME: username
+  DEV_SQL_PASSWORD: password
+  DEV_SQL_DATABASE: database
+#-------------------------------------------------------------------------------

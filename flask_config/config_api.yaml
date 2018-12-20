@@ -1,0 +1,51 @@
+openapi: 3.0.0
+servers:
+  - url: /api/
+info:
+  title: REST API for ME
+  version: '0.1'
+paths:
+  '/events':
+    get:
+      tags:
+        - Events
+      operationId: api.api.get_events
+      summary: Get all events
+      responses:
+        '200':
+          description: Return events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResultEvent'
+components:
+  schemas:
+    APIResult:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: The result of the API call
+    APIResultEvent:
+      type: object
+      required:
+        - APIResult
+      properties:
+        APIResult:
+          $ref: '#/components/schemas/APIResult'
+          description: The API results
+    Event:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: Event title
+          example: Event title
+          minLength: 1
+          maxLength: 1024
