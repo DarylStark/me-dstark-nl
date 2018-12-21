@@ -26,10 +26,10 @@ class Database:
 
         # Check if we are on the production environment and set the values for production
         if 'gunicorn' in os.getenv('SERVER_SOFTWARE', ''):
-            self._host = os.getenv('DEV_SQL_SERVER', '')
-            self._username = os.getenv('DEV_SQL_USERNAME', '')
-            self._password = os.getenv('DEV_SQL_PASSWORD', '')
-            self._database = os.getenv('DEV_SQL_DATABASE', '')
+            self._host = os.getenv('PROD_SQL_SERVER', '')
+            self._username = os.getenv('PROD_SQL_USERNAME', '')
+            self._password = os.getenv('PROD_SQL_PASSWORD', '')
+            self._database = os.getenv('PROD_SQL_DATABASE', '')
             self._connection = None
 
         # Create the connection string that is needed when we create a connection
