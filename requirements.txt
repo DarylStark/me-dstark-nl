@@ -9,3 +9,4 @@ requests
 
 # Requirements for the database engine
 sqlalchemy
+pymysql
