@@ -6,3 +6,6 @@ swagger-ui-bundle
 # Requirements to download and scrape webpages
 bs4
 requests
+
+# Requirements for the database engine
+sqlalchemy

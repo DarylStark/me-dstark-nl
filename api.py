@@ -9,16 +9,17 @@
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import events
+import database
 #---------------------------------------------------------------------------------------------------
 class API:
     def get_events(self):
-        a = events.EventRetrieverTivoliVredenburg()
+        a = database.Database()
 
         return {
             'APIResult': {
                 'success': True
             },
-            'data': [ x.title for x in a.retrieve_events() ]
+            'data': [ a._username ]
         }
 #---------------------------------------------------------------------------------------------------
 api = API()
