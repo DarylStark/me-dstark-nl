@@ -1,25 +1,21 @@
 #---------------------------------------------------------------------------------------------------
-# api.py
+# EventRetriever.py
 #
 # Date: 2018-12-20
 #
-# The code for the REST API
+# Base class for Event Retrievers.
 #---------------------------------------------------------------------------------------------------
 # Global imports
+import requests
+import bs4
 #---------------------------------------------------------------------------------------------------
 # Local imports
-import events
+from events.Event import Event
 #---------------------------------------------------------------------------------------------------
-class API:
-    def get_events(self):
-        a = events.EventRetrieverTivoliVredenburg()
+class EventRetriever:
+    """ Base class for EventRetrievers. Does basic stuff, like setting the default variables """
 
-        return {
-            'APIResult': {
-                'success': True
-            },
-            'data': [ x.title for x in a.retrieve_events() ]
-        }
-#---------------------------------------------------------------------------------------------------
-api = API()
+    def __init__(self):
+        """ Sets default variables for the object """
+        self.events = []
 #---------------------------------------------------------------------------------------------------

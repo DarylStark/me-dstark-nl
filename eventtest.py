@@ -1,0 +1,21 @@
+import events
+
+a = events.EventRetrieverTivoliVredenburg()
+a.retrieve_events()
+for l in a.events:
+    print('----------------------')
+    print('Venue:        {}'.format(l.venue))
+    print('Stage:        {}'.format(l.stage))
+    print('Title:        {}'.format(l.title))
+    print('Support act:  {}'.format(l.supportact))
+    print('URL:          {}'.format(l.url))
+    print('Image:        {}'.format(l.image))
+    print('Date:         {}'.format(l.date))
+    print('Price:        {}'.format(l.price))
+    print('Free:         {}'.format(l.free))
+    print('Soldout:      {}'.format(l.soldout))
+    print('Doors open:   {}'.format(l.timedoorsopen))
+    print('Start:        {}'.format(l.timestart))
+    print('Tickets:      {}'.format(l.url_tickets))
+    print('Unique value: {}'.format(l.uniq_value))
+print('----------------------')

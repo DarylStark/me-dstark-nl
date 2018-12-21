@@ -1,3 +1,13 @@
+# Standard requirements
+datetime
+os
+re
+
+# Requirements for the webserver
 flask
 connexion
 swagger-ui-bundle
+
+# Requirements to download and scrape webpages
+bs4
+requests

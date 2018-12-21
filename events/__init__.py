@@ -7,4 +7,6 @@
 # Initiator for the 'events' package. Imports all the classes from the package.
 #---------------------------------------------------------------------------------------------------
 from events.Event import Event
+from events.EventRetriever import EventRetriever
+from events.EventRetrieverTivoliVredenburg import EventRetrieverTivoliVredenburg
 #---------------------------------------------------------------------------------------------------
