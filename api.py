@@ -13,8 +13,6 @@ import database
 #---------------------------------------------------------------------------------------------------
 class API:
     def get_events(self):
-        a = database.Database()
-
         return {
             'APIResult': {
                 'success': True

@@ -20,14 +20,14 @@ runtime: python37
 env_variables:
   
   # Production credentials for Google Cloud SQL
-  PROD_SQL_SERVER: 127.0.0.1
-  PROD_SQL_USERNAME: username
-  PROD_SQL_PASSWORD: password
-  PROD_SQL_DATABASE: database
+  PROD_SQL_SERVER: 104.155.95.1
+  PROD_SQL_USERNAME: me
+  PROD_SQL_PASSWORD: qgP}=ZVgv??aczRgmb?9bB<-bp4K)r@@
+  PROD_SQL_DATABASE: me
 
   # Development credentials for Google Cloud SQL
   DEV_SQL_SERVER: 104.155.95.1
-  DEV_SQL_USERNAME: darylshome
-  DEV_SQL_PASSWORD: 2@R5pUqfFg9iezkYIL2Bg#GZm^T&!k0D
-  DEV_SQL_DATABASE: darylshome_dev
+  DEV_SQL_USERNAME: me_dev
+  DEV_SQL_PASSWORD: 6UDhG{Bz=aPhg6&}af8ww+B~wwt#AsW?
+  DEV_SQL_DATABASE: me_dev
 #-------------------------------------------------------------------------------

@@ -10,7 +10,6 @@ import requests
 import bs4
 #---------------------------------------------------------------------------------------------------
 # Local imports
-from events.Event import Event
 #---------------------------------------------------------------------------------------------------
 class EventRetriever:
     """ Base class for EventRetrievers. Does basic stuff, like setting the default variables """

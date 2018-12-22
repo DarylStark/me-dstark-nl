@@ -10,6 +10,7 @@ import sqlalchemy
 import os
 #---------------------------------------------------------------------------------------------------
 # Local imports
+import database
 #---------------------------------------------------------------------------------------------------
 class Database:
     """ Class to open database connections and retrieve information from the database """
@@ -54,10 +55,27 @@ class Database:
             echo = self._echo
         )
 
-        # Create the schema
-        self.create_schema()
+        # Create a session
+        self._session_factory = sqlalchemy.orm.sessionmaker(bind = self._engine)
+        self._session = self._session_factory()
+
+        # Create the schema.
+        # TODO: remove when we're fully over to ORM
+        database.BaseClass.metadata.create_all(self._engine)
     
-    def create_schema(self):
+    def commit(self):
+        """ Commits the changes to the database """
+        self._session.commit()
+
+    def add_event(self, event):
+        """ Adds a event to the database """
+
+        # Add the event and commit the changes
+        self._session.add(event)
+        self._session.commit()
+    
+    # TODO: remove when we're fully over to ORM
+    def create_schema_old(self):
         """ This method creates the tables when needed """
 
         # Create an metadata-object

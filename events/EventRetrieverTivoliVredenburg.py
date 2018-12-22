@@ -13,6 +13,7 @@ import re
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import events
+from database import Event
 #---------------------------------------------------------------------------------------------------
 class EventRetrieverTivoliVredenburg(events.EventRetriever):
     """ EventRetriever class to retrieve events from the website of TivoliVredenburg """
@@ -54,7 +55,7 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                     # Create a new Event object with the properties we already have. We will add
                     # details for his event later. The 'day' attribute in the TivoliVredenburg
                     # output is in the form of 'di 3', so we have to strip off the first part.
-                    event_object = events.Event(
+                    event_object = Event(
                         title = event['title'],
                         url = event['link'],
                         image = event['image'],
@@ -64,7 +65,7 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                             int(event['day'].split()[-1])
                         ),
                         venue = 'TivoliVredenburg',
-                        uniq_value = event['link']
+                        unique = event['link']
                     )
 
                     # Add the event to the stack
