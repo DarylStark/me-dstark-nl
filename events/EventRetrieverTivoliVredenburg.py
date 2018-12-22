@@ -65,6 +65,7 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                             int(event['day'].split()[-1])
                         ),
                         venue = 'TivoliVredenburg',
+                        stage = 'Unknown',
                         unique = event['link']
                     )
 
@@ -151,6 +152,7 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                 event.soldout = None
             
             # Find the time the doors open
+            # TODO: make sure this time is in UTC
             try:
                 doorsopen = parsed_page.find('span', string = 'zaal open').parent.find_next_sibling().find('span').text.strip()
                 event.timedoorsopen = datetime.datetime.strptime(doorsopen, '%H:%M').time()
@@ -158,6 +160,7 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                 event.doorsopen = None
             
             # Find the time the event starts
+            # TODO: make sure this time is in UTC
             try:
                 start = parsed_page.find('span', string = 'aanvang').parent.find_next_sibling().find('span').text.strip()
                 event.timestart = datetime.datetime.strptime(start, '%H:%M').time()
@@ -170,4 +173,6 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                 event.url_tickets = tickets.get('href')
             except AttributeError:
                 event.doorsopen = None
+
+            # TODO: Find the stage
 #---------------------------------------------------------------------------------------------------

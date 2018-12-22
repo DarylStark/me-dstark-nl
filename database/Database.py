@@ -8,6 +8,7 @@
 # Global imports
 import sqlalchemy
 import os
+import datetime
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import database
@@ -30,7 +31,7 @@ class Database:
         self._password = os.getenv('DEV_SQL_PASSWORD', '')
         self._database = os.getenv('DEV_SQL_DATABASE', '')
         self._connection = None
-        self._echo = True
+        self._echo = False
 
         # Check if we are on the production environment and set the values for production
         if 'gunicorn' in os.getenv('SERVER_SOFTWARE', ''):
@@ -60,7 +61,6 @@ class Database:
         self._session = self._session_factory()
 
         # Create the schema.
-        # TODO: remove when we're fully over to ORM
         database.BaseClass.metadata.create_all(self._engine)
     
     def commit(self):
@@ -70,42 +70,21 @@ class Database:
     def add_event(self, event):
         """ Adds a event to the database """
 
-        # Add the event and commit the changes
-        self._session.add(event)
-        self._session.commit()
-    
-    # TODO: remove when we're fully over to ORM
-    def create_schema_old(self):
-        """ This method creates the tables when needed """
+        # Set the Event_Added and Event_Changed to the current date
+        event.added = datetime.datetime.utcnow()
+        event.changed = datetime.datetime.utcnow()
 
-        # Create an metadata-object
-        self._metadata = sqlalchemy.MetaData(bind = self._engine)
+        try:
+            # Add the event and commit the changes
+            self._session.add(event)
+            self._session.commit()
 
-        # Create objects for Tables
-        self._tables['tEvents'] = sqlalchemy.Table(
-            'tEvents',
-            self._metadata,
-            sqlalchemy.Column('Event_ID', sqlalchemy.Integer, primary_key = True),
-            sqlalchemy.Column('Event_Added', sqlalchemy.DateTime, nullable = False),
-            sqlalchemy.Column('Event_Changed', sqlalchemy.DateTime, nullable = False),
-            sqlalchemy.Column('Event_Tracked', sqlalchemy.Integer, nullable = False),
-            sqlalchemy.Column('Event_New', sqlalchemy.Integer, nullable = False),
-            sqlalchemy.Column('Event_Title', sqlalchemy.Text, nullable = False),
-            sqlalchemy.Column('Event_Support', sqlalchemy.Text),
-            sqlalchemy.Column('Event_Venue', sqlalchemy.Text, nullable = False),
-            sqlalchemy.Column('Event_Stage', sqlalchemy.Text, nullable = False),
-            sqlalchemy.Column('Event_Date', sqlalchemy.Date),
-            sqlalchemy.Column('Event_Price', sqlalchemy.Integer),
-            sqlalchemy.Column('Event_Free', sqlalchemy.Boolean),
-            sqlalchemy.Column('Event_Soldout', sqlalchemy.Boolean),
-            sqlalchemy.Column('Event_DoorsOpen', sqlalchemy.Time),
-            sqlalchemy.Column('Event_StartTime', sqlalchemy.Time),
-            sqlalchemy.Column('Event_URL', sqlalchemy.Text),
-            sqlalchemy.Column('Event_URLTickets', sqlalchemy.Text),
-            sqlalchemy.Column('Event_Image', sqlalchemy.Text),
-            sqlalchemy.Column('Event_Unique', sqlalchemy.Text, nullable = False),
-        )
-
-        # Create the schema
-        self._metadata.create_all()
+            # Everything went fine, return True
+            return True
+        except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError) as e:
+            # When something goes wrong, do a rollback and return False so the caller can do a new
+            # action. Note; if we don't do a rollback, the transaction will stay in place and the
+            # next commit will fail too. So we always have to do a rollback!
+            self._session.rollback()
+            return False
 #---------------------------------------------------------------------------------------------------
