@@ -13,7 +13,7 @@ import re
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
-from database import Event
+from database import Event, Stage
 #---------------------------------------------------------------------------------------------------
 class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
     """ EventRetriever class to retrieve events from the website of TivoliVredenburg """

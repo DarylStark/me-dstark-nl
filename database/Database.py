@@ -31,7 +31,7 @@ class Database:
         self._password = os.getenv('DEV_SQL_PASSWORD', '')
         self._database = os.getenv('DEV_SQL_DATABASE', '')
         self._connection = None
-        self._echo = False
+        self._echo = True
 
         # Check if we are on the production environment and set the values for production
         if 'gunicorn' in os.getenv('SERVER_SOFTWARE', ''):

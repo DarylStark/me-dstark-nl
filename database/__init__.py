@@ -14,5 +14,7 @@ import sqlalchemy.ext.declarative
 BaseClass = sqlalchemy.ext.declarative.declarative_base()
 #---------------------------------------------------------------------------------------------------
 from database.Database import Database
+from database.Venue import Venue
+from database.Stage import Stage
 from database.Event import Event
 #---------------------------------------------------------------------------------------------------
