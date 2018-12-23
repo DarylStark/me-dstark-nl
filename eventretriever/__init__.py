@@ -1,11 +1,11 @@
 #---------------------------------------------------------------------------------------------------
-# Package: events
+# Package: eventretriever
 # __init__.py
 #
 # Date: 2018-12-20
 #
-# Initiator for the 'events' package. Imports all the classes from the package.
+# Initiator for the 'eventretriever' package. Imports all the classes from the package.
 #---------------------------------------------------------------------------------------------------
-from events.EventRetriever import EventRetriever
-from events.EventRetrieverTivoliVredenburg import EventRetrieverTivoliVredenburg
+from eventretriever.EventRetriever import EventRetriever
+from eventretriever.EventRetrieverTivoliVredenburg import EventRetrieverTivoliVredenburg
 #---------------------------------------------------------------------------------------------------

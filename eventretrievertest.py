@@ -1,8 +1,8 @@
 from database import *
-import events
+import eventretriever
 import datetime
 
-a = events.EventRetrieverTivoliVredenburg()
+a = eventretriever.EventRetrieverTivoliVredenburg()
 e = a.retrieve_events()
 a = Database()
 

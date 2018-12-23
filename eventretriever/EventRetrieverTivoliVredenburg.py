@@ -12,10 +12,10 @@ import datetime
 import re
 #---------------------------------------------------------------------------------------------------
 # Local imports
-import events
+import eventretriever
 from database import Event
 #---------------------------------------------------------------------------------------------------
-class EventRetrieverTivoliVredenburg(events.EventRetriever):
+class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
     """ EventRetriever class to retrieve events from the website of TivoliVredenburg """
 
     def retrieve_events(self):
