@@ -81,7 +81,7 @@ class Database:
 
             # Everything went fine, return True
             return True
-        except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError) as e:
+        except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError):
             # When something goes wrong, do a rollback and return False so the caller can do a new
             # action. Note; if we don't do a rollback, the transaction will stay in place and the
             # next commit will fail too. So we always have to do a rollback!
