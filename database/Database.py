@@ -66,6 +66,23 @@ class Database:
     def commit(self):
         """ Commits the changes to the database """
         self._session.commit()
+    
+    #-----------------------------------------------------------------------------------------------
+    # Methods for venues
+    #-----------------------------------------------------------------------------------------------
+
+    def venues(self):
+        """ Returns the venues in the database """
+
+        # Get the venues from the database
+        venues = self._session.query(database.Venue)
+
+        # Return the result
+        return venues
+
+    #-----------------------------------------------------------------------------------------------
+    # Methods for events
+    #-----------------------------------------------------------------------------------------------
 
     def add_event(self, event):
         """ Adds a event to the database """

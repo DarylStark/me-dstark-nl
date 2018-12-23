@@ -5,6 +5,21 @@ info:
   title: REST API for ME
   version: '0.1'
 paths:
+  '/venues':
+    get:
+      tags:
+        - Venues
+      operationId: api.api.get_venues
+      summary: Get all venues
+      responses:
+        '200':
+          description: Return venues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResultVenue'
   '/events':
     get:
       tags:
@@ -31,6 +46,14 @@ components:
           type: boolean
           description: The result of the API call
     APIResultEvent:
+      type: object
+      required:
+        - APIResult
+      properties:
+        APIResult:
+          $ref: '#/components/schemas/APIResult'
+          description: The API results
+    APIResultVenue:
       type: object
       required:
         - APIResult
