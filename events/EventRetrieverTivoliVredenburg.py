@@ -59,7 +59,7 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
                         title = event['title'],
                         url = event['link'],
                         image = event['image'],
-                        date = datetime.datetime(
+                        date = datetime.date(
                             int(event['year']),
                             int(event['yearMonth'][4:]),
                             int(event['day'].split()[-1])

@@ -87,4 +87,72 @@ class Database:
             # next commit will fail too. So we always have to do a rollback!
             self._session.rollback()
             return False
+
+    def compare_and_set_attribute(self, attribute, object_a, object_b):
+        """ Compares a attribute in two objects. If they are different, it sets the var in object
+            A to the same value as in object B and returns the name of the object. If they are the
+            same, it doesn't update anything and returns None """
+
+        # Get the values
+        var_a = getattr(object_a, attribute)
+        var_b = getattr(object_b, attribute)
+
+        # Compare the values
+        if var_a != var_b:
+            # Not the same, so we have to set the value in A to the same as in B
+            setattr(object_a, attribute, var_b)
+
+            # And return the name of the attribute
+            return attribute
+        
+        # They were the same, return None
+        return None
+    
+    def sync_event(self, event):
+        """ Checks if a event is already in the database. If it is, it updates it. If it isn't, it
+            adds the event using the add_event method of this class. Returns True when the object
+            was added. Returns False when something went wrong. Returns a list with changed
+            properties when the object already existed. """
+        
+        # First, try to add the event. If it succeeds, we are done. If it doesn't succeed, the
+        # object is already in the database and we can search for the original one
+        if self.add_event(event) == False:
+            try:
+                # Find the original event
+                original_events = self._session.query(database.Event).filter(
+                    database.Event.unique == event.unique
+                )
+
+                # Get the original event
+                original_event = original_events[0]
+
+                # Update the original event and keep track of the made changes
+                attributes = [
+                    'title', 'support', 'venue', 'stage',
+                    'date', 'price', 'free', 'soldout',
+                    'doorsopen', 'starttime', 'url', 'url_tickets',
+                    'image'
+                ]
+                changes = [ self.compare_and_set_attribute(attribute, original_event, event) for attribute in attributes ]
+
+                # Remove all None's from the list
+                changes = [ change for change in changes if change is not None ]
+
+                # If the object has changed, update the 'change' field of the object
+                if len(changes) > 0:
+                    original_event.changed = datetime.datetime.utcnow()
+
+                # Commit the new changes
+                self._session.commit()
+
+                # TODO: create a log entry for this event
+
+                # Return the created list with changes
+                return changes
+            except KeyboardInterrupt:
+                # Something went wrong, return False
+                return False
+
+        # We return a tuple with only True when the code above isn't execute
+        return True
 #---------------------------------------------------------------------------------------------------
