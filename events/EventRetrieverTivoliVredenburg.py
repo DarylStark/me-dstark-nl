@@ -93,10 +93,18 @@ class EventRetrieverTivoliVredenburg(events.EventRetriever):
 
             # Find the support act
             try:
-                supportact = parsed_page.find('span', string = 'support').parent.find_next_sibling().find('span').text.strip()
-                event.supportact = supportact
+                supportact = parsed_page.find('span', string = 'support').parent.find_next_sibling().find('span').text.strip().replace('\n', '')
+                event.support = supportact
+
+                # TivoliVredenburg uses a few terms when there is no support act or when the
+                # supportact has yet to be determined. We filter these out and set the support
+                # to None in those cases
+                none_acts = [ 'tbc', 'tba', 'geen support', 'geen', 'geen support (voorprogramma)' ]
+
+                if supportact in none_acts:
+                    event.support = None
             except AttributeError:
-                event.supportact = None
+                event.support = None
             
             # Find an image. There is already an image in there from the summary, but the images on
             # the detailpage are in much higher resolution. If we don't find any, we don't change
