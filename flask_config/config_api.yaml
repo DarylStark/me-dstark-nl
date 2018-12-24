@@ -20,6 +20,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/APIResultVenue'
+  '/stages':
+    get:
+      tags:
+        - Stages
+      operationId: api.api.get_stages
+      summary: Get all or filtered stages
+      parameters:
+        - name: venue
+          in: query
+          schema:
+            type: string
+          description: Return stages for a specific venue
+      responses:
+        '200':
+          description: Return stages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResultStage'
   '/events':
     get:
       tags:
@@ -54,6 +75,14 @@ components:
           $ref: '#/components/schemas/APIResult'
           description: The API results
     APIResultVenue:
+      type: object
+      required:
+        - APIResult
+      properties:
+        APIResult:
+          $ref: '#/components/schemas/APIResult'
+          description: The API results
+    APIResultStage:
       type: object
       required:
         - APIResult

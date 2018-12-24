@@ -80,6 +80,21 @@ class Database:
 
         # Return the result
         return venues
+    
+    #-----------------------------------------------------------------------------------------------
+    # Methods for stages
+    #-----------------------------------------------------------------------------------------------
+
+    def stages(self, venue = None):
+        """ Returns the stages from the database, filtered on venue if needed """
+
+        # Get the stages from the database
+        stages = self._session.query(database.Stage).filter(
+            database.Stage.venue == venue
+        )
+
+        # Return the result
+        return stages
 
     #-----------------------------------------------------------------------------------------------
     # Methods for events

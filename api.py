@@ -31,6 +31,24 @@ class API:
             },
             'data': [ x.name for x in venues ]
         }
+    
+    def get_stages(self, venue = None):
+        """ API method for '/stges'. Returns all or filtered stages from the database """
+
+        # Create a object for database interaction
+        db = database.Database()
+
+        # Get the stages
+        stages = db.stages(venue = venue)
+
+        # Return the stages in a dict
+        # TODO: create better objects for this API
+        return {
+            'APIResult': {
+                'success': True
+            },
+            'data': [ x.name for x in stages ]
+        }
 
     def get_events(self):
         """ API method for '/events'. Returns all or filtered events from the database """
