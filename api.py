@@ -24,6 +24,7 @@ class API:
         venues = db.venues()
 
         # Return the venues in a dict
+        # TODO: create better objects for this API
         return {
             'APIResult': {
                 'success': True

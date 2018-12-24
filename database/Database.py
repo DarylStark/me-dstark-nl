@@ -43,6 +43,7 @@ class Database:
             self._echo = False
 
         # Create the connection string that is needed when we create a connection
+        # TODO: create a connection string for Google SQL
         self.connection_string = 'mysql+pymysql://{username}:{password}@{host}/{database}'.format(
             username = self._username,
             password = self._password,
