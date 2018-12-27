@@ -57,16 +57,11 @@ class Database:
             echo = self._echo
         )
 
-        # Create a session
+        # Create a session-factory
         self._session_factory = sqlalchemy.orm.sessionmaker(bind = self._engine)
-        self._session = self._session_factory()
 
         # Create the schema.
         database.BaseClass.metadata.create_all(self._engine)
-    
-    def commit(self):
-        """ Commits the changes to the database """
-        self._session.commit()
     
     #-----------------------------------------------------------------------------------------------
     # Methods for venues
@@ -76,7 +71,8 @@ class Database:
         """ Returns the venues in the database """
 
         # Get the venues from the database
-        venues = self._session.query(database.Venue)
+        session = self._session_factory()
+        venues = session.query(database.Venue)
 
         # Return the result
         return venues
@@ -89,7 +85,8 @@ class Database:
         """ Returns the stages from the database, filtered on venue if needed """
 
         # Get the stages from the database
-        stages = self._session.query(database.Stage).filter(
+        session = self._session_factory()
+        stages = session.query(database.Stage).filter(
             database.Stage.venue == venue
         )
 
@@ -109,8 +106,9 @@ class Database:
 
         try:
             # Add the event and commit the changes
-            self._session.add(event)
-            self._session.commit()
+            session = self._session_factory()
+            session.add(event)
+            session.commit()
 
             # Everything went fine, return True
             return True
@@ -118,7 +116,7 @@ class Database:
             # When something goes wrong, do a rollback and return False so the caller can do a new
             # action. Note; if we don't do a rollback, the transaction will stay in place and the
             # next commit will fail too. So we always have to do a rollback!
-            self._session.rollback()
+            session.rollback()
             return False
 
     def compare_and_set_attribute(self, attribute, object_a, object_b):
@@ -136,7 +134,7 @@ class Database:
             setattr(object_a, attribute, var_b)
 
             # And return the name of the attribute
-            return attribute
+            return attribute, var_a, var_b
         
         # They were the same, return None
         return None
@@ -152,7 +150,8 @@ class Database:
         if self.add_event(event) == False:
             try:
                 # Find the original event
-                original_events = self._session.query(database.Event).filter(
+                session = self._session_factory()
+                original_events = session.query(database.Event).filter(
                     database.Event.unique == event.unique
                 )
 
@@ -175,10 +174,17 @@ class Database:
                 if len(changes) > 0:
                     original_event.changed = datetime.datetime.utcnow()
 
+                    # Loop through the changes and create a EventChange object for them
+                    for attributechange in changes:
+                        newchange = database.EventChange()
+                        newchange.event = original_event.id
+                        newchange.field = attributechange[0]
+                        newchange.oldvalue = attributechange[1]
+                        newchange.newvalue = attributechange[2]
+                        self.add_event_change(newchange)
+                    
                 # Commit the new changes
-                self._session.commit()
-
-                # TODO: create a log entry for this event
+                session.commit()
 
                 if len(changes) > 0:
                     # We return '1', meaning; the event was changed
@@ -192,4 +198,29 @@ class Database:
 
         # We return '0', meaning; the event was added
         return 0
+    
+    #-----------------------------------------------------------------------------------------------
+    # Methods for event changes
+    #-----------------------------------------------------------------------------------------------
+
+    def add_event_change(self, event_change):
+        """ Adds a event change to the database """
+
+        try:
+            # Set the date in the event change
+            event_change.changed = datetime.datetime.utcnow()
+
+            # Add the event change and commit the changes
+            session = self._session_factory()
+            session.add(event_change)
+            session.commit()
+
+            # Everything went fine, return True
+            return True
+        except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError):
+            # When something goes wrong, do a rollback and return False so the caller can do a new
+            # action. Note; if we don't do a rollback, the transaction will stay in place and the
+            # next commit will fail too. So we always have to do a rollback!
+            session.rollback()
+            return False
 #---------------------------------------------------------------------------------------------------

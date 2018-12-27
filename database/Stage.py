@@ -23,7 +23,7 @@ class Stage(database.BaseClass):
 
     # Create the columns
     id = sqlalchemy.Column('Stage_ID', sqlalchemy.Integer, primary_key = True)
-    venue = sqlalchemy.Column('Stage_Venue', sqlalchemy.ForeignKey("tVenues.Venue_ID"), nullable=False)
+    venue = sqlalchemy.Column('Stage_Venue', sqlalchemy.ForeignKey("tVenues.Venue_ID"), nullable = False)
     name = sqlalchemy.Column('Stage_Name', sqlalchemy.VARCHAR(128))
     address = sqlalchemy.Column('Stage_Address', sqlalchemy.Text)
     zipcode = sqlalchemy.Column('Stage_Zipcode', sqlalchemy.Text)

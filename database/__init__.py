@@ -17,4 +17,5 @@ from database.Database import Database
 from database.Venue import Venue
 from database.Stage import Stage
 from database.Event import Event
+from database.EventChange import EventChange
 #---------------------------------------------------------------------------------------------------
