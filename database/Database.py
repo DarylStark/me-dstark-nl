@@ -180,12 +180,16 @@ class Database:
 
                 # TODO: create a log entry for this event
 
-                # Return the created list with changes
-                return changes
-            except KeyboardInterrupt:
+                if len(changes) > 0:
+                    # We return '1', meaning; the event was changed
+                    return 1
+                else:
+                    # We return '-1', meaning; the event existed, but was not changed
+                    return -1
+            except:
                 # Something went wrong, return False
                 return False
 
-        # We return a tuple with only True when the code above isn't execute
-        return True
+        # We return '0', meaning; the event was added
+        return 0
 #---------------------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ paths:
   '/venues':
     get:
       tags:
-        - Venues
+        - Event venues
       operationId: api.api.get_venues
       summary: Get all venues
       responses:
@@ -23,7 +23,7 @@ paths:
   '/stages':
     get:
       tags:
-        - Stages
+        - Event stages
       operationId: api.api.get_stages
       summary: Get all or filtered stages
       parameters:
@@ -56,6 +56,27 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/APIResultEvent'
+  '/events.Sync':
+    get:
+      tags:
+        - Events
+      operationId: api.api.sync_events
+      summary: Sync events for a specific service
+      parameters:
+        - name: service
+          in: query
+          schema:
+            type: string
+          description: The service you want to sync
+      responses:
+        '200':
+          description: Returns how many new events there were synced and how many were updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResultEventsSync'
 components:
   schemas:
     APIResult:
@@ -74,6 +95,14 @@ components:
         APIResult:
           $ref: '#/components/schemas/APIResult'
           description: The API results
+    APIResultEventsSync:
+      type: object
+      required:
+        - APIResult
+      properties:
+        APIResult:
+          $ref: '#/components/schemas/APIResult'
+          description: The sync results
     APIResultVenue:
       type: object
       required:

@@ -59,6 +59,57 @@ class API:
             },
             'data': [ 'yet to be implemented' ]
         }
+    
+    def sync_events(self, service = None):
+        """ API method for '/events.Sync'. Syncs all events for a specific service """
+
+        # Set success to False. We set it to False later on when something happends
+        success = True
+
+        # We set events to a empty list so we won't get errors later on
+        events = []
+
+        # The API result we are going to return
+        data = {
+            'new_events': 0,
+            'updated_events': 0,
+            'errors': 0
+        }
+
+        # Check the service that we are going to sync
+        if service == 'TivoliVredenburg':
+            # Create a object for the eventretriever for TivoliVredenburg and download all the
+            # events for this Service
+            retriever = eventretriever.EventRetrieverTivoliVredenburg()
+            events = retriever.retrieve_events()
+
+        # Create a object for database interaction
+        db = database.Database()
+        
+        # If we have events, sync them with the database
+        for event in events:
+            retval = db.sync_event(event)
+
+            # Check the return value and update the API result
+            if retval == 1:
+                # The event existed and was changes
+                data['updated_events'] += 1
+            elif retval == 0:
+                # The event was new
+                data['new_events'] += 1
+            elif retval == False:
+                # Something went wrong during the eent sync
+                data['errors'] += 1
+            else:
+                # The event existed but was not changed
+                pass
+
+        return {
+            'APIResult': {
+                'success': success
+            },
+            'data': [ data ]
+        }
 #---------------------------------------------------------------------------------------------------
 api = API()
 #---------------------------------------------------------------------------------------------------
