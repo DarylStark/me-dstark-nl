@@ -18,4 +18,6 @@ from database.Venue import Venue
 from database.Stage import Stage
 from database.Event import Event
 from database.EventChange import EventChange
+from database.FeedItem import FeedItem
+from database.FeedItemEventChange import FeedItemEventChange
 #---------------------------------------------------------------------------------------------------

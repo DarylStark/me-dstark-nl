@@ -6,6 +6,7 @@
 # The code for the REST API
 #---------------------------------------------------------------------------------------------------
 # Global imports
+import datetime
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -91,12 +92,41 @@ class API:
             retval = db.sync_event(event)
 
             # Check the return value and update the API result
-            if retval == 1:
-                # The event existed and was changes
+            if retval['action'] == 'updated':
+                # The event existed and was changed
                 data['updated_events'] += 1
-            elif retval == 0:
+
+                # Get the changed fields
+                changes = [ change.field for change in retval['changes'] ]
+
+                # If the event is tracked or the support-act is changed, we add a
+                # feed-item
+                if retval['event'].tracked == 1 or 'support' in changes:
+                    # Create a new feed item
+                    item = database.FeedItem()
+                    item.itemtype = item.TYPE_TRACKED_EVENT_CHANGED
+                    item.event = retval['event'].id
+
+                    # Add the feed item
+                    db.add_feed_item(item)
+
+                    # Connect the EventChanges to the FeedItem
+                    for change in retval['changes']:
+                        feeditemeventchange = database.FeedItemEventChange()
+                        feeditemeventchange.feeditem = item.id
+                        feeditemeventchange.eventchange = change.id
+                        db.add_feed_item_event_change(feeditemeventchange)
+            elif retval['action'] == 'added':
                 # The event was new
                 data['new_events'] += 1
+
+                # Create a new feed item
+                item = database.FeedItem()
+                item.itemtype = item.TYPE_NEW_EVENT
+                item.event = retval['event'].id
+
+                # Add the feed item
+                db.add_feed_item(item)
             elif retval == False:
                 # Something went wrong during the eent sync
                 data['errors'] += 1

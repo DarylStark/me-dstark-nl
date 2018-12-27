@@ -111,7 +111,7 @@ class Database:
             session.commit()
 
             # Everything went fine, return True
-            return True
+            return event.id, event
         except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError):
             # When something goes wrong, do a rollback and return False so the caller can do a new
             # action. Note; if we don't do a rollback, the transaction will stay in place and the
@@ -145,9 +145,17 @@ class Database:
             was added. Returns False when something went wrong. Returns a list with changed
             properties when the object already existed. """
         
+        # Create an dict to return later
+        returnvalue = {
+            'action': '',
+            'event': None,
+            'changes': []
+        }
+        
         # First, try to add the event. If it succeeds, we are done. If it doesn't succeed, the
         # object is already in the database and we can search for the original one
-        if self.add_event(event) == False:
+        add = self.add_event(event)
+        if add == False:
             try:
                 # Find the original event
                 session = self._session_factory()
@@ -157,6 +165,9 @@ class Database:
 
                 # Get the original event
                 original_event = original_events[0]
+
+                # Set the ID of the original event for the return value
+                returnvalue['event'] = original_event
 
                 # Update the original event and keep track of the made changes
                 attributes = [
@@ -182,22 +193,31 @@ class Database:
                         newchange.oldvalue = attributechange[1]
                         newchange.newvalue = attributechange[2]
                         self.add_event_change(newchange)
+                        returnvalue['changes'].append(newchange)
                     
                 # Commit the new changes
                 session.commit()
 
                 if len(changes) > 0:
-                    # We return '1', meaning; the event was changed
-                    return 1
+                    # We updated the record
+                    returnvalue['action'] = 'updated'
+                    return returnvalue
                 else:
-                    # We return '-1', meaning; the event existed, but was not changed
-                    return -1
+                    # We didn't do anything to the record
+                    returnvalue['action'] = 'existed'
+                    return returnvalue
             except:
                 # Something went wrong, return False
                 return False
+        else:
+            # The event was added; set the ID of the return value
+            returnvalue['event'] = add[1]
 
-        # We return '0', meaning; the event was added
-        return 0
+        # The event was added
+        returnvalue['action'] = 'added'
+
+        # Return the value
+        return returnvalue
     
     #-----------------------------------------------------------------------------------------------
     # Methods for event changes
@@ -216,8 +236,58 @@ class Database:
             session.commit()
 
             # Everything went fine, return True
-            return True
+            return event_change.id, event_change
         except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError):
+            # When something goes wrong, do a rollback and return False so the caller can do a new
+            # action. Note; if we don't do a rollback, the transaction will stay in place and the
+            # next commit will fail too. So we always have to do a rollback!
+            session.rollback()
+            return False
+    
+    #-----------------------------------------------------------------------------------------------
+    # Methods for feed items
+    #-----------------------------------------------------------------------------------------------
+
+    def add_feed_item(self, feed_item):
+        """ Adds a feed item to the database """
+
+        try:
+            # Set the date in the feed item change and add
+            feed_item.date = datetime.datetime.utcnow()
+            feed_item.changedate = datetime.datetime.utcnow()
+
+            # Add the event change and commit the changes
+            session = self._session_factory()
+            session.add(feed_item)
+            session.commit()
+
+            # Everything went fine, return True
+            return feed_item.id, feed_item
+        #except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError):
+        except KeyboardInterrupt:
+            # When something goes wrong, do a rollback and return False so the caller can do a new
+            # action. Note; if we don't do a rollback, the transaction will stay in place and the
+            # next commit will fail too. So we always have to do a rollback!
+            session.rollback()
+            return False
+    
+    #-----------------------------------------------------------------------------------------------
+    # Methods for feed items / change events
+    #-----------------------------------------------------------------------------------------------
+
+    def add_feed_item_event_change(self, feeditemeeventchange):
+        """ Adds a FeedItemEventChange to the database """
+
+        try:
+            # Add the feed item event change and commit the changes
+            session = self._session_factory()
+            session.add(feeditemeeventchange)
+            session.commit()
+
+            # Everything went fine, return True
+            return feeditemeeventchange.id, feeditemeeventchange
+        #except (sqlalchemy.exc.IntegrityError, sqlalchemy.exc.InvalidRequestError):
+        except KeyboardInterrupt:
             # When something goes wrong, do a rollback and return False so the caller can do a new
             # action. Note; if we don't do a rollback, the transaction will stay in place and the
             # next commit will fail too. So we always have to do a rollback!
