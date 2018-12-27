@@ -56,6 +56,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/APIResultEvent'
+  '/feed':
+    get:
+      tags:
+        - Feed
+      operationId: api.api.get_feed
+      summary: Get all feeditems
+      responses:
+        '200':
+          description: Return feeditems
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIResultFeed'
   '/events.Sync':
     get:
       tags:
@@ -88,6 +103,14 @@ components:
           type: boolean
           description: The result of the API call
     APIResultEvent:
+      type: object
+      required:
+        - APIResult
+      properties:
+        APIResult:
+          $ref: '#/components/schemas/APIResult'
+          description: The API results
+    APIResultFeed:
       type: object
       required:
         - APIResult

@@ -140,6 +140,24 @@ class API:
             },
             'data': [ data ]
         }
+    
+    def get_feed(self):
+        """ API method for '/feed'. Returns all or filtered feeditems from the database """
+
+        # Create a object for database interaction
+        db = database.Database()
+
+        # Get the feed
+        feeditems = db.feeditems()
+
+        # Return the feed in a dict
+        # TODO: create better objects for this API
+        return {
+            'APIResult': {
+                'success': True
+            },
+            'data': [ x.FeedItem.id for x in feeditems ]
+        }
 #---------------------------------------------------------------------------------------------------
 api = API()
 #---------------------------------------------------------------------------------------------------

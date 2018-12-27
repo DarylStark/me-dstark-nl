@@ -271,6 +271,16 @@ class Database:
             session.rollback()
             return False
     
+    def feeditems(self):
+        """ Returns the feeditems from the database, filtered if needed """
+
+        # Get the stages from the database
+        session = self._session_factory()
+        feeditems = session.query(database.FeedItem).add_entity(database.Event).outerjoin(database.Event)
+
+        # Return the result
+        return feeditems
+    
     #-----------------------------------------------------------------------------------------------
     # Methods for feed items / change events
     #-----------------------------------------------------------------------------------------------

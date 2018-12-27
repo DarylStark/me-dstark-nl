@@ -21,7 +21,7 @@ class FeedItem(database.BaseClass):
     changedate = sqlalchemy.Column('FeedItem_ChangeDate', sqlalchemy.DateTime, nullable = False)
     itemtype = sqlalchemy.Column('FeedItem_Type', sqlalchemy.Integer, nullable = False)
     status = sqlalchemy.Column('FeedItem_Status', sqlalchemy.Integer, default = 1, nullable = False)
-    event = sqlalchemy.Column('FeedItem_Event', sqlalchemy.ForeignKey("tEvents.Event_ID"), nullable = False)
+    event = sqlalchemy.Column('FeedItem_Event', sqlalchemy.ForeignKey("tEvents.Event_ID"))
 
     # Constants for event status
     STATUS_NEW = 1
