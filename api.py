@@ -83,57 +83,140 @@ class API:
             # events for this Service
             retriever = eventretriever.EventRetrieverTivoliVredenburg()
             events = retriever.retrieve_events()
-
+        
         # Create a object for database interaction
         db = database.Database()
-        
+
         # If we have events, sync them with the database
         for event in events:
-            retval = db.sync_event(event)
+            # First, try to add the event. If this fails, we find the old event and update it
+            session = db._session_factory()
 
-            # Check the return value and update the API result
-            if retval['action'] == 'updated':
-                # The event existed and was changed
-                data['updated_events'] += 1
+            # Set the Event_Added and Event_Changed to the current date
+            event.added = datetime.datetime.utcnow()
+            event.changed = datetime.datetime.utcnow()
 
-                # Get the changed fields
-                changes = [ change.field for change in retval['changes'] ]
+            # Add the new event
+            try:
+                # Add the event
+                session.add(event)
+                session.commit()
+                original_id = event.id
+                session.close()
 
-                # If the event is tracked or the support-act is changed, we add a
-                # feed-item
-                if retval['event'].tracked == 1 or 'support' in changes:
-                    # Create a new feed item
-                    item = database.FeedItem()
-                    item.itemtype = item.TYPE_TRACKED_EVENT_CHANGED
-                    item.event = retval['event'].id
-
-                    # Add the feed item
-                    db.add_feed_item(item)
-
-                    # Connect the EventChanges to the FeedItem
-                    for change in retval['changes']:
-                        feeditemeventchange = database.FeedItemEventChange()
-                        feeditemeventchange.feeditem = item.id
-                        feeditemeventchange.eventchange = change.id
-                        db.add_feed_item_event_change(feeditemeventchange)
-            elif retval['action'] == 'added':
-                # The event was new
-                data['new_events'] += 1
-
-                # Create a new feed item
+                # Add a Feed Item for the new Event
                 item = database.FeedItem()
                 item.itemtype = item.TYPE_NEW_EVENT
-                item.event = retval['event'].id
+                item.event = original_id
+                item.date = datetime.datetime.utcnow()
+                item.changedate = datetime.datetime.utcnow()
 
-                # Add the feed item
-                db.add_feed_item(item)
-            elif retval == False:
-                # Something went wrong during the eent sync
-                data['errors'] += 1
-            else:
-                # The event existed but was not changed
-                pass
+                # Add the new object
+                session = db._session_factory()
+                session.add(item)
+                session.commit()
+                session.close()
 
+                # Increase the counter
+                data['new_events'] += 1
+            except:
+                # The object already existed. Rollback the changes and update the existing object
+                session.rollback()
+                session.close()
+
+                # Find the original object
+                session = db._session_factory()
+                original_events = session.query(database.Event).filter(
+                    database.Event.unique == event.unique
+                )
+
+                # Get the original event
+                original_event = original_events[0]
+                original_id = original_event.id
+                original_tracked = original_event.tracked
+
+                # Update the original event and keep track of the made changes
+                attributes = [
+                    'title', 'support', 'venue', 'stage',
+                    'date', 'price', 'free', 'soldout',
+                    'doorsopen', 'starttime', 'url', 'url_tickets',
+                    'image'
+                ]
+                changes = [ db.compare_and_set_attribute(attribute, original_event, event) for attribute in attributes ]
+
+                # Remove all None's from the list
+                changes = [ change for change in changes if change is not None ]
+
+                # The original event is now updated with the new info and can be saved
+                session.commit()
+                session.close()
+
+                # For every change in the event, we create a logentry that can be used later
+                eventchange_ids = []
+                for change in changes:
+                    # Create a EventChange object and fill it with the correct information
+                    eventchange = database.EventChange()
+                    eventchange.event = original_id
+                    eventchange.changed = datetime.datetime.utcnow()
+                    eventchange.field = change[0]
+                    eventchange.oldvalue = change[1]
+                    eventchange.newvalue = change[2]
+
+                    # Add the new object
+                    session = db._session_factory()
+                    session.add(eventchange)
+                    session.commit()
+
+                    # Save the ID of the 'EventChange' in a dict
+                    eventchange_ids.append(eventchange.id)
+
+                    # Close the session
+                    session.close()
+
+                # Add a new Feed Item for this change
+                if original_tracked == 1 or 'support' in [ c[0] for c in changes ]:
+                    # Create a object for the FeedItem
+                    item = database.FeedItem()
+                    item.itemtype = item.TYPE_EVENT_CHANGED
+                    item.event = original_id
+                    item.date = datetime.datetime.utcnow()
+                    item.changedate = datetime.datetime.utcnow()
+
+                    # If the event was tracked, the item has to be different
+                    if original_tracked == 1:
+                        item.itemtype = item.TYPE_TRACKED_EVENT_CHANGED
+
+                    # Add the new object
+                    session = db._session_factory()
+                    session.add(item)
+                    session.commit()
+
+                    # Save the id
+                    item_id = item.id
+
+                    # Close the session
+                    session.close()
+
+                    # Add Feed Item Event Changes
+                    for change in eventchange_ids:
+                        # Create a FeedItemEventChange object
+                        itemchange = database.FeedItemEventChange()
+                        itemchange.feeditem = item_id
+                        itemchange.eventchange = change
+
+                        # Add the new object
+                        session = db._session_factory()
+                        session.add(itemchange)
+                        session.commit()
+                        session.close()
+                    
+                # Increase the counter
+                if len(eventchange_ids) > 0:
+                    data['updated_events'] += 1
+
+        # TODO: counters for below
+
+        # Return the API result
         return {
             'APIResult': {
                 'success': success
