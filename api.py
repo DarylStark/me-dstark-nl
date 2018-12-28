@@ -150,13 +150,35 @@ class API:
         # Get the feed
         feeditems = db.feeditems()
 
+        # Create a list with dicts
+        data = []
+        for feeditem in feeditems:
+            # Create a dict for the feeditem
+            item = feeditem.FeedItem.get_dict()
+
+            # If this is a event-type, we have to add the event
+            if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_NEW_EVENT, feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
+                item['event'] = feeditem.Event.get_dict()
+            
+            # If this is a event-change, we need to add the changes. We get these from the database
+            # seperatly; we don't do this via a JOIN because that would result in more then one
+            # 'feed-item'.
+            if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
+                changes = db.feed_item_event_changes(feeditem = feeditem.FeedItem.id)
+                item['changes'] = []
+                for change in changes:
+                    item['changes'].append(change.EventChange.get_dict())
+            
+            # Append the created dict to the list
+            data.append(item)
+
         # Return the feed in a dict
         # TODO: create better objects for this API
         return {
             'APIResult': {
                 'success': True
             },
-            'data': [ x.FeedItem.id for x in feeditems ]
+            'data': [ data ]
         }
 #---------------------------------------------------------------------------------------------------
 api = API()

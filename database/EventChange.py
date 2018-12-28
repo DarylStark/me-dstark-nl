@@ -22,4 +22,16 @@ class EventChange(database.BaseClass):
     field = sqlalchemy.Column('EventChange_Field', sqlalchemy.Text)
     oldvalue = sqlalchemy.Column('EventChange_Old_Value', sqlalchemy.Text)
     newvalue = sqlalchemy.Column('EventChange_New_Value', sqlalchemy.Text)
+
+    def get_dict(self):
+        """ Method to represent the object as a dict """
+
+        return {
+            'id': self.id,
+            'event': self.event,
+            'changed': self.changed,
+            'field': self.field,
+            'oldvalue': self.oldvalue,
+            'newvalue': self.newvalue
+        }
 #---------------------------------------------------------------------------------------------------

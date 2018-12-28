@@ -40,4 +40,29 @@ class Event(database.BaseClass):
     url_tickets = sqlalchemy.Column('Event_URLTickets', sqlalchemy.Text)
     image = sqlalchemy.Column('Event_Image', sqlalchemy.Text)
     unique = sqlalchemy.Column('Event_Unique', sqlalchemy.VARCHAR(length = 128), nullable = False)
+
+    def get_dict(self):
+        """ Method to represent the object as a dict """
+
+        return {
+            'id': self.id,
+            'added': self.added,
+            'changed': self.changed,
+            'tracked': self.tracked,
+            'new': self.new,
+            'title': self.title,
+            'support': self.support,
+            'venue': self.venue,
+            'stage': self.stage,
+            'date': self.date,
+            'price': self.price,
+            'free': self.free,
+            'soldout': self.soldout,
+            'doorsopen': self.doorsopen,
+            'starttime': self.starttime,
+            'url': self.url,
+            'url_tickets': self.url_tickets,
+            'image': self.image,
+            'unique': self.unique
+        }
 #---------------------------------------------------------------------------------------------------

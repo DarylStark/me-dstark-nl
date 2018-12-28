@@ -31,4 +31,16 @@ class FeedItem(database.BaseClass):
     TYPE_NEW_EVENT = 1
     TYPE_TRACKED_EVENT_CHANGED = 2
     TYPE_EVENT_CHANGED = 3
+
+    def get_dict(self):
+        """ Method to represent the object as a dict """
+
+        return {
+            'id': self.id,
+            'date': self.date,
+            'changedate': self.changedate,
+            'itemtype': self.itemtype,
+            'status': self.status,
+            'event': self.event
+        }
 #---------------------------------------------------------------------------------------------------

@@ -274,7 +274,9 @@ class Database:
     def feeditems(self):
         """ Returns the feeditems from the database, filtered if needed """
 
-        # Get the stages from the database
+        # Get the feeditems from the database. We do a 'outer' join with the Event table to
+        # retrieve all events that are related to the feeditems. This results in a LEFT OUTER
+        # join.
         session = self._session_factory()
         feeditems = session.query(database.FeedItem).add_entity(database.Event).outerjoin(database.Event)
 
@@ -303,4 +305,14 @@ class Database:
             # next commit will fail too. So we always have to do a rollback!
             session.rollback()
             return False
+    
+    def feed_item_event_changes(self, feeditem = None):
+        """ Returns the feeditemeventchanges from the database, filtered if needed """
+
+        # Get the feeditemseventchanges from the database, filtered on the requested feeditem
+        session = self._session_factory()
+        changes = session.query(database.FeedItemEventChange).add_entity(database.EventChange).outerjoin(database.EventChange)
+
+        # Return the result
+        return changes
 #---------------------------------------------------------------------------------------------------
