@@ -7,6 +7,8 @@
 #---------------------------------------------------------------------------------------------------
 # Global imports
 import datetime
+import math
+import time
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -15,40 +17,56 @@ import database
 class API:
     """ Class for the REST API of the website """
 
+    def create_api_return(self, api, error_code = 0, error_text = '', data = [], length = 0, retval = {}, page = 0, limit = 0, runtime = 0):
+        """ Creates the default API return code """
+        
+        # Calculate the maxpage
+        maxpage = 0
+        if page > 0 and limit > 0:
+            maxpage = int(math.ceil(float(length) / float(limit)))
+
+        # Create the empty object
+        api_object = {
+            'request': {
+                'api': api,
+                'runtime': round(runtime, 3)
+            },
+            'error': {
+                'code': error_code,
+                'text': error_text
+            },
+            'data': {
+                'data': data,
+                'length': length,
+                'page': page,
+                'maxpage': maxpage,
+                'limit': limit,
+                'data_len': len(data)
+            },
+            'retval': retval
+        }
+
+        # Return the object
+        return api_object
+
     def get_venues(self):
         """ API method for '/venues'. Returns all or filtered venues from the database """
         
-        # Create a object for database interaction
-        db = database.Database()
-
-        # Get the venues
-        venues = db.venues()
-
-        # Return the venues in a dict
-        # TODO: create better objects for this API
         return {
             'APIResult': {
-                'success': True
+                'success': False
             },
-            'data': [ x.name for x in venues ]
+            'data': [ 'yet to be implemented' ]
         }
     
     def get_stages(self, venue = None):
         """ API method for '/stges'. Returns all or filtered stages from the database """
 
-        # Create a object for database interaction
-        db = database.Database()
-
-        # Get the stages
-        stages = db.stages(venue = venue)
-
-        # Return the stages in a dict
-        # TODO: create better objects for this API
         return {
             'APIResult': {
-                'success': True
+                'success': False
             },
-            'data': [ x.name for x in stages ]
+            'data': [ 'yet to be implemented' ]
         }
 
     def get_events(self):
@@ -214,8 +232,6 @@ class API:
                 if len(eventchange_ids) > 0:
                     data['updated_events'] += 1
 
-        # TODO: counters for below
-
         # Return the API result
         return {
             'APIResult': {
@@ -224,45 +240,73 @@ class API:
             'data': [ data ]
         }
     
-    def get_feed(self):
+    def get_feed(self, limit = 15, page = 1):
         """ API method for '/feed'. Returns all or filtered feeditems from the database """
 
-        # Create a object for database interaction
-        db = database.Database()
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
 
-        # Get the feed
-        feeditems = db.feeditems()
+        try:
+            # Get the start time
+            time_start = time.time()
 
-        # Create a list with dicts
-        data = []
-        for feeditem in feeditems:
-            # Create a dict for the feeditem
-            item = feeditem.FeedItem.get_dict()
+            # Create a object for database interaction
+            db = database.Database()
 
-            # If this is a event-type, we have to add the event
-            if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_NEW_EVENT, feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
-                item['event'] = feeditem.Event.get_dict()
+            # Get the count of rows in the database
+            session = db._session_factory()
+            length = session.query(database.FeedItem).add_entity(database.Event).outerjoin(database.Event).count()
+            session.close()
+
+            # Get the feeditems for the requested page
+            session = db._session_factory()
+            feeditems = session.query(database.FeedItem).add_entity(database.Event).outerjoin(database.Event).limit(limit).offset((page - 1) * limit)
+            session.close()
+
+            # Create a list with dicts
+            data = []
+            for feeditem in feeditems:
+                # Create a dict for the feeditem
+                item = feeditem.FeedItem.get_dict()
+
+                # If this is a event-type, we have to add the event
+                if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_NEW_EVENT, feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
+                    item['event'] = feeditem.Event.get_dict()
+                
+                # If this is a event-change, we need to add the changes. We get these from the database
+                # seperatly; we don't do this via a JOIN because that would result in more then one
+                # 'feed-item'.
+                if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
+                    session = db._session_factory()
+                    changes = session.query(database.FeedItemEventChange).add_entity(database.EventChange).outerjoin(database.EventChange)
+                    session.close()
+
+                    item['changes'] = []
+                    for change in changes:
+                        item['changes'].append(change.EventChange.get_dict())
+                
+                # Append the created dict to the list
+                data.append(item)
             
-            # If this is a event-change, we need to add the changes. We get these from the database
-            # seperatly; we don't do this via a JOIN because that would result in more then one
-            # 'feed-item'.
-            if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
-                changes = db.feed_item_event_changes(feeditem = feeditem.FeedItem.id)
-                item['changes'] = []
-                for change in changes:
-                    item['changes'].append(change.EventChange.get_dict())
-            
-            # Append the created dict to the list
-            data.append(item)
+            # Get the start time
+            time_end = time.time()
+        except:
+            error_code = 1
+            error_text = 'Unknown error'
 
         # Return the feed in a dict
-        # TODO: create better objects for this API
-        return {
-            'APIResult': {
-                'success': True
-            },
-            'data': [ data ]
-        }
+        return self.create_api_return(
+            api = 'feed',
+            error_code = error_code,
+            error_text = error_text,
+            data = data,
+            length = length,
+            retval = {},
+            page = page,
+            limit = limit,
+            runtime = time_end - time_start
+        )
 #---------------------------------------------------------------------------------------------------
 api = API()
 #---------------------------------------------------------------------------------------------------

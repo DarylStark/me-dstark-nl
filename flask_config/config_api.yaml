@@ -62,6 +62,17 @@ paths:
         - Feed
       operationId: api.api.get_feed
       summary: Get all feeditems
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: The maximum number of items you want to get
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: The pagenumber you want to retrieve
       responses:
         '200':
           description: Return feeditems
