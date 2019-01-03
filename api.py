@@ -52,35 +52,27 @@ class API:
     def get_venues(self):
         """ API method for '/venues'. Returns all or filtered venues from the database """
         
-        return {
-            'APIResult': {
-                'success': False
-            },
-            'data': [ 'yet to be implemented' ]
-        }
+        return self.create_api_return(api = 'venues', error_code = 1, error_text = 'not implemented yet')
     
     def get_stages(self, venue = None):
         """ API method for '/stges'. Returns all or filtered stages from the database """
 
-        return {
-            'APIResult': {
-                'success': False
-            },
-            'data': [ 'yet to be implemented' ]
-        }
+        return self.create_api_return(api = 'venues', error_code = 1, error_text = 'not implemented yet')
 
     def get_events(self):
         """ API method for '/events'. Returns all or filtered events from the database """
 
-        return {
-            'APIResult': {
-                'success': False
-            },
-            'data': [ 'yet to be implemented' ]
-        }
+        return self.create_api_return(api = 'venues', error_code = 1, error_text = 'not implemented yet')
     
     def sync_events(self, service = None):
         """ API method for '/events.Sync'. Syncs all events for a specific service """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
 
         # Set success to False. We set it to False later on when something happends
         success = True
@@ -231,26 +223,34 @@ class API:
                 # Increase the counter
                 if len(eventchange_ids) > 0:
                     data['updated_events'] += 1
+        
+        # Get the start time
+        time_end = time.time()
 
-        # Return the API result
-        return {
-            'APIResult': {
-                'success': success
-            },
-            'data': [ data ]
-        }
+        # Return the sync data
+        return self.create_api_return(
+            api = 'events.Sync',
+            error_code = error_code,
+            error_text = error_text,
+            data = data,
+            length = 0,
+            retval = {},
+            page = 0,
+            limit = 0,
+            runtime = time_end - time_start
+        )
     
     def get_feed(self, limit = 15, page = 1):
         """ API method for '/feed'. Returns all or filtered feeditems from the database """
+
+        # Get the start time
+        time_start = time.time()
 
         # Set a default error code and text
         error_code = 0
         error_text = ''
 
         try:
-            # Get the start time
-            time_start = time.time()
-
             # Create a object for database interaction
             db = database.Database()
 
@@ -295,7 +295,7 @@ class API:
             error_code = 1
             error_text = 'Unknown error'
 
-        # Return the feed in a dict
+        # Return the feed
         return self.create_api_return(
             api = 'feed',
             error_code = error_code,
