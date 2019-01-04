@@ -168,7 +168,7 @@ class API:
                     session.close()
 
                 # Add a new Feed Item for this change
-                if original_tracked > 0 or 'support' in [ c[0] for c in changes ]:
+                if len(changes) > 0 and (original_tracked > 0 or 'support' in [ c[0] for c in changes ]):
                     # Create a object for the FeedItem
                     item = database.FeedItem()
                     item.itemtype = item.TYPE_EVENT_CHANGED
