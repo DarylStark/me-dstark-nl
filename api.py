@@ -494,7 +494,15 @@ class API:
                 # 'feed-item'.
                 if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
                     session = db._session_factory()
-                    changes = session.query(database.FeedItemEventChange).add_entity(database.EventChange).outerjoin(database.EventChange)
+                    changes = session.query(
+                        database.FeedItemEventChange
+                    ).add_entity(
+                        database.EventChange
+                    ).outerjoin(
+                        database.EventChange
+                    ).filter(
+                        database.FeedItemEventChange.feeditem == feeditem.FeedItem.id
+                    )
                     session.close()
 
                     item['changes'] = []
