@@ -60,9 +60,6 @@ class API:
         error_code = 0
         error_text = ''
 
-        # Set success to False. We set it to False later on when something happends
-        success = True
-
         # We set events to a empty list so we won't get errors later on
         events = []
 
