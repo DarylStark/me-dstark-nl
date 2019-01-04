@@ -219,10 +219,6 @@ class API:
             error_code = error_code,
             error_text = error_text,
             data = data,
-            length = 0,
-            retval = {},
-            page = 0,
-            limit = 0,
             runtime = time_end - time_start
         )
     
@@ -302,7 +298,7 @@ class API:
                 
                 # Append the created dict to the list
                 data.append(item)
-        except KeyboardInterrupt:
+        except:
             error_code = 1
             error_text = 'Unknown error'
         
@@ -316,9 +312,149 @@ class API:
             error_text = error_text,
             data = data,
             length = length,
-            retval = {},
             page = page,
             limit = limit,
+            runtime = time_end - time_start
+        )
+    
+    def dismiss_feed(self, id):
+        """ API method for '/feed.Dismiss'. Dismisses a feeditem """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create the return value
+        retval = {
+            'id': id,
+            'dismissed': False
+        },
+
+        try:
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Find the item
+            session = db._session_factory()
+            item = session.query(
+                database.FeedItem
+            ).filter(
+                database.FeedItem.id == id
+            ).filter(
+                database.FeedItem.status == 1
+            )
+
+            if item.count() == 1:
+                # Dismiss the item
+                item[0].status = 2
+                session.commit()
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'dismissed': True
+                },
+            else:
+                # Not found, return an error
+                error_code = 1
+                error_text = 'Item cannot be found or is already dismissed'
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'dismissed': False
+                },
+        except:
+            # Unknown error happend
+            error_code = 2
+            error_text = 'Unknown error happened'
+
+        # Close the session
+        session.close()
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'feed.Dismiss',
+            error_code = error_code,
+            error_text = error_text,
+            retval = retval,
+            runtime = time_end - time_start
+        )
+
+    def setnew_feed(self, id):
+        """ API method for '/feed.SetNew'. Undismisses a feeditem """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create the return value
+        retval = {
+            'id': id,
+            'undismissed': False
+        },
+
+        try:
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Find the item
+            session = db._session_factory()
+            item = session.query(
+                database.FeedItem
+            ).filter(
+                database.FeedItem.id == id
+            ).filter(
+                database.FeedItem.status == 2
+            )
+
+            if item.count() == 1:
+                # Dismiss the item
+                item[0].status = 1
+                # TODO: update the changedate
+                session.commit()
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'undismissed': True
+                },
+            else:
+                # Not found, return an error
+                error_code = 1
+                error_text = 'Item cannot be found or is not dismissed'
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'undismissed': False
+                },
+        except:
+            # Unknown error happend
+            error_code = 2
+            error_text = 'Unknown error happened'
+
+        # Close the session
+        session.close()
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'feed.SetNew',
+            error_code = error_code,
+            error_text = error_text,
+            retval = retval,
             runtime = time_end - time_start
         )
 
@@ -355,9 +491,6 @@ class API:
             error_text = error_text,
             data = data,
             length = len(data),
-            retval = {},
-            page = 0,
-            limit = 0,
             runtime = time_end - time_start
         )
 #---------------------------------------------------------------------------------------------------

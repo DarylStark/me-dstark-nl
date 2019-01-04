@@ -53,6 +53,44 @@ paths:
             application/json:
               schema:
                 type: array
+  '/feed.Dismiss':
+    get:
+      tags:
+        - Feed
+      operationId: api.api.dismiss_feed
+      summary: Dismiss a feeditem
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          description: The feeditem to dismiss
+      responses:
+        '200':
+          description: API result
+          content:
+            application/json:
+              schema:
+                type: array
+  '/feed.SetNew':
+    get:
+      tags:
+        - Feed
+      operationId: api.api.setnew_feed
+      summary: Undismiss a feeditem
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          description: The feeditem to undismiss
+      responses:
+        '200':
+          description: API result
+          content:
+            application/json:
+              schema:
+                type: array
   '/templates.Get':
     get:
       tags:

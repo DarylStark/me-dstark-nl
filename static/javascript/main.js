@@ -727,7 +727,7 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
   item = item.replace(/{{ feed_dismissdatetime }}/g, dismiss_datetime_formatted);
 
   item = item.replace(/{{ title }}/g, feeditem['event']['title']);
-  item = item.replace(/{{ id }}/g, feeditem['event']['id']);
+  item = item.replace(/{{ id }}/g, feeditem['id']);
   item = item.replace(/{{ event_id }}/g, feeditem['event']['id']);
   item = item.replace(/{{ support }}/g, feeditem['event']['support']);
   item = item.replace(/{{ venue }}/g, feeditem['event']['venue']);
@@ -769,7 +769,7 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
 
   // Add a onclick element for the undismiss button
   newitem.find('.undismiss').click(function() {
-    t.pageFeedItemDismiss(feeditem['event']['id'], true);
+    t.pageFeedItemDismiss(feeditem['id'], true);
   });
 
   // Add a onclick element for the 'tracked' toggle
