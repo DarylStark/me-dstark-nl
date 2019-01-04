@@ -226,7 +226,7 @@ class API:
             runtime = time_end - time_start
         )
     
-    def get_feed(self, limit = 15, page = 1):
+    def get_feed(self, limit = 15, page = 1, dismissed = 0):
         """ API method for '/feed'. Returns all or filtered feeditems from the database """
 
         # Get the start time
@@ -240,18 +240,43 @@ class API:
         data = []
         length = 0
 
+        # Check the dismissed status and transform it to the correct status
+        status = 1
+        if dismissed > 0:
+            status = 2
+
         try:
             # Create a object for database interaction
             db = database.Database()
 
             # Get the count of rows in the database
             session = db._session_factory()
-            length = session.query(database.FeedItem).add_entity(database.Event).outerjoin(database.Event).count()
+            length = session.query(
+                database.FeedItem
+            ).add_entity(
+                database.Event
+            ).outerjoin(
+                database.Event
+            ).filter(
+                database.FeedItem.status == status
+            ).count()
             session.close()
 
             # Get the feeditems for the requested page
             session = db._session_factory()
-            feeditems = session.query(database.FeedItem).add_entity(database.Event).outerjoin(database.Event).limit(limit).offset((page - 1) * limit)
+            feeditems = session.query(
+                database.FeedItem
+            ).add_entity(
+                database.Event
+            ).outerjoin(
+                database.Event
+            ).filter(
+                database.FeedItem.status == status
+            ).limit(
+                limit
+            ).offset(
+                (page - 1) * limit
+            )
             session.close()
 
             # Create a list with dicts
@@ -277,7 +302,7 @@ class API:
                 
                 # Append the created dict to the list
                 data.append(item)
-        except:
+        except KeyboardInterrupt:
             error_code = 1
             error_text = 'Unknown error'
         

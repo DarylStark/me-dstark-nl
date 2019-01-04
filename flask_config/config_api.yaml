@@ -41,6 +41,11 @@ paths:
           schema:
             type: integer
           description: The pagenumber you want to retrieve
+        - name: dismissed
+          in: query
+          schema:
+            type: integer
+          description: Set to any integer higher then 0 to only return dismissed items
       responses:
         '200':
           description: Return feeditems

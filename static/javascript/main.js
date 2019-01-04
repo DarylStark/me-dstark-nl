@@ -662,6 +662,7 @@ GUI.prototype.pageFeedItemEventTrackedToggle = function(eventid, trackedtoggle =
 }
 /*----------------------------------------------------------------------------*/
 // Method to return a feed item for events
+// TODO: Remove this
 GUI.prototype.pageFeedItemEvent = function(feeditem) {
   // Get the correct template from the cache
   if (this.feed['showarchive']) {
@@ -671,35 +672,41 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
   }
 
   // Get the correct type
-  if (feeditem['type'] == 1) { type = 'New event'; }
-  if (feeditem['type'] == 2) { type = 'Support act for event changed'; }
-  if (feeditem['type'] == 3) { type = 'Tracked event changed'; }
+  if (feeditem['itemtype'] == 1) { type = 'New event'; }
+  if (feeditem['itemtype'] == 3) { type = 'Support act for event changed'; }
+  if (feeditem['itemtype'] == 2) { type = 'Tracked event changed'; }
 
   // Get the datetime for the feeditem in UTC
-  feed_datetime_formatted = this.getDateTime(feeditem['feed_date'] + ' ' + feeditem['time'] + ' UTC', 'yyyy-mm-dd hh:ii:ss');
+  itemdate = feeditem['date']
+  date = itemdate.split('T')[0]
+  time = itemdate.split('T')[1].substring(0, 8)
+  feed_datetime_formatted = this.getDateTime(date + ' ' + time + ' UTC', 'yyyy-mm-dd hh:ii:ss');
 
-  // Get the datetime for when the item was dismissed
-  dismiss_datetime_formatted = this.getDateTime(feeditem['dismiss_date'] + ' ' + feeditem['dismiss_time'] + ' UTC', 'yyyy-mm-dd hh:ii:ss');
+  // Get the datetime for when the item was changed
+  itemdate = feeditem['changedate']
+  date = itemdate.split('T')[0]
+  time = itemdate.split('T')[1].substring(0, 8)
+  dismiss_datetime_formatted = this.getDateTime(date + ' ' + time + ' UTC', 'yyyy-mm-dd hh:ii:ss');
 
   // Get the date for the event
-  date = new Date(feeditem['date']);
+  date = new Date(feeditem['event']['date']);
   date_formatted = date.getDate() + ' ' + months[date.getMonth()]['short'] + ' ' + date.getFullYear();
 
   // Get the weekday for the event
   day_formatted = days[date.getDay()];
 
   // Get the doors start time
-  starttime = feeditem['starttime'];
-  if (starttime != "00:00:00") {
+  starttime = feeditem['event']['starttime'];
+  if (starttime != null) {
     starttime_formatted = starttime.split(':')[0] + ':' + starttime.split(':')[1];
   } else {
     starttime_formatted = 'unknown time'
   }
 
   // Get the price
-  if (feeditem['free'] == 0) {
-    if (feeditem['price'] > 0) {
-      price_formatted = '€ ' + parseFloat(feeditem['price'] / 100).toFixed(2);
+  if (feeditem['event']['free'] == false) {
+    if (feeditem['event']['price'] > 0) {
+      price_formatted = '&euro; ' + parseFloat(feeditem['event']['price'] / 100).toFixed(2);
     } else {
       price_formatted = 'unknown price';
     }
@@ -708,7 +715,7 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
   }
 
   // Check if this is sold out
-  if (feeditem['soldout'] == 0) {
+  if (feeditem['event']['soldout'] == false) {
     soldout_formatted = 'not sold oud';
   } else {
     soldout_formatted = 'sold out';
@@ -719,12 +726,12 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
   item = item.replace(/{{ feed_datetime }}/g, feed_datetime_formatted);
   item = item.replace(/{{ feed_dismissdatetime }}/g, dismiss_datetime_formatted);
 
-  item = item.replace(/{{ title }}/g, feeditem['title']);
-  item = item.replace(/{{ id }}/g, feeditem['id']);
-  item = item.replace(/{{ event_id }}/g, feeditem['event_id']);
-  item = item.replace(/{{ support }}/g, feeditem['support']);
-  item = item.replace(/{{ venue }}/g, feeditem['venue']);
-  item = item.replace(/{{ stage }}/g, feeditem['stage']);
+  item = item.replace(/{{ title }}/g, feeditem['event']['title']);
+  item = item.replace(/{{ id }}/g, feeditem['event']['id']);
+  item = item.replace(/{{ event_id }}/g, feeditem['event']['id']);
+  item = item.replace(/{{ support }}/g, feeditem['event']['support']);
+  item = item.replace(/{{ venue }}/g, feeditem['event']['venue']);
+  item = item.replace(/{{ stage }}/g, feeditem['event']['stage']);
   item = item.replace(/{{ day }}/g, day_formatted);
   item = item.replace(/{{ date }}/g, date_formatted);
   item = item.replace(/{{ starttime }}/g, starttime_formatted);
@@ -735,25 +742,25 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
   newitem = $($.parseHTML(item));
 
   // Set the URL for the website
-  newitem.find('#button-website').attr('href', feeditem['url']);
+  newitem.find('#button-website').attr('href', feeditem['event']['url']);
 
   // Set the URL for tickets, if there is one
-  if (feeditem['url_tickets']) {
-    newitem.find('#button-buy').attr('href', feeditem['url_tickets']);
+  if (feeditem['event']['url_tickets']) {
+    newitem.find('#button-buy').attr('href', feeditem['event']['url_tickets']);
   } else {
     newitem.find('#button-buy').hide();
   }
 
   // If there is an image, change the background of the title
-  if (feeditem['image']) {
-    newitem.find('.mdl-card__title').css('background-image', 'url(' + feeditem['image'] + ')');
+  if (feeditem['event']['image']) {
+    newitem.find('.mdl-card__title').css('background-image', 'url(' + feeditem['event']['image'] + ')');
   }
 
   // Upgrade the element for MDL
   t.upgradeElement(newitem);
 
   // Set the 'tracked' and 'going' state
-  t.pageFeedItemEventTogglesSetTracked(feeditem['event_id'], feeditem['tracked'], newitem);
+  t.pageFeedItemEventTogglesSetTracked(feeditem['event']['id'], feeditem['event']['tracked'], newitem);
 
   // Add a onclick element for the dismiss button
   newitem.find('.dismiss').click(function() {
@@ -762,17 +769,17 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
 
   // Add a onclick element for the undismiss button
   newitem.find('.undismiss').click(function() {
-    t.pageFeedItemDismiss(feeditem['id'], true);
+    t.pageFeedItemDismiss(feeditem['event']['id'], true);
   });
 
   // Add a onclick element for the 'tracked' toggle
-  newitem.find('#switch-tracked-' + feeditem['event_id']).change(function() {
-    t.pageFeedItemEventTrackedToggle(feeditem['event_id'], true);
+  newitem.find('#switch-tracked-' + feeditem['event']['id']).change(function() {
+    t.pageFeedItemEventTrackedToggle(feeditem['event']['id'], true);
   });
 
   // Add a onclick element for the 'going' toggle
-  newitem.find('#switch-going-' + feeditem['event_id']).change(function() {
-    t.pageFeedItemEventTrackedToggle(feeditem['event_id'], false);
+  newitem.find('#switch-going-' + feeditem['event']['id']).change(function() {
+    t.pageFeedItemEventTrackedToggle(feeditem['event']['id'], false);
   });
 
   return newitem;
@@ -812,7 +819,7 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
       // Walk through the items and add them to the feed
       $.each(data['data']['data'], function(index, feeditem) {
         // Get the type for the item
-        type = feeditem['type'];
+        type = feeditem['itemtype'];
 
         // If the item is a event (new, support changed or tracked changed)
         if (type == 1 || type == 2 || type == 3) {
