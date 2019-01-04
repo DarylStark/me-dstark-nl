@@ -9,6 +9,7 @@
 import datetime
 import math
 import time
+import os
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -48,21 +49,6 @@ class API:
 
         # Return the object
         return api_object
-
-    def get_venues(self):
-        """ API method for '/venues'. Returns all or filtered venues from the database """
-        
-        return self.create_api_return(api = 'venues', error_code = 1, error_text = 'not implemented yet')
-    
-    def get_stages(self, venue = None):
-        """ API method for '/stges'. Returns all or filtered stages from the database """
-
-        return self.create_api_return(api = 'venues', error_code = 1, error_text = 'not implemented yet')
-
-    def get_events(self):
-        """ API method for '/events'. Returns all or filtered events from the database """
-
-        return self.create_api_return(api = 'venues', error_code = 1, error_text = 'not implemented yet')
     
     def sync_events(self, service = None):
         """ API method for '/events.Sync'. Syncs all events for a specific service """
@@ -300,7 +286,7 @@ class API:
 
         # Return the feed
         return self.create_api_return(
-            api = 'feed',
+            api = 'feed.Get',
             error_code = error_code,
             error_text = error_text,
             data = data,
@@ -308,6 +294,45 @@ class API:
             retval = {},
             page = page,
             limit = limit,
+            runtime = time_end - time_start
+        )
+
+    def get_template(self, template):
+        """ API method for '/template.Get'. Returns a requested template """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Get the end time
+        time_end = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create default values
+        data = []
+
+        # Get the template directory and file
+        htmldir = 'templates/'
+        templatefile = htmldir + template + '.html'
+
+        # Load the templatefile
+        with open(templatefile) as tpl:
+            data = tpl.read()
+            tpl.close()
+            data = [ data ]
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'template.Get',
+            error_code = error_code,
+            error_text = error_text,
+            data = data,
+            length = len(data),
+            retval = {},
+            page = 0,
+            limit = 0,
             runtime = time_end - time_start
         )
 #---------------------------------------------------------------------------------------------------

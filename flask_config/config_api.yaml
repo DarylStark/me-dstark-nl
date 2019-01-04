@@ -5,58 +5,26 @@ info:
   title: REST API for ME
   version: '0.1'
 paths:
-  '/venues':
-    get:
-      tags:
-        - Event venues
-      operationId: api.api.get_venues
-      summary: Get all venues
-      responses:
-        '200':
-          description: Return venues
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/APIResultVenue'
-  '/stages':
-    get:
-      tags:
-        - Event stages
-      operationId: api.api.get_stages
-      summary: Get all or filtered stages
-      parameters:
-        - name: venue
-          in: query
-          schema:
-            type: string
-          description: Return stages for a specific venue
-      responses:
-        '200':
-          description: Return stages
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/APIResultStage'
-  '/events':
+  '/events.Sync':
     get:
       tags:
         - Events
-      operationId: api.api.get_events
-      summary: Get all events
+      operationId: api.api.sync_events
+      summary: Sync events for a specific service
+      parameters:
+        - name: service
+          in: query
+          schema:
+            type: string
+          description: The service you want to sync
       responses:
         '200':
-          description: Return events
+          description: Returns how many new events there were synced and how many were updated
           content:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/APIResultEvent'
-  '/feed':
+  '/feed.Get':
     get:
       tags:
         - Feed
@@ -80,87 +48,22 @@ paths:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/APIResultFeed'
-  '/events.Sync':
+  '/templates.Get':
     get:
       tags:
-        - Events
-      operationId: api.api.sync_events
-      summary: Sync events for a specific service
+        - Templates
+      operationId: api.api.get_template
+      summary: Get a template
       parameters:
-        - name: service
+        - name: template
           in: query
           schema:
             type: string
-          description: The service you want to sync
+          description: The template you want to get
       responses:
         '200':
-          description: Returns how many new events there were synced and how many were updated
+          description: Return template
           content:
             application/json:
               schema:
                 type: array
-                items:
-                  $ref: '#/components/schemas/APIResultEventsSync'
-components:
-  schemas:
-    APIResult:
-      type: object
-      required:
-        - success
-      properties:
-        success:
-          type: boolean
-          description: The result of the API call
-    APIResultEvent:
-      type: object
-      required:
-        - APIResult
-      properties:
-        APIResult:
-          $ref: '#/components/schemas/APIResult'
-          description: The API results
-    APIResultFeed:
-      type: object
-      required:
-        - APIResult
-      properties:
-        APIResult:
-          $ref: '#/components/schemas/APIResult'
-          description: The API results
-    APIResultEventsSync:
-      type: object
-      required:
-        - APIResult
-      properties:
-        APIResult:
-          $ref: '#/components/schemas/APIResult'
-          description: The sync results
-    APIResultVenue:
-      type: object
-      required:
-        - APIResult
-      properties:
-        APIResult:
-          $ref: '#/components/schemas/APIResult'
-          description: The API results
-    APIResultStage:
-      type: object
-      required:
-        - APIResult
-      properties:
-        APIResult:
-          $ref: '#/components/schemas/APIResult'
-          description: The API results
-    Event:
-      type: object
-      required:
-        - title
-      properties:
-        title:
-          type: string
-          description: Event title
-          example: Event title
-          minLength: 1
-          maxLength: 1024

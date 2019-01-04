@@ -1,0 +1,70 @@
+<div class='mdl-cell mdl-cell--2-col-desktop mdl-cell--hide-tablet mdl-cell--hide-phone me-js-card_{{ id }}'></div>
+<div class='mdl-cell mdl-cell--8-col-desktop mdl-cell--8-col-tablet mdl-cell--4-col-phone me-js-card_{{ id }}'>
+  <div class='me-card-wide mdl-card mdl-shadow--4dp me-js-card_inner_{{ id }}'>
+
+    <div class='mdl-card__title'>
+      <h2 class='mdl-card__title-text'>{{ title }}</h2>
+    </div>
+
+    <div class='mdl-card__supporting-text me-card__feed_info'>
+      <div class='me-card__feed_info_type'>
+        {{ feed_type }}
+      </div>
+      <div class='me-card__feed_info_date'>
+        {{ feed_datetime }}
+      </div>
+    </div>
+
+    <div class='mdl-card__supporting-text me-card__feed_dismissed'>
+      <div class='me-card__feed_info_dismissed'>
+        Dismissed at
+      </div>
+      <div class='me-card__feed_info_dismissed_date'>
+        {{ feed_dismissdatetime }}
+      </div>
+    </div>
+
+    <div class='mdl-card__supporting-text me-card__feed_event_text'>
+      <div class='me-card__feed_event_text'>
+        <b>Support: </b>{{ support }}
+      </div>
+    </div>
+
+    <div class='mdl-card__supporting-text me-card__feed_event_text'>
+      <div class='me-card__feed_event_text'>
+        <b>{{ venue }}</b> / {{ stage }}
+      </div>
+    </div>
+
+    <div class='mdl-card__supporting-text me-card__feed_event_text'>
+      Happends on <b>{{ day }}</b>, <b>{{ date }}</b> at <b>{{ starttime }}</b>. Tickets are <b>{{ price }}</b> and the concert is <b>{{ soldout }}</b>.
+    </div>
+
+    <div class='mdl-card__supporting-text'>
+      <div class='me-card__feed_event_toggle'>
+        <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-tracked-{{ event_id }}" id='label-tracked-{{ event_id }}'>
+          <input type="checkbox" id="switch-tracked-{{ event_id }}" class="mdl-switch__input">
+          <span class="mdl-switch__label">Tracked</span>
+        </label>
+      </div>
+      <div class='me-card__feed_event_toggle'>
+        <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-going-{{ event_id }}" id='label-going-{{ event_id }}'>
+          <input type="checkbox" id="switch-going-{{ event_id }}" class="mdl-switch__input">
+          <span class="mdl-switch__label">Going</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="mdl-card__actions mdl-card--border me-card__actions">
+      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id='button-buy' target='_blank'>Buy tickets</a>
+      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" id='button-website' target='_blank'>Website</a>
+    </div>
+
+    <div class='mdl-card__menu'>
+      <button class='mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect undismiss'>
+        <i class='material-icons'>view_stream</i>
+      </button>
+    </div>
+  </div>
+</div>
+<div class='mdl-cell mdl-cell--2-col-desktop mdl-cell--hide-tablet mdl-cell--hide-phone me-js-card_{{ id }}'></div>
