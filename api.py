@@ -265,6 +265,9 @@ class API:
                 database.Event
             ).filter(
                 database.FeedItem.status == status
+            ).order_by(
+                database.FeedItem.date.desc(),
+                database.FeedItem.id.desc()
             ).limit(
                 limit
             ).offset(
