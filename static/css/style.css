@@ -1,0 +1,349 @@
+/* Page */
+
+html, body
+{
+  font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+
+/* Layout */
+
+.me-layout .mdl-layout__header .mdl-layout__drawer-button {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+/* Drawer */
+
+.me-navigation {
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+}
+
+.mdl-layout__drawer .mdl-navigation
+{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+
+.me-layout .me-navigation .mdl-navigation__link {
+  display: -webkit-flex !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: rgba(255, 255, 255, 0.56);
+  font-weight: 500;
+  padding-left: 10px;
+}
+
+.me-navigation .mdl-navigation__link .material-icons
+{
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.56);
+  margin-right: 32px;
+}
+
+.me-drawer
+{
+  border: none;
+}
+
+.me-drawer-header
+{
+  box-sizing: border-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-justify-content: flex-end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+  padding: 16px;
+  height: 151px;
+}
+
+.me-avatar
+{
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+}
+
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
+  cursor: pointer;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.me-layout .me-navigation .mdl-navigation__link:hover, .me-navigation__link_active {
+  background-color: #00BCD4;
+  color: #37474F !important;
+}
+
+.me-menu-section
+{
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-left: 10px;
+  color: rgba(255, 255, 255, 0.56);
+  font-weight: 500;
+  opacity: .87;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #263238;
+}
+
+/* Content */
+
+.me-progress
+{
+  width: inherit !important;
+  display: none;
+}
+
+.me-progress-empty
+{
+  width: inherit !important;
+  display: block;
+  height: 4px;
+}
+
+#scroller
+{
+  overflow-y: scroll;
+}
+
+/* Cards */
+
+.me-card-wide.mdl-card {
+  width: auto;
+  min-height: 0px;
+}
+
+.me-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+  background-color: #263238;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: 50% 50%;
+}
+
+.me-card-wide .material-icons {
+  color: white;
+}
+
+.mdl-card__supporting-text.me-card__feed_info {
+  width: auto;
+  padding: 0px;
+  background-color: #00BCD4;
+}
+
+.mdl-card__supporting-text.me-card__feed_info .me-card__feed_info_type {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: left;
+  white-space: nowrap;
+  position: absolute;
+  float: left;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card__feed_info .me-card__feed_info_date {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: right;
+  white-space: nowrap;
+  float: right;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card__feed_dismissed {
+  width: auto;
+  padding: 0px;
+  background-color: #009CA2;
+}
+
+.mdl-card__supporting-text.me-card__feed_dismissed .me-card__feed_info_dismissed {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: left;
+  white-space: nowrap;
+  position: absolute;
+  float: left;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card__feed_dismissed .me-card__feed_info_dismissed_date {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: right;
+  white-space: nowrap;
+  float: right;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card__feed_event_text {
+  width: auto;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.mdl-card__supporting-text .me-card__feed_event_toggle {
+  display: block;
+  white-space: nowrap;
+  background-color: #ffffff;
+  width: 100%;
+  text-align: left;
+  float: left;
+}
+
+.mdl-card__supporting-text .me-card__feed_event_toggle:last-child {
+  padding-top: 16px;
+}
+
+.mdl-card__supporting-text .me-card__feed_event_toggle .mdl-switch__label {
+  font-size: 1rem;
+}
+
+.me-card__actions {
+  text-align: right;
+}
+
+.me-card-empty.mdl-card {
+  width: auto;
+  min-height: 0px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+.me-card__empty {
+  text-align: center;
+  height: auto;
+}
+
+.me-upbutton {
+  position: fixed;
+  display: none;
+  right: 0;
+  bottom: 0;
+  margin-right: 40px;
+  margin-bottom: 40px;
+  z-index: 900;
+}
+
+/* Feed filter */
+
+.me-card-feed-filter {
+  height: auto;
+  min-height: 0px;
+}
+
+.mdl-card__supporting-text.me-card-feed-filter-archive {
+  width: auto;
+  padding: 0px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.mdl-card__supporting-text.me-card-feed-filter-archive .me-card-feed-filter-archive-left {
+  display: inline-block;
+  padding: 11px 16px 11px 16px;
+  text-align: left;
+  white-space: nowrap;
+  position: absolute;
+  float: left;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card-feed-filter-archive .me-card-feed-filter-archive-switch {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: right;
+  white-space: nowrap;
+  float: right;
+  font-style: italic;
+}
+
+.me-card__title-small {
+  height: 48px !important;
+}
+
+.mdl-cell .mdl-card {
+  margin-bottom: 16px;
+}
+
+.mdl-cell .mdl-card:last-child {
+  margin-bottom: 0px;
+}
+
+/* Planning */
+
+.events .mdl-card__supporting-text {
+  border-bottom: 1px solid #e5e5e5;
+  width: 100%;
+}
+
+.events .mdl-card__supporting-text:last-child {
+  border-bottom: 0px;
+}
+
+/* Concerts filter */
+
+.me-card-concerts-filter {
+  height: auto;
+  min-height: 0px;
+}
+
+.mdl-card__supporting-text.me-card-concerts-filter-archive {
+  width: auto;
+  padding: 0px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.mdl-card__supporting-text.me-card-concerts-filter-archive .me-card-concerts-filter-archive-left {
+  display: inline-block;
+  padding: 11px 16px 11px 16px;
+  text-align: left;
+  white-space: nowrap;
+  position: absolute;
+  float: left;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card-concerts-filter-archive .me-card-concerts-filter-archive-switch {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: right;
+  white-space: nowrap;
+  float: right;
+  font-style: italic;
+}
+
+/* Generals */
+
+.capitalize {
+  text-transform: capitalize;
+}

@@ -224,7 +224,7 @@ class API:
                 if len(eventchange_ids) > 0:
                     data['updated_events'] += 1
         
-        # Get the start time
+        # Get the end time
         time_end = time.time()
 
         # Return the sync data
@@ -250,6 +250,10 @@ class API:
         error_code = 0
         error_text = ''
 
+        # Create default values
+        data = []
+        length = 0
+
         try:
             # Create a object for database interaction
             db = database.Database()
@@ -265,7 +269,6 @@ class API:
             session.close()
 
             # Create a list with dicts
-            data = []
             for feeditem in feeditems:
                 # Create a dict for the feeditem
                 item = feeditem.FeedItem.get_dict()
@@ -288,12 +291,12 @@ class API:
                 
                 # Append the created dict to the list
                 data.append(item)
-            
-            # Get the start time
-            time_end = time.time()
         except:
             error_code = 1
             error_text = 'Unknown error'
+        
+        # Get the end time
+        time_end = time.time()
 
         # Return the feed
         return self.create_api_return(

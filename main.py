@@ -36,11 +36,73 @@ app = connexion.FlaskApp(
 # 'flask_config" folder. This file can be used to create the complete API.
 app.add_api(me_options['api_configfile'])
 
-# Create a method that will be used when routed to '/'
-# TODO: make sure this is used for everything, except '/api/'
-@app.route('/', methods = [ 'GET' ])
-def root_application():
-    return '<b>Insert homepage here</b>.'
+# A method to server static files
+def serve_static(path, filename, mimetype):
+    """ Method to serve static content """
+    try:
+        # Open the needed file
+        with open('static/' + path + '/' + filename) as f:
+            cnt = f.readlines()
+        
+        # Return the content
+        return flask.Response(''.join(cnt), mimetype = mimetype)
+    except:
+        # Return a 404 error when something goes wrong
+        flask.abort(404)
+
+# Static folder for JavaScript files
+@app.route('/js/<string:filename>', methods = [ 'GET'] )
+def serve_javascript(filename):
+    return serve_static('javascript', filename, 'application/javascript')
+
+# Static folder for CSS files
+@app.route('/css/<string:filename>', methods = [ 'GET'] )
+def serve_css(filename):
+    return serve_static('css', filename, 'text/css')
+
+# Create a method that will be used when routed to '/'. This method opens the 'index.html' file in
+# the directory with all the templates and returns it with the variables set.
+# TODO: make sure this is used for everything, except '/api/' and the statics
+@app.route('/', defaults = { 'path': '' }, methods = [ 'GET' ])
+@app.route('/<path:path>', methods = [ 'GET' ])
+def root_application(path):
+    # User menu (for logout and settings)
+    user_menu = [
+        { 'name': 'Settings' },
+        { 'name': 'Logout' }
+    ]
+
+    # Main menu
+    main_menu = {
+        'menuitems': [
+            { 'title': 'Feed', 'icon': 'view_stream', 'id': 'feed' },
+            { 'title': 'Planning', 'icon': 'event', 'id': 'planning' }
+        ],
+        'submenus': [
+            {
+                'name': 'Personal',
+                'subitems': [
+                    { 'title': 'Concerts', 'icon': 'music_video', 'id': 'concerts' }
+                ]
+            },
+            { 'name': 'Professional' },
+            { 'name': 'Study' }
+        ]
+    }
+
+    # Variables for the template
+    template_vars = {
+        'pagetitle': 'Daryl Stark',
+        'username': 'Daryl Stark',
+        'user_menu': user_menu,
+        'main_menu': main_menu
+    }
+
+    # Create the object for the templates
+    template = flask.render_template('index.html', **template_vars)
+
+    # Return the rendered version
+    return template
 
 # Check if we are running the file as a program, instead of a module
 if __name__ == '__main__':
