@@ -349,6 +349,7 @@ class API:
 
             if item.count() == 1:
                 # Dismiss the item
+                item[0].changedate = datetime.datetime.utcnow()
                 item[0].status = 2
                 session.commit()
 
@@ -419,8 +420,8 @@ class API:
 
             if item.count() == 1:
                 # Dismiss the item
+                item[0].changedate = datetime.datetime.utcnow()
                 item[0].status = 1
-                # TODO: update the changedate
                 session.commit()
 
                 # Create the return value
@@ -438,7 +439,7 @@ class API:
                     'id': id,
                     'undismissed': False
                 },
-        except:
+        except KeyboardInterrupt:
             # Unknown error happend
             error_code = 2
             error_text = 'Unknown error happened'
