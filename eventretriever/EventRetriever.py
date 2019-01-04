@@ -17,4 +17,9 @@ class EventRetriever:
     def __init__(self):
         """ Sets default variables for the object """
         self.events = []
+        self.stages = {}
+    
+    def set_stages(self, stages):
+        """ Sets the stages that are applicable """
+        self.stages = stages
 #---------------------------------------------------------------------------------------------------

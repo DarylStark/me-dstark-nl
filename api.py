@@ -11,6 +11,11 @@ import math
 import time
 import os
 import sqlalchemy
+
+
+
+
+import sys
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -61,6 +66,30 @@ class API:
         error_code = 0
         error_text = ''
 
+        # Create a object for database interaction
+        db = database.Database()
+
+        # Get all stages from the database
+        stagelist = {}
+        session = db._session_factory()
+        stages = session.query(
+            database.Stage
+        ).add_entity(
+            database.Venue
+        ).join(
+            database.Venue
+        )
+
+        # Add the stages to the stagelist
+        for stage in stages:
+            if stage.Venue.name in stagelist.keys():
+                stagelist[stage.Venue.name][stage.Stage.name] = stage.Stage.id
+            else:
+                stagelist[stage.Venue.name] = { stage.Stage.name: stage.Stage.id }
+
+        # Close the session
+        session.close()
+
         # We set events to a empty list so we won't get errors later on
         events = []
 
@@ -76,10 +105,9 @@ class API:
             # Create a object for the eventretriever for TivoliVredenburg and download all the
             # events for this Service
             retriever = eventretriever.EventRetrieverTivoliVredenburg()
+            if 'TivoliVredenburg' in stagelist.keys():
+                retriever.set_stages(stagelist['TivoliVredenburg'])
             events = retriever.retrieve_events()
-        
-        # Create a object for database interaction
-        db = database.Database()
 
         # If we have events, sync them with the database
         for event in events:
@@ -131,7 +159,7 @@ class API:
 
                 # Update the original event and keep track of the made changes
                 attributes = [
-                    'title', 'support', 'venue', 'stage',
+                    'title', 'support', 'stage',
                     'date', 'price', 'free', 'soldout',
                     'doorsopen', 'starttime', 'url', 'url_tickets',
                     'image'

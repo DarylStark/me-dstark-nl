@@ -64,8 +64,6 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                             int(event['yearMonth'][4:]),
                             int(event['day'].split()[-1])
                         ),
-                        venue = 'TivoliVredenburg',
-                        stage = 'Unknown',
                         unique = event['link']
                     )
 
@@ -90,6 +88,18 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
 
             # Parse the HTML that we downloaded
             parsed_page = bs4.BeautifulSoup(page.content, 'html.parser')
+
+            # Find the stage
+            try:
+                stage = parsed_page.find('span', string = 'locatie').parent.find_next_sibling().find('span').text.strip().replace('\n', '')
+
+                # Find the stage in the local stagelist
+                if stage in self.stages.keys():
+                    event.stage = self.stages[stage]
+                else:
+                    event.stage = None
+            except AttributeError:
+                event.stage = None
 
             # Find the support act
             try:

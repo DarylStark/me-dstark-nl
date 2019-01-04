@@ -28,8 +28,7 @@ class Event(database.BaseClass):
     new = sqlalchemy.Column('Event_New', sqlalchemy.Boolean, default = False, nullable = False)
     title = sqlalchemy.Column('Event_Title', sqlalchemy.Text, nullable = False)
     support = sqlalchemy.Column('Event_Support', sqlalchemy.Text)
-    venue = sqlalchemy.Column('Event_Venue', sqlalchemy.Text, nullable = False)
-    stage = sqlalchemy.Column('Event_Stage', sqlalchemy.Text, nullable = False)
+    stage = sqlalchemy.Column('Event_Stage', sqlalchemy.ForeignKey("tStages.Stage_ID"), nullable = True)
     date = sqlalchemy.Column('Event_Date', sqlalchemy.Date)
     price = sqlalchemy.Column('Event_Price', sqlalchemy.Integer)
     free = sqlalchemy.Column('Event_Free', sqlalchemy.Boolean)
@@ -52,7 +51,6 @@ class Event(database.BaseClass):
             'new': self.new,
             'title': self.title,
             'support': self.support,
-            'venue': self.venue,
             'stage': self.stage,
             'date': self.date,
             'price': self.price,
