@@ -481,8 +481,16 @@ class API:
                 database.FeedItem
             ).add_entity(
                 database.Event
+            ).add_entity(
+                database.Stage
+            ).add_entity(
+                database.Venue
             ).outerjoin(
                 database.Event
+            ).join(
+                database.Stage
+            ).join(
+                database.Venue
             ).filter(
                 database.FeedItem.status == status
             ).count()
@@ -494,8 +502,16 @@ class API:
                 database.FeedItem
             ).add_entity(
                 database.Event
+            ).add_entity(
+                database.Stage
+            ).add_entity(
+                database.Venue
             ).outerjoin(
                 database.Event
+            ).join(
+                database.Stage
+            ).join(
+                database.Venue
             ).filter(
                 database.FeedItem.status == status
             ).order_by(
@@ -516,6 +532,22 @@ class API:
                 # If this is a event-type, we have to add the event
                 if feeditem.FeedItem.itemtype in (feeditem.FeedItem.TYPE_NEW_EVENT, feeditem.FeedItem.TYPE_TRACKED_EVENT_CHANGED, feeditem.FeedItem.TYPE_EVENT_CHANGED):
                     item['event'] = feeditem.Event.get_dict()
+
+                    # Create empty stage fields
+                    stagefields = {
+                        'stage': None,
+                        'venue': None
+                    }
+                
+                    # If the event has a stage, we have to fill in the fields
+                    if feeditem.Event.stage:
+                        stagefields = {
+                            'stage': feeditem.Stage.name,
+                            'venue': feeditem.Venue.name
+                        }
+                    
+                    # Add the stagefields to the event
+                    item['event']['stage'] = stagefields
                 
                 # If this is a event-change, we need to add the changes. We get these from the database
                 # seperatly; we don't do this via a JOIN because that would result in more then one
