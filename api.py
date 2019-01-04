@@ -487,9 +487,9 @@ class API:
                 database.Venue
             ).outerjoin(
                 database.Event
-            ).join(
+            ).outerjoin(
                 database.Stage
-            ).join(
+            ).outerjoin(
                 database.Venue
             ).filter(
                 database.FeedItem.status == status
@@ -508,9 +508,9 @@ class API:
                 database.Venue
             ).outerjoin(
                 database.Event
-            ).join(
+            ).outerjoin(
                 database.Stage
-            ).join(
+            ).outerjoin(
                 database.Venue
             ).filter(
                 database.FeedItem.status == status
