@@ -168,7 +168,7 @@ class API:
                     session.close()
 
                 # Add a new Feed Item for this change
-                if original_tracked == 1 or 'support' in [ c[0] for c in changes ]:
+                if original_tracked > 0 or 'support' in [ c[0] for c in changes ]:
                     # Create a object for the FeedItem
                     item = database.FeedItem()
                     item.itemtype = item.TYPE_EVENT_CHANGED
@@ -315,7 +315,7 @@ class API:
             ).filter(
                 database.Event.id == id
             ).filter(
-                database.Event.tracked == 1
+                sqlalchemy.or_(database.Event.tracked == 1, database.Event.tracked == 2)
             )
 
             if item.count() == 1:
@@ -349,7 +349,75 @@ class API:
 
         # Return the feed
         return self.create_api_return(
-            api = 'events.SetTracked',
+            api = 'events.SetNotTracked',
+            error_code = error_code,
+            error_text = error_text,
+            retval = retval,
+            runtime = time_end - time_start
+        )
+
+    def setgoing_event(self, id):
+        """ API method for '/events.SetGoing'. Sets a event to going """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create the return value
+        retval = {
+            'id': id,
+            'setgoing': False
+        },
+
+        try:
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Find the item
+            session = db._session_factory()
+            item = session.query(
+                database.Event
+            ).filter(
+                database.Event.id == id
+            ).filter(
+                sqlalchemy.or_(database.Event.tracked == 0, database.Event.tracked == 1)
+            )
+
+            if item.count() == 1:
+                # Dismiss the item
+                item[0].changedate = datetime.datetime.utcnow()
+                item[0].tracked = 2
+                session.commit()
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'setgoing': True
+                },
+            else:
+                # Not found, return an error
+                error_code = 1
+                error_text = 'Item cannot be found or is already tracked'
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'setgoing': False
+                },
+        except KeyboardInterrupt:
+            # Unknown error happend
+            error_code = 2
+            error_text = 'Unknown error happened'
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'events.SetGoing',
             error_code = error_code,
             error_text = error_text,
             retval = retval,

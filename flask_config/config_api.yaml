@@ -62,6 +62,25 @@ paths:
             application/json:
               schema:
                 type: array
+  '/events.SetGoing':
+    get:
+      tags:
+        - Feed
+      operationId: api.api.setgoing_event
+      summary: Sets a event to going
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          description: The event that needs to be set to going
+      responses:
+        '200':
+          description: API result
+          content:
+            application/json:
+              schema:
+                type: array
   '/feed.Get':
     get:
       tags:

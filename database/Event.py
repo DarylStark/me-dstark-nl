@@ -24,7 +24,7 @@ class Event(database.BaseClass):
     id = sqlalchemy.Column('Event_ID', sqlalchemy.Integer, primary_key = True)
     added = sqlalchemy.Column('Event_Added', sqlalchemy.DateTime, nullable = False)
     changed = sqlalchemy.Column('Event_Changed', sqlalchemy.DateTime, nullable = False)
-    tracked = sqlalchemy.Column('Event_Tracked', sqlalchemy.Boolean, default = False, nullable = False)
+    tracked = sqlalchemy.Column('Event_Tracked', sqlalchemy.Integer, default = 0, nullable = False)
     new = sqlalchemy.Column('Event_New', sqlalchemy.Boolean, default = False, nullable = False)
     title = sqlalchemy.Column('Event_Title', sqlalchemy.Text, nullable = False)
     support = sqlalchemy.Column('Event_Support', sqlalchemy.Text)
