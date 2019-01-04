@@ -10,6 +10,7 @@ import datetime
 import math
 import time
 import os
+import sqlalchemy
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -219,6 +220,142 @@ class API:
             runtime = time_end - time_start
         )
     
+    def settracked_event(self, id):
+        """ API method for '/events.SetTracked'. Sets a event to tracked """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create the return value
+        retval = {
+            'id': id,
+            'settracked': False
+        },
+
+        try:
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Find the item
+            session = db._session_factory()
+            item = session.query(
+                database.Event
+            ).filter(
+                database.Event.id == id
+            ).filter(
+                sqlalchemy.or_(database.Event.tracked == 0, database.Event.tracked == 2)
+            )
+
+            if item.count() == 1:
+                # Dismiss the item
+                item[0].changedate = datetime.datetime.utcnow()
+                item[0].tracked = 1
+                session.commit()
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'settracked': True
+                },
+            else:
+                # Not found, return an error
+                error_code = 1
+                error_text = 'Item cannot be found or is already tracked'
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'settracked': False
+                },
+        except:
+            # Unknown error happend
+            error_code = 2
+            error_text = 'Unknown error happened'
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'events.SetTracked',
+            error_code = error_code,
+            error_text = error_text,
+            retval = retval,
+            runtime = time_end - time_start
+        )
+
+    def setnottracked_event(self, id):
+        """ API method for '/events.SetNotTracked'. Sets a event to not tracked """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create the return value
+        retval = {
+            'id': id,
+            'setnottracked': False
+        },
+
+        try:
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Find the item
+            session = db._session_factory()
+            item = session.query(
+                database.Event
+            ).filter(
+                database.Event.id == id
+            ).filter(
+                database.Event.tracked == 1
+            )
+
+            if item.count() == 1:
+                # Dismiss the item
+                item[0].changedate = datetime.datetime.utcnow()
+                item[0].tracked = 0
+                session.commit()
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'setnottracked': True
+                },
+            else:
+                # Not found, return an error
+                error_code = 1
+                error_text = 'Item cannot be found or is already not tracked'
+
+                # Create the return value
+                retval = {
+                    'id': id,
+                    'setnottracked': False
+                },
+        except:
+            # Unknown error happend
+            error_code = 2
+            error_text = 'Unknown error happened'
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'events.SetTracked',
+            error_code = error_code,
+            error_text = error_text,
+            retval = retval,
+            runtime = time_end - time_start
+        )
+
     def get_feed(self, limit = 15, page = 1, dismissed = 0):
         """ API method for '/feed'. Returns all or filtered feeditems from the database """
 

@@ -24,6 +24,44 @@ paths:
             application/json:
               schema:
                 type: array
+  '/events.SetTracked':
+    get:
+      tags:
+        - Feed
+      operationId: api.api.settracked_event
+      summary: Sets a event to tracked
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          description: The event that needs to be set to tracked
+      responses:
+        '200':
+          description: API result
+          content:
+            application/json:
+              schema:
+                type: array
+  '/events.SetNotTracked':
+    get:
+      tags:
+        - Feed
+      operationId: api.api.setnottracked_event
+      summary: Sets a event to not tracked
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: integer
+          description: The event that needs to be set to not tracked
+      responses:
+        '200':
+          description: API result
+          content:
+            application/json:
+              schema:
+                type: array
   '/feed.Get':
     get:
       tags:
