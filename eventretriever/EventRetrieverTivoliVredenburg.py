@@ -45,30 +45,35 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
         # Start looping through the pages
         while keeplooping:
             try:
-                # Retrieve the page and get the JSON
-                newurl = url.format(pageindex = pageindex)
-                page = requests.get(newurl)
-                data = page.json()
+                # Retrieve the page and get the JSON. We do this in a try block. If we capture an
+                # error, we stop this page, increase the page and do the next. If we don't get an
+                # exception, we process the page
+                try:
+                    newurl = url.format(pageindex = pageindex)
+                    page = requests.get(newurl)
+                    data = page.json()
+                except requests.exceptions.ConnectionError:
+                    pass
+                else:
+                    # Loop through the events we received
+                    for event in data:
+                        # Create a new Event object with the properties we already have. We will add
+                        # details for his event later. The 'day' attribute in the TivoliVredenburg
+                        # output is in the form of 'di 3', so we have to strip off the first part.
+                        event_object = Event(
+                            title = event['title'],
+                            url = event['link'],
+                            image = event['image'],
+                            date = datetime.date(
+                                int(event['year']),
+                                int(event['yearMonth'][4:]),
+                                int(event['day'].split()[-1])
+                            ),
+                            unique = event['link']
+                        )
 
-                # Loop through the events we received
-                for event in data:
-                    # Create a new Event object with the properties we already have. We will add
-                    # details for his event later. The 'day' attribute in the TivoliVredenburg
-                    # output is in the form of 'di 3', so we have to strip off the first part.
-                    event_object = Event(
-                        title = event['title'],
-                        url = event['link'],
-                        image = event['image'],
-                        date = datetime.date(
-                            int(event['year']),
-                            int(event['yearMonth'][4:]),
-                            int(event['day'].split()[-1])
-                        ),
-                        unique = event['link']
-                    )
-
-                    # Add the event to the stack
-                    self.events.append(event_object)
+                        # Add the event to the stack
+                        self.events.append(event_object)
 
                 # Increase the page counter
                 pageindex += 1
@@ -84,113 +89,114 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
         # from the event from that page and set it in the Event
         for event in self.events:
             # Download the page and parse the HTML
-            page = requests.get(event.url)
-
-            # Parse the HTML that we downloaded
-            parsed_page = bs4.BeautifulSoup(page.content, 'html.parser')
-
-            # Find the stage
             try:
-                stage = parsed_page.find('span', string = 'locatie').parent.find_next_sibling().find('span').text.strip().replace('\n', '')
-
-                # Find the stage in the local stagelist
-                if stage in self.stages.keys():
-                    event.stage = self.stages[stage]
-                else:
-                    event.stage = None
-            except AttributeError:
-                event.stage = None
-
-            # Find the support act
-            try:
-                supportact = parsed_page.find('span', string = 'support').parent.find_next_sibling().find('span').text.strip().replace('\n', '')
-                event.support = supportact
-
-                # TivoliVredenburg uses a few terms when there is no support act or when the
-                # supportact has yet to be determined. We filter these out and set the support
-                # to None in those cases
-                none_acts = [ 'tbc', 'tba', 'geen support', 'geen', 'geen support (voorprogramma)' ]
-
-                if supportact in none_acts:
-                    event.support = None
-            except AttributeError:
-                event.support = None
-            
-            # Find an image. There is already an image in there from the summary, but the images on
-            # the detailpage are in much higher resolution. If we don't find any, we don't change
-            # the image as it is now, so we get the summary image only if we can't find any bigger
-            # on the detail page
-            try:
-                # Find all images on the page and use only the first one. The first one is the big
-                # image used for the event.
-                image = parsed_page.find_all('img')[0].get('src')
-                event.image = image
-            except (AttributeError, IndexError):
+                page = requests.get(event.url)
+            except requests.exceptions.ConnectionError:
                 pass
-            
-            # Find the price for the event
-            try:
-                # Find the element with the price
-                price_html = str(parsed_page.find('div', { 'class': 'price right' }))
+            else:
+                # Parse the HTML that we downloaded
+                parsed_page = bs4.BeautifulSoup(page.content, 'html.parser')
 
-                # Extract the price from that
-                regex_price = re.compile('</span>([^<]*)<')
-                price = regex_price.findall(price_html)[0].strip()
+                # Find the stage
+                try:
+                    stage = parsed_page.find('span', string = 'locatie').parent.find_next_sibling().find('span').text.strip().replace('\n', '')
 
-                # Remove clutter
-                price = price.replace(',-', ',00') \
-                             .replace(',', '')
+                    # Find the stage in the local stagelist
+                    if stage in self.stages.keys():
+                        event.stage = self.stages[stage]
+                    else:
+                        event.stage = None
+                except AttributeError:
+                    event.stage = None
+
+                # Find the support act
+                try:
+                    supportact = parsed_page.find('span', string = 'support').parent.find_next_sibling().find('span').text.strip().replace('\n', '')
+                    event.support = supportact
+
+                    # TivoliVredenburg uses a few terms when there is no support act or when the
+                    # supportact has yet to be determined. We filter these out and set the support
+                    # to None in those cases
+                    none_acts = [ 'tbc', 'tba', 'geen support', 'geen', 'geen support (voorprogramma)' ]
+
+                    if supportact in none_acts:
+                        event.support = None
+                except AttributeError:
+                    event.support = None
                 
-                # Set the price in the object
-                event.price = int(price)
-            except (AttributeError, ValueError, IndexError):
-                event.price = None
+                # Find an image. There is already an image in there from the summary, but the images on
+                # the detailpage are in much higher resolution. If we don't find any, we don't change
+                # the image as it is now, so we get the summary image only if we can't find any bigger
+                # on the detail page
+                try:
+                    # Find all images on the page and use only the first one. The first one is the big
+                    # image used for the event.
+                    image = parsed_page.find_all('img')[0].get('src')
+                    event.image = image
+                except (AttributeError, IndexError):
+                    pass
+                
+                # Find the price for the event
+                try:
+                    # Find the element with the price
+                    price_html = str(parsed_page.find('div', { 'class': 'price right' }))
 
-            # Check if the concert if Free
-            try:
-                # Find the 'free' element on the page (if there is any)
-                free = parsed_page.find('span', string = 'Gratis')
-                if not free is None:
-                    event.free = True
-                else:
-                    event.free = False
-            except:
-                event.free = None
-            
-            # Check if the event is sold out
-            try:
-                # Find the 'soldout' element on the page (if there is any)
-                soldout = parsed_page.find('span', string = 'Uitverkocht')
-                event.soldout = not soldout is None
-                #if not soldout is None:
-                #    event.soldout = True
-                #else:
-                #    event.soldout = False
-            except:
-                event.soldout = None
-            
-            # Find the time the doors open
-            # TODO: make sure this time is in UTC
-            try:
-                doorsopen = parsed_page.find('span', string = 'zaal open').parent.find_next_sibling().find('span').text.strip()
-                event.timedoorsopen = datetime.datetime.strptime(doorsopen, '%H:%M').time()
-            except AttributeError:
-                event.doorsopen = None
-            
-            # Find the time the event starts
-            # TODO: make sure this time is in UTC
-            try:
-                start = parsed_page.find('span', string = 'aanvang').parent.find_next_sibling().find('span').text.strip()
-                event.timestart = datetime.datetime.strptime(start, '%H:%M').time()
-            except AttributeError:
-                event.doorsopen = None
+                    # Extract the price from that
+                    regex_price = re.compile('</span>([^<]*)<')
+                    price = regex_price.findall(price_html)[0].strip()
 
-            # Find the URL to buy tickets
-            try:
-                tickets = parsed_page.find('a', { 'class': 'order-tickets' })
-                event.url_tickets = tickets.get('href')
-            except AttributeError:
-                event.doorsopen = None
+                    # Remove clutter
+                    price = price.replace(',-', ',00') \
+                                .replace(',', '')
+                    
+                    # Set the price in the object
+                    event.price = int(price)
+                except (AttributeError, ValueError, IndexError):
+                    event.price = None
 
-            # TODO: Find the stage
+                # Check if the concert if Free
+                try:
+                    # Find the 'free' element on the page (if there is any)
+                    free = parsed_page.find('span', string = 'Gratis')
+                    if not free is None:
+                        event.free = True
+                    else:
+                        event.free = False
+                except:
+                    event.free = None
+                
+                # Check if the event is sold out
+                try:
+                    # Find the 'soldout' element on the page (if there is any)
+                    soldout = parsed_page.find('span', string = 'Uitverkocht')
+                    event.soldout = not soldout is None
+                    #if not soldout is None:
+                    #    event.soldout = True
+                    #else:
+                    #    event.soldout = False
+                except:
+                    event.soldout = None
+                
+                # Find the time the doors open
+                # TODO: make sure this time is in UTC
+                try:
+                    doorsopen = parsed_page.find('span', string = 'zaal open').parent.find_next_sibling().find('span').text.strip()
+                    event.timedoorsopen = datetime.datetime.strptime(doorsopen, '%H:%M').time()
+                except AttributeError:
+                    event.doorsopen = None
+                
+                # Find the time the event starts
+                # TODO: make sure this time is in UTC
+                try:
+                    start = parsed_page.find('span', string = 'aanvang').parent.find_next_sibling().find('span').text.strip()
+                    event.timestart = datetime.datetime.strptime(start, '%H:%M').time()
+                except AttributeError:
+                    event.doorsopen = None
+
+                # Find the URL to buy tickets
+                try:
+                    tickets = parsed_page.find('a', { 'class': 'order-tickets' })
+                    event.url_tickets = tickets.get('href')
+                except AttributeError:
+                    event.doorsopen = None
 #---------------------------------------------------------------------------------------------------
