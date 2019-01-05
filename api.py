@@ -515,6 +515,7 @@ class API:
             ).filter(
                 database.FeedItem.status == status
             ).order_by(
+                database.FeedItem.changedate.desc(),
                 database.FeedItem.date.desc(),
                 database.FeedItem.id.desc()
             ).limit(
