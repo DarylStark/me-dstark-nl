@@ -27,7 +27,7 @@ paths:
   '/events.SetTracked':
     get:
       tags:
-        - Feed
+        - Events
       operationId: api.api.settracked_event
       summary: Sets a event to tracked
       parameters:
@@ -46,7 +46,7 @@ paths:
   '/events.SetNotTracked':
     get:
       tags:
-        - Feed
+        - Events
       operationId: api.api.setnottracked_event
       summary: Sets a event to not tracked
       parameters:
@@ -65,7 +65,7 @@ paths:
   '/events.SetGoing':
     get:
       tags:
-        - Feed
+        - Events
       operationId: api.api.setgoing_event
       summary: Sets a event to going
       parameters:
@@ -77,6 +77,40 @@ paths:
       responses:
         '200':
           description: API result
+          content:
+            application/json:
+              schema:
+                type: array
+  '/events.Get':
+    get:
+      tags:
+        - Events
+      operationId: api.api.get_events
+      summary: Get all events or a filtered subset
+      parameters:
+        - name: tracked
+          in: query
+          schema:
+            type: integer
+          description: Filter on tracked items
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: The maximum number of items you want to get
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: The pagenumber you want to retrieve
+        - name: date
+          in: query
+          schema:
+            type: string
+          description: The date on which the events have to happen
+      responses:
+        '200':
+          description: Return feeditems
           content:
             application/json:
               schema:

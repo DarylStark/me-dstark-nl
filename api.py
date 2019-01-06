@@ -451,9 +451,83 @@ class API:
             retval = retval,
             runtime = time_end - time_start
         )
+    
+    def get_events(self, limit = 15, page = 1, tracked = None, date = None):
+        """ API method for '/events.Get'. Returns all or filtered events from the database """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # Create default values
+        data = []
+        length = 0
+
+        try:
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Get the count of rows in the database
+            session = db._session_factory()
+            query = session.query(
+                database.Event
+            )
+
+            # Add the filters, when needed
+            if tracked is not None:
+                query = query.filter(
+                    database.Event.tracked == tracked
+                )
+            
+            if date is not None:
+                query = query.filter(
+                    database.Event.date == date
+                )
+
+            # Create one query for the length
+            length = query.count()
+
+            # And one for the events
+            events = query.limit(
+                limit
+            ).offset(
+                (page - 1) * limit
+            )
+
+            # Close the session
+            session.close()
+
+            # Create a list with dicts
+            for event in events:
+                # Create a dict for the feeditem
+                item = event.get_dict()
+                
+                # Append the created dict to the list
+                data.append(item)
+        except KeyboardInterrupt:
+            error_code = 1
+            error_text = 'Unknown error'
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the feed
+        return self.create_api_return(
+            api = 'events.Get',
+            error_code = error_code,
+            error_text = error_text,
+            data = data,
+            length = length,
+            page = page,
+            limit = limit,
+            runtime = time_end - time_start
+        )
 
     def get_feed(self, limit = 15, page = 1, dismissed = 0):
-        """ API method for '/feed'. Returns all or filtered feeditems from the database """
+        """ API method for '/feed.Get'. Returns all or filtered feeditems from the database """
 
         # Get the start time
         time_start = time.time()
