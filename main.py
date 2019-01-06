@@ -10,6 +10,7 @@ import os
 import sys
 import flask
 import connexion
+from flask import session
 #---------------------------------------------------------------------------------------------------
 me_options = {
     'configdir': 'flask_config/',
@@ -31,6 +32,9 @@ app = connexion.FlaskApp(
     __name__,
     specification_dir = me_options['configdir']
 )
+
+# Set the secret key for Flask-sessions
+app.app.secret_key = '&\xf6\xd9\x97\x16Z\xa0\xdf\xf4\x8ak\xac0dDD\x0f\x7f\xf2\x1eV\x14-\x81'
 
 # Add the API method to the Flask instance. We pass the configuration file that is defined in the
 # 'flask_config" folder. This file can be used to create the complete API.
@@ -60,49 +64,57 @@ def serve_javascript(filename):
 def serve_css(filename):
     return serve_static('css', filename, 'text/css')
 
+@app.route('/login', methods = [ 'GET'] )
+def login():
+    return '<b>Show loginpage</b>'
+
 # Create a method that will be used when routed to '/'. This method opens the 'index.html' file in
 # the directory with all the templates and returns it with the variables set.
-# TODO: make sure this is used for everything, except '/api/' and the statics
 @app.route('/', defaults = { 'path': '' }, methods = [ 'GET' ])
 @app.route('/<path:path>', methods = [ 'GET' ])
 def root_application(path):
-    # User menu (for logout and settings)
-    user_menu = [
-        { 'name': 'Settings' },
-        { 'name': 'Logout' }
-    ]
-
-    # Main menu
-    main_menu = {
-        'menuitems': [
-            { 'title': 'Feed', 'icon': 'view_stream', 'id': 'feed' },
-            { 'title': 'Planning', 'icon': 'event', 'id': 'planning' }
-        ],
-        'submenus': [
-            {
-                'name': 'Personal',
-                'subitems': [
-                    { 'title': 'Concerts', 'icon': 'music_video', 'id': 'concerts' }
-                ]
-            },
-            { 'name': 'Professional' },
-            { 'name': 'Study' }
+    # Check if the user is logged in
+    if 'loggedin' in session:
+        # User menu (for logout and settings)
+        user_menu = [
+            { 'name': 'Settings' },
+            { 'name': 'Logout' }
         ]
-    }
 
-    # Variables for the template
-    template_vars = {
-        'pagetitle': 'Daryl Stark',
-        'username': 'Daryl Stark',
-        'user_menu': user_menu,
-        'main_menu': main_menu
-    }
+        # Main menu
+        main_menu = {
+            'menuitems': [
+                { 'title': 'Feed', 'icon': 'view_stream', 'id': 'feed' },
+                { 'title': 'Planning', 'icon': 'event', 'id': 'planning' }
+            ],
+            'submenus': [
+                {
+                    'name': 'Personal',
+                    'subitems': [
+                        { 'title': 'Concerts', 'icon': 'music_video', 'id': 'concerts' }
+                    ]
+                },
+                { 'name': 'Professional' },
+                { 'name': 'Study' }
+            ]
+        }
 
-    # Create the object for the templates
-    template = flask.render_template('index.html', **template_vars)
+        # Variables for the template
+        template_vars = {
+            'pagetitle': 'Daryl Stark',
+            'username': 'Daryl Stark',
+            'user_menu': user_menu,
+            'main_menu': main_menu
+        }
 
-    # Return the rendered version
-    return template
+        # Create the object for the templates
+        template = flask.render_template('index.html', **template_vars)
+
+        # Return the rendered version
+        return template
+    
+    # User is not logged in. Redirect to the loginpage
+    return flask.redirect('/login', code = 302)
 
 # Check if we are running the file as a program, instead of a module
 if __name__ == '__main__':

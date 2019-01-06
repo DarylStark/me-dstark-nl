@@ -1,5 +1,6 @@
 # Requirements for the webserver
 flask
+flask-session
 connexion
 swagger-ui-bundle
 
