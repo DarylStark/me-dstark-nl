@@ -1064,10 +1064,10 @@ GUI.prototype.pagePlanningEvents = function(tracked, page, success, fail) {
       planning_event = tpl_cache['planning_event'];
 
       // Replace the variables
-      planning_event = planning_event.replace(/{{ venue }}/g, event['venue']);
-      planning_event = planning_event.replace(/{{ stage }}/g, event['stage']);
+      planning_event = planning_event.replace(/{{ venue }}/g, event['stage']['venue']);
+      planning_event = planning_event.replace(/{{ stage }}/g, event['stage']['stage']);
       planning_event = planning_event.replace(/{{ title }}/g, event['title']);
-      planning_event = planning_event.replace(/{{ support }}/g, event['support']);
+      planning_event = planning_event.replace(/{{ support }}/g, event['support'] == null ? 'No support' : event['support']);
 
       // Convert the template to a DOM object
       planning_event = $($.parseHTML(planning_event));

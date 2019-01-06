@@ -474,6 +474,14 @@ class API:
             session = db._session_factory()
             query = session.query(
                 database.Event
+            ).add_entity(
+                database.Stage
+            ).add_entity(
+                database.Venue
+            ).outerjoin(
+                database.Stage
+            ).outerjoin(
+                database.Venue
             )
 
             # Add the filters, when needed
@@ -503,7 +511,20 @@ class API:
             # Create a list with dicts
             for event in events:
                 # Create a dict for the feeditem
-                item = event.get_dict()
+                item = event.Event.get_dict()
+                
+                # Add a empty stage
+                item['stage'] = {
+                    'stage': None,
+                    'venue': None
+                }
+
+                # Add the venue
+                if event.Event.stage:
+                    item['stage'] = {
+                        'stage': event.Stage.name,
+                        'venue': event.Venue.name
+                    }
                 
                 # Append the created dict to the list
                 data.append(item)
