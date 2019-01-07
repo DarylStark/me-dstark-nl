@@ -41,16 +41,25 @@ app.app.secret_key = '&\xf6\xd9\x97\x16Z\xa0\xdf\xf4\x8ak\xac0dDD\x0f\x7f\xf2\x1
 app.add_api(me_options['api_configfile'])
 
 # A method to server static files
-def serve_static(path, filename, mimetype):
+def serve_static(path, filename, mimetype, binary = False):
     """ Method to serve static content """
     try:
+        # Set the flags for the open-context-manager
+        flags = 'r'
+        if binary:
+            flags = 'rb'
+
         # Open the needed file
-        with open('static/' + path + '/' + filename) as f:
+        with open('static/' + path + '/' + filename, flags) as f:
             cnt = f.readlines()
+
+        # Generate the content
+        if binary == False:
+            cnt = ''.join(cnt)
         
         # Return the content
-        return flask.Response(''.join(cnt), mimetype = mimetype)
-    except:
+        return flask.Response(cnt, mimetype = mimetype)
+    except KeyboardInterrupt:
         # Return a 404 error when something goes wrong
         flask.abort(404)
 
@@ -64,9 +73,21 @@ def serve_javascript(filename):
 def serve_css(filename):
     return serve_static('css', filename, 'text/css')
 
+# Static folder for images
+@app.route('/images/<string:filename>', methods = [ 'GET'] )
+def serve_image(filename):
+    return serve_static('images', filename, 'image/jpeg', binary = True)
+
 @app.route('/login', methods = [ 'GET'] )
 def login():
-    return '<b>Show loginpage</b>'
+    if 'loggedin' in session:
+        # User is already logged in. Redirect him to the homepage
+        return flask.redirect('/login', code = 302)
+    else:
+        # User is not logged in; show the loginpage
+        # Create the object for the templates
+        template = flask.render_template('login.html')
+        return template
 
 # Create a method that will be used when routed to '/'. This method opens the 'index.html' file in
 # the directory with all the templates and returns it with the variables set.
