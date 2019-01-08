@@ -73,7 +73,7 @@
                 <div class='mdl-card__content'>
                     <div id='my-signin2'></div>
                     <script>
-                        function succesLogin() {
+                        function successLogin() {
                             window.location.href = '/';
                         }
 
@@ -90,13 +90,17 @@
                                 type: 'POST',
                                 url: '/api/user.Verify',
                                 data: { 'token': token },
-                                success: succesLogin,
+                                success: successLogin,
                                 error: errorLogin
                             });
 
                             // If verified; redirect the user to the homepage
 
                             // If not verified; redirect the user to the error page
+                        }
+
+                        function onFailure(error) {
+                            console.log(error);
                         }
 
                         function renderButton() {
@@ -106,7 +110,8 @@
                                 'height': 50,
                                 'longtitle': true,
                                 'theme': 'dark',
-                                'onsuccess': onSuccess
+                                'onsuccess': onSuccess,
+                                'onfailure': onFailure
                             });
                         }
                     </script>
