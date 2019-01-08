@@ -73,11 +73,17 @@
                 <div class='mdl-card__content'>
                     <div id='my-signin2'></div>
                     <script>
-                        function successLogin() {
-                            window.location.href = '/';
+                        function successLogin(data) {
+                            if (data['retval']['loggedin']) {
+                                location.href = '/';
+                            } else {
+                                // TODO: give an good error
+                                console.log('not logged in');
+                            }
                         }
 
                         function errorLogin() {
+                            // TODO: give an good error
                             console.log('error');
                         }
 
@@ -89,14 +95,10 @@
                             $.ajax({
                                 type: 'POST',
                                 url: '/api/user.Verify',
-                                data: { 'token': token },
+                                data: JSON.stringify({ token: token }),
                                 success: successLogin,
                                 error: errorLogin
                             });
-
-                            // If verified; redirect the user to the homepage
-
-                            // If not verified; redirect the user to the error page
                         }
 
                         function onFailure(error) {

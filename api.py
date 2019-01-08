@@ -11,11 +11,8 @@ import math
 import time
 import os
 import sqlalchemy
-
-
-
-
-import sys
+from flask import request
+from flask import session
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -55,6 +52,50 @@ class API:
 
         # Return the object
         return api_object
+    
+    def verify_user(self):
+        """ API method for 'user.Verify'. Verifies a user login from Google """
+
+        # Get the start time
+        time_start = time.time()
+
+        # Set a default error code and text
+        error_code = 0
+        error_text = ''
+
+        # False retval
+        retval = {
+            'loggedin': False
+        }
+
+        # Get the data in the request
+        token = request.form.get('token')
+
+        # Get token and check validity
+        valid = True
+
+        # Create the correct return value and start a session if possible
+        if valid:
+            session['loggedin'] = True
+            retval = {
+                'loggedin': True
+            }
+        else:
+            retval = {
+                'loggedin': False
+            }
+
+        # Get the end time
+        time_end = time.time()
+
+        # Return the sync data
+        return self.create_api_return(
+            api = 'user.Verify',
+            error_code = error_code,
+            error_text = error_text,
+            runtime = time_end - time_start,
+            retval = retval
+        )
     
     def sync_events(self, service = None):
         """ API method for '/events.Sync'. Syncs all events for a specific service """

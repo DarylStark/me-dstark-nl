@@ -5,6 +5,25 @@ info:
   title: REST API for ME
   version: '0.1'
 paths:
+  '/user.Verify':
+    post:
+      tags:
+        - Users
+      operationId: api.api.verify_user
+      summary: Verify a logged in user
+      responses:
+        '200':
+          description: User is logged in successfull
+          content:
+            application/json:
+              schema:
+                type: array
+        '403':
+          description: User is not logged in
+          content:
+            application/json:
+              schema:
+                type: array
   '/events.Sync':
     get:
       tags:
@@ -200,4 +219,4 @@ paths:
           content:
             application/json:
               schema:
-                type: array
+                type: arrays
