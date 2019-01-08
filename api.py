@@ -84,6 +84,8 @@ class API:
             if idinfo['iss'] not in [ 'accounts.google.com', 'https://accounts.google.com' ]:
                 raise ValueError()
             
+            retval['id'] = idinfo
+            
             valid = True
         except ValueError:
             # Invalid token
