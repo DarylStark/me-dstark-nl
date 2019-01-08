@@ -13,6 +13,8 @@ import os
 import sqlalchemy
 from flask import request
 from flask import session
+from google.oauth2 import id_token
+from google.auth.transport import requests
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -72,7 +74,19 @@ class API:
         token = request.form.get('token')
 
         # Get token and check validity
-        valid = True
+        # TODO: move the Client ID to the app.yaml file
+        try:
+            client_id = '167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
+
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                raise ValueError()
+
+            retval['id'] = idinfo
+            
+            valid = True
+        except ValueError:
+            valid = False
 
         # Create the correct return value and start a session if possible
         if valid:

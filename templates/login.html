@@ -75,7 +75,8 @@
                     <script>
                         function successLogin(data) {
                             if (data['retval']['loggedin']) {
-                                location.href = '/';
+                                //location.href = '/';
+                                console.log('logged in');
                             } else {
                                 // TODO: give an good error
                                 console.log('not logged in');
