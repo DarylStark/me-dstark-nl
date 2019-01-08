@@ -11,3 +11,6 @@ requests
 # Requirements for the database engine
 sqlalchemy
 pymysql
+
+# Requirements for Google
+google-api-python-client

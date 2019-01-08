@@ -29,6 +29,11 @@
             position: relative;
             left: 0px;
         }
+
+        .mdl-cell, .mdl-grid {
+            margin-top: 0px;
+            padding-top: 0px;
+        }
     </style>
     <!-- Metadata -->
     <meta name='google-signin-client_id' content='167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'>
@@ -69,11 +74,14 @@
                     <div id='my-signin2'></div>
                     <script>
                         function onSuccess(googleUser) {
-                            console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
-                        }
+                            // Get the user token for this user
+                            token = googleUser.getAuthResponse().id_token;
 
-                        function onFailure(error) {
-                            console.log(error);
+                            // Send the token to the verification API
+
+                            // If verified; redirect the user to the homepage
+
+                            // If not verified; redirect the user to the error page
                         }
 
                         function renderButton() {
@@ -83,8 +91,7 @@
                                 'height': 50,
                                 'longtitle': true,
                                 'theme': 'dark',
-                                'onsuccess': onSuccess,
-                                'onfailure': onFailure
+                                'onsuccess': onSuccess
                             });
                         }
                     </script>
