@@ -67,7 +67,8 @@ class API:
 
         # False retval
         retval = {
-            'loggedin': False
+            'loggedin': False,
+            'id': None
         }
 
         # Get the data in the request
@@ -91,9 +92,7 @@ class API:
         # Create the correct return value and start a session if possible
         if valid:
             session['loggedin'] = True
-            retval = {
-                'loggedin': True
-            }
+            retval['loggedin'] = True
         else:
             retval = {
                 'loggedin': False
