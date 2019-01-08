@@ -77,16 +77,16 @@ class API:
         # Get token and check validity
         # TODO: move the Client ID to the app.yaml file
         try:
+            # Get the idinfo for this session
             client_id = '167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
 
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError()
-
-            retval['id'] = idinfo['email']
             
             valid = True
         except ValueError:
+            # Invalid token
             valid = False
 
         # Create the correct return value and start a session if possible
@@ -94,9 +94,7 @@ class API:
             session['loggedin'] = True
             retval['loggedin'] = True
         else:
-            retval = {
-                'loggedin': False
-            }
+            retval['loggedin'] = False
 
         # Get the end time
         time_end = time.time()
