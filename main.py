@@ -59,7 +59,7 @@ def serve_static(path, filename, mimetype, binary = False):
         
         # Return the content
         return flask.Response(cnt, mimetype = mimetype)
-    except KeyboardInterrupt:
+    except:
         # Return a 404 error when something goes wrong
         flask.abort(404)
 

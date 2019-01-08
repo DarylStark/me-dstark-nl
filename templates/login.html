@@ -73,11 +73,26 @@
                 <div class='mdl-card__content'>
                     <div id='my-signin2'></div>
                     <script>
+                        function succesLogin() {
+                            window.location.href = '/';
+                        }
+
+                        function errorLogin() {
+                            console.log('error');
+                        }
+
                         function onSuccess(googleUser) {
                             // Get the user token for this user
                             token = googleUser.getAuthResponse().id_token;
 
                             // Send the token to the verification API
+                            $.ajax({
+                                type: 'POST',
+                                url: '/api/user.Verify',
+                                data: { 'token': token },
+                                success: succesLogin,
+                                error: errorLogin
+                            });
 
                             // If verified; redirect the user to the homepage
 
