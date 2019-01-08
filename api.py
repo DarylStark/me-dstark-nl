@@ -83,7 +83,7 @@ class API:
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError()
 
-            retval['id'] = idinfo
+            retval['id'] = idinfo['email']
             
             valid = True
         except ValueError:
