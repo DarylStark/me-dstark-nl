@@ -81,7 +81,7 @@ class API:
             client_id = '167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
 
-            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            if idinfo['iss'] not in [ 'accounts.google.com', 'https://accounts.google.com' ]:
                 raise ValueError()
             
             valid = True
