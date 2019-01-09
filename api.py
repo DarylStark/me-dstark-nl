@@ -68,8 +68,11 @@ class API:
         # False retval
         retval = {
             'loggedin': False,
-            'id': None
+            'name': None
         }
+
+        # Default values
+        valid = False
 
         # Get the data in the request
         token = request.form.get('token')
@@ -81,12 +84,37 @@ class API:
             client_id = '167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
 
+            # Check if the token is signed correctly
             if idinfo['iss'] not in [ 'accounts.google.com', 'https://accounts.google.com' ]:
                 raise ValueError()
             
-            retval['id'] = idinfo
-            
-            valid = True
+            # Get the account ID and the e-mailadress
+            user_id = idinfo['sub']
+            user_email = idinfo['email']
+            user_name = idinfo['name']
+            user_image = idinfo['picture']
+
+            # Check if there is a profile for this user. If there is, allow him to login, otherwise
+            # raise a ValueError so the user cannot login
+
+            # Create a object for database interaction
+            db = database.Database()
+
+            # Create a session and look for the user, based on emailaddress
+            session = db._session_factory()
+            user = session.query(
+                database.User
+            ).filter(
+                database.User.email == user_email
+            )
+
+            # Check if we got something
+            if user.count() == 1:
+                valid = True
+
+                # TODO: update the record
+            else:
+                raise ValueError()
         except ValueError:
             # Invalid token
             valid = False

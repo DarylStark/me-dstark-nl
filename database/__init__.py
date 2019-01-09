@@ -20,4 +20,5 @@ from database.Event import Event
 from database.EventChange import EventChange
 from database.FeedItem import FeedItem
 from database.FeedItemEventChange import FeedItemEventChange
+from database.User import User
 #---------------------------------------------------------------------------------------------------
