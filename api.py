@@ -12,7 +12,7 @@ import time
 import os
 import sqlalchemy
 from flask import request
-from flask import session
+from flask import session as flasksession
 from google.oauth2 import id_token
 from google.auth.transport import requests
 #---------------------------------------------------------------------------------------------------
@@ -61,6 +61,9 @@ class API:
         # Get the start time
         time_start = time.time()
 
+        # Destroy the session
+        flasksession.clear()
+
         # Set a default error code and text
         error_code = 0
         error_text = ''
@@ -86,6 +89,8 @@ class API:
 
             # Check if the token is signed correctly
             if idinfo['iss'] not in [ 'accounts.google.com', 'https://accounts.google.com' ]:
+                error_code = 1
+                error_text = 'This aint a correct Google User'
                 raise ValueError()
             
             # Get the account ID and the e-mailadress
@@ -114,6 +119,8 @@ class API:
 
                 # TODO: update the record
             else:
+                error_code = 2
+                error_text = 'User is not allowed to log in'
                 raise ValueError()
         except ValueError:
             # Invalid token
@@ -121,7 +128,7 @@ class API:
 
         # Create the correct return value and start a session if possible
         if valid:
-            session['loggedin'] = True
+            flasksession['loggedin'] = True
             retval['loggedin'] = True
         else:
             retval['loggedin'] = False
