@@ -164,7 +164,12 @@ class API:
     def sync_events(self, service = None):
         """ API method for '/events.Sync'. Syncs all events for a specific service """
 
-        if is_logged_in():
+        # Check if we can run the API. We can either run it when the user is logged in, or when
+        # GAE starts it as cronjob. For the latter, we don't need to be logged in
+        logged_in = is_logged_in()
+        cronjob = request.headers.get('X-Appengine-Cron') == 'true' and request.remote_addr == '10.0.0.1'
+
+        if logged_in or cronjob:
             # Get the start time
             time_start = time.time()
 

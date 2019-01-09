@@ -1,0 +1,14 @@
+#-------------------------------------------------------------------------------
+# crpm.yaml
+#
+# Date: 2019-01-09
+#
+# Cronjobs for the application
+#-------------------------------------------------------------------------------
+# Cronjobs to synchronize events
+#-------------------------------------------------------------------------------
+cron:
+- description: Event synchronization for TivoliVredenburg
+  url: /api/events.Sync?service=TivoliVredenburg
+  schedule: every day 01:00
+#-------------------------------------------------------------------------------
