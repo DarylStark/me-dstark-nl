@@ -77,14 +77,15 @@
                             if (data['retval']['loggedin']) {
                                 location.href = '/';
                             } else {
-                                // TODO: give an good error
-                                console.log('not logged in');
+                                gapi.auth2.getAuthInstance().signOut().then(function() {
+                                    location.href = '/logout';
+                                    //location.reload();
+                                });
                             }
                         }
 
                         function errorLogin() {
-                            // TODO: give an good error
-                            console.log('error');
+                            location.reload();
                         }
 
                         function onSuccess(googleUser) {
@@ -102,7 +103,7 @@
                         }
 
                         function onFailure(error) {
-                            console.log(error);
+                            location.reload();
                         }
 
                         function renderButton() {
