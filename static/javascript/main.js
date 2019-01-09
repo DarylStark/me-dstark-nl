@@ -1157,6 +1157,12 @@ $(document).ready(function() {
     });
   });
 
+  // Add an event listener to the static menu
+  $('#logout').click(function() {
+    console.log('Logging off');
+    logout();
+  });
+
   // Add an event listener to 'onopopstate' for the window so we can make the
   // return button work
   $(window).bind('popstate', function(page) {

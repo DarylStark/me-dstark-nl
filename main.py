@@ -95,10 +95,9 @@ def logout():
         # User is not logged in. Redirect him to the loginpage
         return flask.redirect('/login', code = 302)
     else:
-        # User is logged in. Show the default lougout page and destroy the session
+        # User is logged in. Clear the session and redirect the user to the login page
         session.clear()
-        template = flask.render_template('logout.html')
-        return template
+        return flask.redirect('/login', code = 302)
 
 # Create a method that will be used when routed to '/'. This method opens the 'index.html' file in
 # the directory with all the templates and returns it with the variables set.
@@ -109,8 +108,8 @@ def root_application(path):
     if 'loggedin' in session:
         # User menu (for logout and settings)
         user_menu = [
-            { 'name': 'Settings' },
-            { 'name': 'Logout' }
+            { 'name': 'Settings', 'id': 'settings' },
+            { 'name': 'Logout', 'id': 'logout' }
         ]
 
         # Main menu

@@ -23,6 +23,12 @@
                 gapi.auth2.init();
             });
         }
+
+        function logout() {
+          gapi.auth2.getAuthInstance().signOut().then(function() {
+            location.href = '/logout';
+          });
+        }
     </script>
     <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
   </head>
@@ -47,10 +53,8 @@
             <i class='material-icons'>account_circle</i>
           </button>
           <ul class='mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right' for='user_menu'>
-            {% set itemid = 1 %}
             {% for item in user_menu %}
-              <li class='mdl-menu__item' id='{{ itemid }}'>{{ item.name }}</li>
-              {% set itemid = itemid + 1 %}
+              <li class='mdl-menu__item' id='{{ item.id }}'>{{ item.name }}</li>
             {% endfor %}
           </ul>
         </div>
