@@ -89,7 +89,7 @@ def login():
         template = flask.render_template('login.html')
         return template
 
-@app.route('/login', methods = [ 'GET'] )
+@app.route('/logout', methods = [ 'GET'] )
 def logout():
     if 'loggedin' not in session:
         # User is not logged in. Redirect him to the loginpage
