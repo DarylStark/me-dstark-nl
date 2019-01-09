@@ -8,21 +8,14 @@
   </head>
 
   <body>
-
         <script>
             function onLoad() {
                 gapi.load('auth2', function() {
-                    console.log('Google is initiated');
                     gapi.auth2.init();
-                    var auth2 = gapi.auth2.getAuthInstance();
-                    auth2.signOut().then(function () {
-                        location.href = '/';
-                    });
+                    gapi.auth2.getAuthInstance().signOut().then(function() { location.href = '/'; }
                 });
             }
         </script>
-        
         <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
-
   </body>
 </html>
