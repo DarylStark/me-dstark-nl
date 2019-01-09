@@ -115,10 +115,24 @@ class API:
 
             # Check if we got something
             if user.count() == 1:
+                # Set valid to True so the client knows to login
                 valid = True
 
-                # TODO: update the record
+                # Set the username in the return value so the client can do something with it
+                retval['name'] = user_name
+
+                # Update the record in the database
+                user[0].name = user_name
+                user[0].google_id = user_id
+                user[0].image = user_image
+
+                # Write to the database
+                session.commit()
+
+                # Close the session
+                session.close()
             else:
+                session.close()
                 error_code = 2
                 error_text = 'User is not allowed to log in'
                 raise ValueError()
