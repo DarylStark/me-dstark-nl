@@ -646,7 +646,7 @@ class API:
                     
                     # Append the created dict to the list
                     data.append(item)
-            except KeyboardInterrupt:
+            except:
                 error_code = 1
                 error_text = 'Unknown error'
 
