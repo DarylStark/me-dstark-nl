@@ -45,6 +45,14 @@ app.app.secret_key = '&\xf6\xd9\x97\x16Z\xa0\xdf\xf4\x8ak\xac0dDD\x0f\x7f\xf2\x1
 # 'flask_config" folder. This file can be used to create the complete API.
 app.add_api(me_options['api_configfile'])
 
+def is_logged_in():
+    """ Method to check if we are logged in. If we are, return True. Else, return False """
+    if 'loggedin' in session:
+        if session['loggedin'] == True:
+            return True
+    
+    return False
+
 # A method to server static files
 def serve_static(path, filename, mimetype, binary = False):
     """ Method to serve static content """
@@ -71,27 +79,35 @@ def serve_static(path, filename, mimetype, binary = False):
 # Static folder for JavaScript files
 @app.route('/js/<string:filename>', methods = [ 'GET'] )
 def serve_javascript(filename):
-    return serve_static('javascript', filename, 'application/javascript')
+    if is_logged_in():
+        return serve_static('javascript', filename, 'application/javascript')
+    else:
+        flask.abort(403)
 
 # Static folder for CSS files
 @app.route('/css/<string:filename>', methods = [ 'GET'] )
 def serve_css(filename):
-    return serve_static('css', filename, 'text/css')
+    if is_logged_in():
+        return serve_static('css', filename, 'text/css')
+    else:
+        flask.abort(403)
 
 # Static folder for images
 @app.route('/images/<string:filename>', methods = [ 'GET'] )
 def serve_image(filename):
-    return serve_static('images', filename, 'image/jpeg', binary = True)
+    if is_logged_in():
+        return serve_static('images', filename, 'image/jpeg', binary = True)
+    else:
+        flask.abort(403)
 
 @app.route('/login', methods = [ 'GET'] )
 def login():
-    if 'loggedin' in session:
+    # Check if the user is already logged in
+    if is_logged_in():
         # User is already logged in. Redirect him to the homepage
         return flask.redirect('/', code = 302)
     else:
-        # User is not logged in
-
-        # Check if we are on production
+        # User is not logged in. Check if we are on production
         if me_runtime_options['environment'] == 'Production':
             # Create the object for the templates
             template = flask.render_template('login.html')
@@ -102,7 +118,7 @@ def login():
 
 @app.route('/logout', methods = [ 'GET'] )
 def logout():
-    if 'loggedin' not in session:
+    if not is_logged_in():
         # User is not logged in. Redirect him to the loginpage
         return flask.redirect('/login', code = 302)
     else:
@@ -116,7 +132,7 @@ def logout():
 @app.route('/<path:path>', methods = [ 'GET' ])
 def root_application(path):
     # Check if the user is logged in
-    if 'loggedin' in session:
+    if is_logged_in():
         # User menu (for logout and settings)
         user_menu = [
             { 'name': 'Settings', 'id': 'settings' },
@@ -154,9 +170,9 @@ def root_application(path):
 
         # Return the rendered version
         return template
-    
-    # User is not logged in. Redirect to the loginpage
-    return flask.redirect('/login', code = 302)
+    else:
+        # User is not logged in. Redirect to the loginpage
+        return flask.redirect('/login', code = 302)
 
 # Check if we are running the file as a program, instead of a module
 if __name__ == '__main__':
