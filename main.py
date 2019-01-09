@@ -95,10 +95,9 @@ def serve_css(filename):
 # Static folder for images
 @app.route('/images/<string:filename>', methods = [ 'GET'] )
 def serve_image(filename):
-    if is_logged_in():
-        return serve_static('images', filename, 'image/jpeg', binary = True)
-    else:
-        flask.abort(403)
+    # For images, we don't check if we are logged in. If we would; the image for the login window
+    # wouldn't work.
+    return serve_static('images', filename, 'image/jpeg', binary = True)
 
 @app.route('/login', methods = [ 'GET'] )
 def login():
