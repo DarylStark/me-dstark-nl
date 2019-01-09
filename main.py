@@ -82,11 +82,22 @@ def serve_image(filename):
 def login():
     if 'loggedin' in session:
         # User is already logged in. Redirect him to the homepage
-        return flask.redirect('/login', code = 302)
+        return flask.redirect('/', code = 302)
     else:
         # User is not logged in; show the loginpage
         # Create the object for the templates
         template = flask.render_template('login.html')
+        return template
+
+@app.route('/login', methods = [ 'GET'] )
+def logout():
+    if 'loggedin' not in session:
+        # User is not logged in. Redirect him to the loginpage
+        return flask.redirect('/login', code = 302)
+    else:
+        # User is logged in. Show the default lougout page and destroy the session
+        session.clear()
+        template = flask.render_template('logout.html')
         return template
 
 # Create a method that will be used when routed to '/'. This method opens the 'index.html' file in
