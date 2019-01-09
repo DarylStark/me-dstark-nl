@@ -22,9 +22,14 @@ me_options = {
     }
 }
 #---------------------------------------------------------------------------------------------------
+me_runtime_options = {
+    'environment': 'Development'
+}
+#---------------------------------------------------------------------------------------------------
 # Check if we are on Google App Engine. If we are, set some options differently
 if 'gunicorn' in os.getenv('SERVER_SOFTWARE', ''):
     me_options['flask']['debug'] = False
+    me_runtime_options['environment'] = 'Production'
 
 # Create an instance of Flask. We use the 'connextion' module so we can easily create an documented,
 # testable and configurable API
@@ -84,10 +89,16 @@ def login():
         # User is already logged in. Redirect him to the homepage
         return flask.redirect('/', code = 302)
     else:
-        # User is not logged in; show the loginpage
-        # Create the object for the templates
-        template = flask.render_template('login.html')
-        return template
+        # User is not logged in
+
+        # Check if we are on production
+        if me_runtime_options['environment'] == 'Production':
+            # Create the object for the templates
+            template = flask.render_template('login.html')
+            return template
+        else:
+            session['loggedin'] = True
+            return flask.redirect('/', code = 302)
 
 @app.route('/logout', methods = [ 'GET'] )
 def logout():
