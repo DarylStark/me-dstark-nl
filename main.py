@@ -12,6 +12,9 @@ import flask
 import connexion
 from flask import session
 #---------------------------------------------------------------------------------------------------
+# Local imports
+from is_logged_in import is_logged_in
+#---------------------------------------------------------------------------------------------------
 me_options = {
     'configdir': 'flask_config/',
     'api_configfile': 'config_api.yaml',
@@ -44,14 +47,6 @@ app.app.secret_key = '&\xf6\xd9\x97\x16Z\xa0\xdf\xf4\x8ak\xac0dDD\x0f\x7f\xf2\x1
 # Add the API method to the Flask instance. We pass the configuration file that is defined in the
 # 'flask_config" folder. This file can be used to create the complete API.
 app.add_api(me_options['api_configfile'])
-
-def is_logged_in():
-    """ Method to check if we are logged in. If we are, return True. Else, return False """
-    if 'loggedin' in session:
-        if session['loggedin'] == True:
-            return True
-    
-    return False
 
 # A method to server static files
 def serve_static(path, filename, mimetype, binary = False):
@@ -123,7 +118,10 @@ def logout():
     else:
         # User is logged in. Clear the session and redirect the user to the login page
         session.clear()
-        return flask.redirect('/login', code = 302)
+        if me_runtime_options['environment'] == 'Production':
+            return flask.redirect('/login', code = 302)
+        else:
+            return ''
 
 # Create a method that will be used when routed to '/'. This method opens the 'index.html' file in
 # the directory with all the templates and returns it with the variables set.
