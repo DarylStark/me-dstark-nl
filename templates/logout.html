@@ -2,21 +2,30 @@
 <html lang='en'>
   <head>
     <title>Logging you out</title>
-    <!-- Javascript -->
-    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <!-- Metadata -->
     <meta name='google-signin-client_id' content='167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'>
   </head>
 
   <body>
 
-    <script>
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-            console.log('logged you out');
-            location.href = '/login';
-        });
-    </script>
+        <script>
+            function signOut() {
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                    location.href = '/'
+                });
+            }
+        
+            function onLoad() {
+                gapi.load('auth2', function() {
+                    gapi.auth2.init();
+                });
+
+                signOut();
+            }
+            </script>
+        
+            <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
 
   </body>
 </html>
