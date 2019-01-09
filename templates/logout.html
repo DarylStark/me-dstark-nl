@@ -3,15 +3,17 @@
   <head>
     <title>Logging you out</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
     <!-- Metadata -->
     <meta name='google-signin-client_id' content='167809871556-5rtenoj1e65tic5nu08m6g197e4dm9d1.apps.googleusercontent.com'>
     <script>
-        $(document).ready(function() {
+        function onLoad() {
             gapi.load('auth2', function() {
                 gapi.auth2.init();
-                gapi.auth2.getAuthInstance().signOut().then(function() { location.href = '/'; });
             });
+        }
+        $(document).ready(function() {
+            gapi.auth2.getAuthInstance().signOut().then(function() { location.href = '/'; });
         });
     </script>
   </head>
