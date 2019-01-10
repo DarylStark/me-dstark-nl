@@ -220,6 +220,11 @@ class API:
                 if 'TivoliVredenburg' in stagelist.keys():
                     retriever.set_stages(stagelist['TivoliVredenburg'])
                 events = retriever.retrieve_events()
+            elif service == 'Paradiso':
+                # Create a object for the eventretriever for Paradiso and download all the
+                # events for this Service
+                retriever = eventretriever.EventRetrieverParadiso()
+                events = retriever.retrieve_events()
             else:
                 error_code = 1
                 error_text = 'Unknown service'

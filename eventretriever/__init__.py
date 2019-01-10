@@ -8,4 +8,5 @@
 #---------------------------------------------------------------------------------------------------
 from eventretriever.EventRetriever import EventRetriever
 from eventretriever.EventRetrieverTivoliVredenburg import EventRetrieverTivoliVredenburg
+from eventretriever.EventRetrieverParadiso import EventRetrieverParadiso
 #---------------------------------------------------------------------------------------------------
