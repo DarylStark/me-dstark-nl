@@ -208,7 +208,8 @@ class API:
             data = {
                 'new_events': 0,
                 'updated_events': 0,
-                'errors': 0
+                'errors': 0,
+                'events_found': 0
             }
 
             # Check the service that we are going to sync
@@ -222,6 +223,9 @@ class API:
 
             # If we have events, sync them with the database
             for event in events:
+                # Increase the 'events_found' timer so we know how much events we have scanned
+                data['events_found'] += 1
+
                 # First, try to add the event. If this fails, we find the old event and update it
                 session = db._session_factory()
 
@@ -346,6 +350,29 @@ class API:
                     # Increase the counter
                     if len(eventchange_ids) > 0:
                         data['updated_events'] += 1
+            
+            # Get the end time
+            time_end = time.time()
+            runtime = time_end - time_start
+
+            # Create a object for the sync results
+            syncresults = database.EventSyncResult(
+                datetime = datetime.datetime.utcnow(),
+                runtime = int(runtime),
+                service = service,
+                cron = cronjob,
+                success = error_code == 0,
+                found = data['events_found'],
+                errors = data['errors'],
+                new_events = data['new_events'],
+                updated_events = data['updated_events']
+            )
+
+            # Add the object
+            session = db._session_factory()
+            session.add(syncresults)
+            session.commit()
+            session.close()
             
             # Get the end time
             time_end = time.time()
