@@ -220,6 +220,9 @@ class API:
                 if 'TivoliVredenburg' in stagelist.keys():
                     retriever.set_stages(stagelist['TivoliVredenburg'])
                 events = retriever.retrieve_events()
+            else:
+                error_code = 1
+                error_text = 'Unknown service'
 
             # If we have events, sync them with the database
             for event in events:
@@ -356,23 +359,24 @@ class API:
             runtime = time_end - time_start
 
             # Create a object for the sync results
-            syncresults = database.EventSyncResult(
-                datetime = datetime.datetime.utcnow(),
-                runtime = int(runtime),
-                service = service,
-                cron = cronjob,
-                success = error_code == 0,
-                found = data['events_found'],
-                errors = data['errors'],
-                new_events = data['new_events'],
-                updated_events = data['updated_events']
-            )
+            if error_code != 1:
+                syncresults = database.EventSyncResult(
+                    datetime = datetime.datetime.utcnow(),
+                    runtime = int(runtime),
+                    service = service,
+                    cron = cronjob,
+                    success = error_code == 0,
+                    found = data['events_found'],
+                    errors = data['errors'],
+                    new_events = data['new_events'],
+                    updated_events = data['updated_events']
+                )
 
-            # Add the object
-            session = db._session_factory()
-            session.add(syncresults)
-            session.commit()
-            session.close()
+                # Add the object
+                session = db._session_factory()
+                session.add(syncresults)
+                session.commit()
+                session.close()
             
             # Get the end time
             time_end = time.time()
