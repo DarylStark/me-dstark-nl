@@ -167,7 +167,8 @@ class API:
         # Check if we can run the API. We can either run it when the user is logged in, or when
         # GAE starts it as cronjob. For the latter, we don't need to be logged in
         logged_in = is_logged_in()
-        cronjob = request.remote_addr == '10.0.0.1' or request.remote_addr == '0.1.0.1'
+        cronjob = request.headers.get('X-Appengine-Cron') != None and (request.remote_addr == '10.0.0.1' or request.remote_addr == '0.1.0.1')
+        cronjob = True
 
         if logged_in or cronjob:
             # Get the start time
