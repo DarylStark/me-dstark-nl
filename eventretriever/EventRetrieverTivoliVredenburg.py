@@ -181,7 +181,7 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                 # TODO: make sure this time is in UTC
                 try:
                     doorsopen = parsed_page.find('span', string = 'zaal open').parent.find_next_sibling().find('span').text.strip()
-                    event.timedoorsopen = str(datetime.datetime.strptime(doorsopen, '%H:%M').time())
+                    event.timedoorsopen = datetime.datetime.strptime(doorsopen, '%H:%M').time()
                 except AttributeError:
                     event.doorsopen = None
                 
@@ -189,7 +189,7 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                 # TODO: make sure this time is in UTC
                 try:
                     start = parsed_page.find('span', string = 'aanvang').parent.find_next_sibling().find('span').text.strip()
-                    event.timestart = str(datetime.datetime.strptime(start, '%H:%M').time())
+                    event.timestart = datetime.datetime.strptime(start, '%H:%M').time()
                 except AttributeError:
                     event.doorsopen = None
 
