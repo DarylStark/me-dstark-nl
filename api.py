@@ -168,7 +168,11 @@ class API:
         # GAE starts it as cronjob. For the latter, we don't need to be logged in
         logged_in = is_logged_in()
         cronjob = request.headers.get('X-Appengine-Cron') != None and (request.remote_addr == '10.0.0.1' or request.remote_addr == '0.1.0.1')
-        cronjob = True
+
+        return {
+            'ip': request.remote_addr,
+            'header': request.headers.get('X-Appengine-Cron')
+        }
 
         if logged_in or cronjob:
             # Get the start time
