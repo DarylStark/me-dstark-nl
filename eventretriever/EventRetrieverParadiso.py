@@ -45,6 +45,7 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
 
                 # Loop through the events on the page
                 for event in data:
+                    print(event['title'])
                     event_object = Event(
                         title = event['title'].split('+')[0].strip(),
                         url = event_url.format(slug = event['slug'], id = str(event['id'])),
@@ -74,18 +75,15 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                     
                     event_object.price = int(event['ticket_price'])
 
-                # Add the event to the stack
-                self.events.append(event_object)
+                    # Add the event to the stack
+                    self.events.append(event_object)
 
                 # Increase the pagenumber so th next iteration will do the next page
                 pageindex += 1
-
-                if pageindex > 20:
-                    break
             except json.decoder.JSONDecodeError:
                 # We got an error; stop with the loop
                 break
-
+        
         # Return the events
         return self.events
 #---------------------------------------------------------------------------------------------------
