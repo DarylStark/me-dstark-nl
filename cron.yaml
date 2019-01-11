@@ -11,4 +11,7 @@ cron:
 - description: Event synchronization for TivoliVredenburg
   url: /api/events.Sync?service=TivoliVredenburg
   schedule: every day 01:00
+- description: Event synchronization for Paradiso
+  url: /api/events.Sync?service=Paradiso
+  schedule: every day 01:15
 #-------------------------------------------------------------------------------
