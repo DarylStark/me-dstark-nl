@@ -224,6 +224,8 @@ class API:
                 # Create a object for the eventretriever for Paradiso and download all the
                 # events for this Service
                 retriever = eventretriever.EventRetrieverParadiso()
+                if 'Paradiso' in stagelist.keys():
+                    retriever.set_stages(stagelist['Paradiso'])
                 events = retriever.retrieve_events()
             else:
                 error_code = 1

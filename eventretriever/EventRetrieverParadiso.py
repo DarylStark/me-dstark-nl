@@ -24,6 +24,8 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
         # Set the URL
         url = 'https://api.paradiso.nl/api/events?lang=nl&start_time=now&sort=date&order=asc&limit=30&page={pageindex}&with=locations'
         event_url = 'https://www.paradiso.nl/nl/programma/{slug}/{id}/'
+        detail_url = 'https://api.paradiso.nl/api/library/lists/events/{id}?lang=nl'
+        image_url = 'https://api.paradiso.nl/img/events/{image}'
 
         # Set up the loop
         pageindex = 1
@@ -41,11 +43,10 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
 
                 # If there is no data, stop processing this page
                 if len(data) == 0:
-                    raise json.decoder.JSONDecodeError
+                    raise ValueError
 
                 # Loop through the events on the page
                 for event in data:
-                    print(event['title'])
                     event_object = Event(
                         title = event['title'].split('+')[0].strip(),
                         url = event_url.format(slug = event['slug'], id = str(event['id'])),
@@ -59,7 +60,8 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                         url_tickets = event['ticket_url'],
                         free = False,
                         soldout = event['sold_out'] == 'option_1',
-                        starttime = str(datetime.datetime.strptime(event['start_date_time'].split()[1], '%H:%M:%S').time())
+                        # TODO: make sure this time is in UTC
+                        starttime = datetime.datetime.strptime(event['start_date_time'].split()[1], '%H:%M:%S').time()
                     )
 
                     # Check if there is an support and if there is; fill it
@@ -75,12 +77,32 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                     
                     event_object.price = int(event['ticket_price'])
 
+                    # Get additional information from the detail_url
+                    newurl = detail_url.format(id = str(event['id']))
+                    newpage = requests.get(newurl)
+                    detaildata = newpage.json()
+
+                    try:
+                        event = detaildata[0]
+                        # TODO: make sure this time is in UTC
+                        event_object.doorsopen = datetime.datetime.strptime(event['content']['doors_open__disabled'].split()[1], '%H:%M:%S').time()
+                        event_object.image = image_url.format(image = event['content']['main_image__focus_events']['filename'])
+                        stagename = event['content']['locations'][0]['content']['title']
+
+                        # Find the stage in the local stagelist
+                        if stagename in self.stages.keys():
+                            event_object.stage = self.stages[stagename]
+                        else:
+                            event_object.stage = None
+                    except:
+                        pass
+
                     # Add the event to the stack
                     self.events.append(event_object)
 
                 # Increase the pagenumber so th next iteration will do the next page
                 pageindex += 1
-            except json.decoder.JSONDecodeError:
+            except (json.decoder.JSONDecodeError, ValueError):
                 # We got an error; stop with the loop
                 break
         
