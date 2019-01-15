@@ -227,6 +227,13 @@ class API:
                 if 'Paradiso' in stagelist.keys():
                     retriever.set_stages(stagelist['Paradiso'])
                 events = retriever.retrieve_events()
+            elif service == 'AfasLive':
+                # Create a object for the eventretriever for AfasLive and download all the
+                # events for this Service
+                retriever = eventretriever.EventRetrieverAfasLive()
+                if 'AFAS Live' in stagelist.keys():
+                    retriever.set_stages(stagelist['AFAS Live'])
+                events = retriever.retrieve_events()
             else:
                 error_code = 1
                 error_text = 'Unknown service'

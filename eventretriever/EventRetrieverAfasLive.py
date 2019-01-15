@@ -39,8 +39,10 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
                 newurl = url.format(pageindex = pageindex)
                 page = requests.get(newurl)
 
-                # Check if the same as the last one, this is the last page. Raise an error
-                if str(page.content) == lastpage:
+                # Check if the same as the last one, this is the last page. Raise an error. If this
+                # is more then page 25, we stop too. This to prevent endless loops if something went
+                # wrong
+                if str(page.content) == lastpage or pageindex > 24:
                     raise IndexError
                 else:
                     # Not the last page! Get all links to events
@@ -80,7 +82,7 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
                                     int(date.split('/')[3].strip()[0:4]),
                                     int(date.split('/')[2].strip()),
                                     int(date.split('/')[1].strip())
-                                ),
+                                )
                             except:
                                 event_object.date = None
                             
@@ -111,8 +113,10 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
                                    alltimes.append(time.find('span').text.strip().replace(' uur', ''))
 
                                 # Set the times in the object
-                                event_object.doorsopen = alltimes[0]
-                                event_object.starttime = alltimes[1]
+                                if re.match('[0-9]{2}:[0-9]{2}', alltimes[0]):
+                                    event_object.doorsopen = datetime.datetime.strptime(alltimes[0], '%H:%M').time()
+                                if re.match('[0-9]{2}:[0-9]{2}', alltimes[1]):
+                                    event_object.starttime = datetime.datetime.strptime(alltimes[1], '%H:%M').time()
                             except:
                                 pass
                             
@@ -152,10 +156,12 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
                             # There are no free concerts in Afas Live
                             event_object.free = False
 
-                            # TODO: set the stage (only one possible as far as I know)
+                            # Set the stage (only one possible as far as I know)
+                            if 'Black Box' in self.stages.keys():
+                                event_object.stage = self.stages['Black Box']
 
-                            # TODO: Remove
-                            print(event_object.get_dict())
+                            # Add the event to the stack
+                            self.events.append(event_object)
 
                 # Increase the pagenumber so th next iteration will do the next page
                 pageindex += 1
