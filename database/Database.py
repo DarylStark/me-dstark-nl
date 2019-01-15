@@ -54,7 +54,9 @@ class Database:
         # Create a SQLalchemy engine that we can use later on
         self._engine = sqlalchemy.create_engine(
             self.connection_string,
-            echo = self._echo
+            echo = self._echo,
+            pool_pre_ping = True,
+            pool_size = 5
         )
 
         # Create a session-factory
