@@ -81,6 +81,13 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                     newpage = requests.get(newurl)
                     detaildata = newpage.json()
 
+                    # Check if this event is free
+                    try:
+                        if detaildata[0]['content']['ticket_price__disabled'] == None:
+                            event_object.free = True
+                    except:
+                        pass
+
                     try:
                         event = detaildata[0]
                         # TODO: make sure this time is in UTC
