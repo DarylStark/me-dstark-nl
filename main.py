@@ -134,11 +134,6 @@ def logout():
 @app.route('/', defaults = { 'path': '' }, methods = [ 'GET' ])
 @app.route('/<path:path>', methods = [ 'GET' ])
 def root_application(path):
-    # Some browsers (like Chrome) request a favicon. This can result in unwanted results when we're
-    # not caching this.
-    #if path == 'favicon.ico':
-    #    return ''
-
     # Check if the user is logged in
     if is_logged_in():
         # User menu (for logout and settings)
