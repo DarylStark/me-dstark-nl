@@ -30,6 +30,7 @@ class Database:
         self._username = os.getenv('DEV_SQL_USERNAME', '')
         self._password = os.getenv('DEV_SQL_PASSWORD', '')
         self._database = os.getenv('DEV_SQL_DATABASE', '')
+        self._instance = os.getenv('DEV_SQL_INSTANCE', '')
         self._connection = None
         self._echo = True
 
@@ -39,17 +40,26 @@ class Database:
             self._username = os.getenv('PROD_SQL_USERNAME', '')
             self._password = os.getenv('PROD_SQL_PASSWORD', '')
             self._database = os.getenv('PROD_SQL_DATABASE', '')
+            self._instance = os.getenv('PROD_SQL_INSTANCE', '')
             self._connection = None
             self._echo = False
 
         # Create the connection string that is needed when we create a connection
-        # TODO: create a connection string for Google SQL
         self.connection_string = 'mysql+pymysql://{username}:{password}@{host}/{database}'.format(
             username = self._username,
             password = self._password,
             host = self._host,
             database = self._database
         )
+
+        # For production, we use a socket-connection. This is faster and cheaper
+        if 'gunicorn' in os.getenv('SERVER_SOFTWARE', ''):
+            self.connection_string = 'mysql+pymysql://{username}:{password}@/{database}?unix_socket=/cloudsql/{instance}'.format(
+                username = self._username,
+                password = self._password,
+                instance = self._instance,
+                database = self._database
+            )
 
         # Create a SQLalchemy engine that we can use later on
         self._engine = sqlalchemy.create_engine(

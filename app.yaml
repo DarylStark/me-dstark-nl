@@ -24,6 +24,7 @@ env_variables:
   PROD_SQL_USERNAME: me
   PROD_SQL_PASSWORD: qgP}=ZVgv??aczRgmb?9bB<-bp4K)r@@
   PROD_SQL_DATABASE: me
+  PROD_SQL_INSTANCE: dstark-nl:europe-west1:sql-apps-dstark-nl
 
   # Development credentials for Google Cloud SQL
   DEV_SQL_SERVER: 104.155.95.1
