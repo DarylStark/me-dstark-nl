@@ -94,6 +94,12 @@ def serve_image(filename):
     # wouldn't work.
     return serve_static('images', filename, 'image/jpeg', binary = True)
 
+# Static route for the favicon
+@app.route('/favicon.ico', methods = [ 'GET'] )
+def serve_favicon():
+    # Return the favicon
+    return serve_static('icons', 'favicon.ico', 'image/x-icon', binary = True)
+
 @app.route('/login', methods = [ 'GET'] )
 def login():
     # Check if the user is already logged in
@@ -130,8 +136,8 @@ def logout():
 def root_application(path):
     # Some browsers (like Chrome) request a favicon. This can result in unwanted results when we're
     # not caching this.
-    if path == 'favicon.ico':
-        return ''
+    #if path == 'favicon.ico':
+    #    return ''
 
     # Check if the user is logged in
     if is_logged_in():
