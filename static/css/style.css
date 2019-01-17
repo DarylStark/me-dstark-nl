@@ -255,36 +255,39 @@ html, body
   z-index: 900;
 }
 
+/* Inputs and selects */
+
+select {
+  background-color: transparent;
+  border: 0px;
+  font-size: 11pt;
+  text-align: right;
+}
+
+select option {
+  background-color: #ffffff;
+  border: none;
+}
+
+select:focus {
+  outline: none;
+}
+
 /* Feed filter */
 
-.me-card-feed-filter {
-  height: auto;
-  min-height: 0px;
+div.me-filter {
+  border-bottom: 1px solid #cccccc;
 }
 
-.mdl-card__supporting-text.me-card-feed-filter-archive {
-  width: auto;
-  padding: 0px;
-  border-bottom: 1px solid #e5e5e5;
+div.me-filter p {
+  margin: 0px
 }
 
-.mdl-card__supporting-text.me-card-feed-filter-archive .me-card-feed-filter-archive-left {
-  display: inline-block;
-  padding: 11px 16px 11px 16px;
-  text-align: left;
-  white-space: nowrap;
-  position: absolute;
-  float: left;
-  font-style: italic;
-}
-
-.mdl-card__supporting-text.me-card-feed-filter-archive .me-card-feed-filter-archive-switch {
-  display: inline-block;
-  padding: 8px 16px 8px 16px;
-  text-align: right;
-  white-space: nowrap;
+div.me-filter p:first-child {
   float: right;
-  font-style: italic;
+  margin-top: 2px;
+  margin-right: 5px;
+  font-size: 11pt;
 }
 
 .me-card__title-small {
