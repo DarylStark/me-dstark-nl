@@ -22,4 +22,5 @@ from database.FeedItem import FeedItem
 from database.FeedItemEventChange import FeedItemEventChange
 from database.User import User
 from database.EventSyncResult import EventSyncResult
+from database.Filter import Filter
 #---------------------------------------------------------------------------------------------------

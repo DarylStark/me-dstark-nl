@@ -255,36 +255,63 @@ html, body
   z-index: 900;
 }
 
+/* Inputs and selects */
+
+select {
+  background-color: transparent;
+  border: 0px;
+  font-size: 1rem;
+}
+
+select option {
+  background-color: #ffffff;
+  border: none;
+  font-size: 1rem;
+}
+
+select:focus {
+  outline: none;
+}
+
+input.mdl-textfield__input {
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+}
+
 /* Feed filter */
 
-.me-card-feed-filter {
-  height: auto;
-  min-height: 0px;
+div.me-filter {
+  border-bottom: 1px solid #cccccc;
 }
 
-.mdl-card__supporting-text.me-card-feed-filter-archive {
-  width: auto;
-  padding: 0px;
-  border-bottom: 1px solid #e5e5e5;
+div.me-filter p {
+  margin: 0px
 }
 
-.mdl-card__supporting-text.me-card-feed-filter-archive .me-card-feed-filter-archive-left {
-  display: inline-block;
-  padding: 11px 16px 11px 16px;
-  text-align: left;
-  white-space: nowrap;
-  position: absolute;
-  float: left;
-  font-style: italic;
-}
-
-.mdl-card__supporting-text.me-card-feed-filter-archive .me-card-feed-filter-archive-switch {
-  display: inline-block;
-  padding: 8px 16px 8px 16px;
-  text-align: right;
-  white-space: nowrap;
+div.me-filter p:first-child {
   float: right;
-  font-style: italic;
+  margin-top: 2px;
+  margin-right: 5px;
+  font-size: 11pt;
+  padding-left: 5px;
+  border-left: 1px solid #cccccc;
+}
+
+div.me-filter p:last-child i {
+  margin: 0px;
+  padding: 0px;
+}
+
+div.me-filter p:last-child i:hover {
+  background-color: #dedede;
+  cursor: pointer;
+}
+
+.me-card-filter-item {
+  border-bottom: 1px solid #cccccc;
 }
 
 .me-card__title-small {
@@ -297,6 +324,64 @@ html, body
 
 .mdl-cell .mdl-card:last-child {
   margin-bottom: 0px;
+}
+
+/* Filters */
+
+.me-card-filter .mdl-card__supporting-text {
+  border-bottom: 1px solid #cccccc;
+  width: auto;
+}
+
+.me-card-filter .me-card-textfield {
+  padding: 15px;
+  background-color: #f3f3f3;
+}
+
+.me-card-filter .mdl-textfield {
+  padding: 0px;
+  width: 100%;
+}
+
+.me-card-filter .me-card-textfield .mdl-textfield__input {
+  border-bottom: 0px;
+  padding: 0px;
+}
+
+.me-card-filter .mdl-card__actions {
+  border-top: 0px;
+  padding: 0px;
+  text-align: left;
+  display: table;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-filtername {
+  background-color: #f3f3f3;
+  border-right: 1px solid #cccccc;
+  text-align: left;
+  padding: 15px;
+  padding-top: 24px;
+  padding-bottom: 23px;
+  display: table-cell;
+  width: 100%;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-buttons {
+  padding: 15px;
+  display: table-cell;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-buttons a {
+  white-space: nowrap;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-filtername .mdl-textfield__input {
+  border-bottom: 0px;
+  padding: 0px;
+}
+
+.mdl-card__supporting-text .mdl-chip {
+  cursor: pointer;
 }
 
 /* Planning */

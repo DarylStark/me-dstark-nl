@@ -405,13 +405,9 @@ GUI.prototype.pageFeed = function() {
     'max_page': 0,
     'to_top_button': false,
     'empty': false,
-    'showarchive': false
+    'filter': '',
+    'filters': []
   };
-
-  // Check if we need to show the archive
-  if (currenturl.indexOf('archive') > -1) {
-    this.feed['showarchive'] = true;
-  }
 
   // Preload the templates
   this.preloadTemplates([ 'feed', 'feed_item_newevent', 'feed_item_newevent_archive', 'feed_empty' ], function () {
@@ -424,110 +420,264 @@ GUI.prototype.pageFeed = function() {
     // Upgrade the element for MDL
     t.upgradeElement(feed);
 
-    // Set the switch to the correct state
-    if (t.feed['showarchive']) {
-      feed.find('#label-archive')[0].MaterialSwitch.on();
-    }
-
     // Attach the new element to the content div
     $('#content').append(feed);
 
-    // Attach a handler to the switch for the archive
-    $('#switch-archive').change(function() {
-      // Check the new position of the switch
-      newstate_archive = $('#switch-archive').prop('checked');
+    // Standard filters
+    t.feed['filters'] = [
+      { 'name': '(New items)', 'filter': '', 'changable': false }
+    ]
 
-      // Show the loading bar
-      t.startLoading();
-
-      // Check if the switch is set to 'archive' or to 'not archive'
-
-      // Reset the feed settings
-      // TODO: do this better.. maybe a default method or something
-      t.feed = {
-        'items_on_screen': 0,
-        'current_page': 0,
-        'limit': 15,
-        'loading_for_page': 1,
-        'max_page': 0,
-        'to_top_button': false,
-        'empty': false
-      }
-
-      // If the switch is set to 'show archive', show the archive. Otherwise,
-      // don't show the archive but the new items.
-      t.feed['showarchive'] = newstate_archive;
-
-      // Set the new feed settings
-      t.feed['current_page'] = 1;
-
-      // Remove the current elements (after the filter)
-      $('.last-filter').nextAll().remove();
-
-      // TODO: Update the URL
-      if ($('#switch-archive').prop('checked')) {
-        window.history.pushState({ 'current_item': 'feed' }, 'Feed', '/feed/archive');
+    $('#filter_button').click(function() {
+      if ($('.filter-block').css('display') == 'none') {
+        $('.filter-block').show();
       } else {
-        window.history.pushState({ 'current_item': 'feed' }, 'Feed', '/feed');
+        $('.filter-block').hide();
       }
-
-      // Add the new elements
-      t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page']);
     });
 
-    // Attach a handler to the 'go up' button
-    $('.me-upbutton').click(function() {
-      $('#scroller').animate({
-        scrollTop: 0
+    // Get the custom filters
+    t.apiCall('filters.Get', { 'page': 'feed' }, function(data, status, request) {
+      // Update the button
+      t.updateFeedFilterButton();
+
+      $.each(data['data']['data'], function(index, item) {
+        t.feed['filters'].push(
+          { 'name': item['name'], 'filter': item['filter'], 'changable': true }
+        );
       });
-    });
 
-    // Add a handler to retrieve the next page when scrolling
-    $('#scroller').on('scroll', function() {
-      // If we scroll beneauth the top of the page, show a button to go to the
-      // top of the page. Otherwise, remove it
-      if ($(this).scrollTop() > 0 && t.feed['to_top_button'] == false) {
-        // Show the button
-        t.feed['to_top_button'] = true;
-        $('.me-upbutton').fadeIn(400);
-      } else if ($(this).scrollTop() == 0 && t.feed['to_top_button'] == true) {
-        // Hide the button
-        t.feed['to_top_button'] = false;
-        $('.me-upbutton').fadeOut(200);
-      }
+      // Add the filters to the list
+      $.each(t.feed['filters'], function(index, item) {
+        $("#filters").append(new Option(item['name'], index));
+      });
 
-      // When we are 100px from the bottom, start loading the next
-      if($(this).scrollTop() + $(this).innerHeight() + 100 >= $(this)[0].scrollHeight) {
-        // Only when we're not already loading that page
-        if (t.feed['loading_for_page'] != (t.feed['current_page'] + 1)) {
-          // Check if we didn't reach the max page yet
-          if (t.feed['max_page'] >= (t.feed['current_page'] + 1)) {
-            // Show the loading bar
-            t.startLoading();
+      // Add an handler to the 'filters' dropdown
+      $('#filters').change(function() {
+        // Get the new value
+        newfilter = t.feed['filters'][$("#filters").val()]
+        
+        // Set the filter to the textbar
+        $('#searchquery').val(newfilter['filter']);
 
-            // Set the page we are loading for
-            t.feed['loading_for_page'] = t.feed['current_page'] + 1;
+        // Set the filtername
+        if (newfilter['changable']) {
+          $('#filtername').val(newfilter['name']);
+        } else {
+          $('#filtername').val('');
+        }
 
-            // Load the new page
-            t.pageFeedLoaditems(t.feed['limit'], t.feed['loading_for_page'], function() {
-              // And set the new current page
-              t.feed['current_page'] = t.feed['loading_for_page'];
+        // Apply the filter
+        t.pageFeedApplyFilter();
+      });
+
+      // Add an handler to the 'filter' button
+      $('#filter').click(function() {
+        // Save the filter
+        if ($('#filtername').val() != '') {
+          // Start loading
+          t.startLoading();
+
+          // Check the values
+          fltname = $('#filtername').val().trim();
+          flt = $('#searchquery').val().trim();
+          filtercnt = $('#filters option:contains("' + fltname + '")');
+          filteroptions = 0;
+
+          $.each(filtercnt, function(index, element) {
+            if ($(element).html() == fltname) {
+              filteroptions = 1;
+              filterelement = $(element)
+            }
+          });
+
+          if (flt != '' && fltname != '') {
+            t.apiCall('filters.Save', { 'page': 'feed', 'flt': flt, 'name': fltname }, function(data, status, request) {
+              if (filteroptions == 0) {
+                // Add the filter to the dropdown
+                t.feed['filters'].push(
+                  { 'name': fltname, 'filter': flt, 'changable': true }
+                );
+                $("#filters").append(new Option(fltname, t.feed['filters'].length - 1, true, true));
+              } else {
+                // Update the current filter
+                t.feed['filters'][filterelement.val()]['filter'] = flt;
+              }
+
+              // Apply the filter
+              t.pageFeedApplyFilter();
             });
+          } else {
+            if (fltname != '' && filteroptions == 1 && flt == '') {
+              t.apiCall('filters.Delete', { 'page': 'feed', 'name': fltname }, function(data, status, request) {
+                filterelement.remove();
+              });
+            }
+
+            // Apply the filter
+            t.pageFeedApplyFilter();
+          }
+        } else {
+          // Apply the filter
+          t.pageFeedApplyFilter();
+        }
+      });
+
+      // Add an event listener to the filter-input so we can catch 'enters'
+      $('#searchquery').keyup(function(event) {
+        if (event.keyCode === 13) {
+          $('#filter').click();
+        }
+
+        // Update the button
+        t.updateFeedFilterButton();
+      });
+
+      // Add an event listener to the filter-name so we can catch 'enters'
+      $('#filtername').keyup(function(event) {
+        if (event.keyCode === 13) {
+          $('#filter').click();
+        }
+
+        // Update the button
+        t.updateFeedFilterButton();
+      });
+
+      // Attach an handler to the buttons for the filter
+      $('#filter_buttons').find('.mdl-chip').click(function (event) {
+        // Get the value from the current input and add the new one
+        entry = ' ' + $(event.currentTarget).find('span').html();
+        oldval = $('#searchquery').val().trim();
+        newval = $.trim(oldval + entry);
+
+        // Set the new value
+        $('#searchquery').val(newval);
+
+        // Give the query the focus again
+        $('#searchquery').focus();
+      });
+
+      // Attach a handler to the 'go up' button
+      $('.me-upbutton').click(function() {
+        $('#scroller').animate({
+          scrollTop: 0
+        });
+      });
+
+      // Add a handler to retrieve the next page when scrolling
+      $('#scroller').on('scroll', function() {
+        // If we scroll beneauth the top of the page, show a button to go to the
+        // top of the page. Otherwise, remove it
+        if ($(this).scrollTop() > 0 && t.feed['to_top_button'] == false) {
+          // Show the button
+          t.feed['to_top_button'] = true;
+          $('.me-upbutton').fadeIn(400);
+        } else if ($(this).scrollTop() == 0 && t.feed['to_top_button'] == true) {
+          // Hide the button
+          t.feed['to_top_button'] = false;
+          $('.me-upbutton').fadeOut(200);
+        }
+
+        // When we are 100px from the bottom, start loading the next
+        if($(this).scrollTop() + $(this).innerHeight() + 100 >= $(this)[0].scrollHeight) {
+          // Only when we're not already loading that page
+          if (t.feed['loading_for_page'] != (t.feed['current_page'] + 1)) {
+            // Check if we didn't reach the max page yet
+            if (t.feed['max_page'] >= (t.feed['current_page'] + 1)) {
+              // Show the loading bar
+              t.startLoading();
+
+              // Set the page we are loading for
+              t.feed['loading_for_page'] = t.feed['current_page'] + 1;
+
+              // Load the new page
+              t.pageFeedLoaditems(t.feed['limit'], t.feed['loading_for_page'], function() {
+                // And set the new current page
+                t.feed['current_page'] = t.feed['loading_for_page'];
+              });
+            }
           }
         }
+      });
+
+      // Get the first page of the feed
+      t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page'] + 1, function() {
+        t.feed['current_page'] = 1;
+      });
+    }, function() {
+      // The templates couldn't be loaded
+      // Give an error to the user
+      t.showNotification('Could not load the needed templates');
+      t.stopLoading();
+    });
+  });
+}
+/*----------------------------------------------------------------------------*/
+GUI.prototype.updateFeedFilterButton = function() {
+  // Check the values
+  fltname = $('#filtername').val().trim();
+  flt = $('#searchquery').val().trim();
+  filtercnt = $('#filters option:contains("' + fltname + '")');
+  filteroptions = 0;
+
+  $.each(filtercnt, function(index, element) {
+    if ($(element).html() == fltname) {
+      filteroptions = 1;
+    }
+  });
+
+  // Update the filterbutton
+  if (fltname == '') {
+    $('#filter').html('Apply');
+  } else if (fltname != '' && flt == '' && filteroptions == 1) {
+    $('#filter').html('Delete filter');
+  } else if (fltname != '' && flt != '') {
+    $('#filter').html('Apply and save');
+  }
+}
+/*----------------------------------------------------------------------------*/
+GUI.prototype.pageFeedApplyFilter = function() {
+  // Show the loading bar
+  this.startLoading();
+
+  // Update the button
+  this.updateFeedFilterButton();
+
+  // Get the new filter
+  flt = $('#searchquery').val()
+
+  // Reset the feed settings
+  // TODO: do this better.. maybe a default method or something
+  this.feed = {
+    'items_on_screen': 0,
+    'current_page': 1,
+    'limit': 15,
+    'loading_for_page': 1,
+    'max_page': 0,
+    'to_top_button': false,
+    'empty': false,
+    'filter': flt,
+    'filters': this.feed['filters']
+  }
+
+  fltname = $('#filtername').val().trim();
+  filtercnt = $('#filters option:contains("' + fltname + '")');
+
+  if (fltname != '') {
+    $.each(filtercnt, function(index, element) {
+      if ($(element).html() == fltname) {
+        $('#filters').val($(element).val());
       }
     });
+  } else {
+    $('#filters').val(0);
+  }
 
-    // Get the first page of the feed
-    t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page'] + 1, function() {
-      t.feed['current_page'] = 1;
-    });
-  }, function() {
-    // The templates couldn't be loaded
-    // Give an error to the user
-    t.showNotification('Could not load the needed templates');
-    t.stopLoading();
-  });
+  // Remove the current elements (after the filter)
+  $('.last-filter').nextAll().remove();
+
+  // Add the new elements
+  t.pageFeedLoaditems(t.feed['limit'], this.feed['current_page']);
 }
 /*----------------------------------------------------------------------------*/
 // Method to dismiss a speficic feed item, or undimiss it
@@ -665,7 +815,7 @@ GUI.prototype.pageFeedItemEventTrackedToggle = function(eventid, trackedtoggle =
 // TODO: Remove this
 GUI.prototype.pageFeedItemEvent = function(feeditem) {
   // Get the correct template from the cache
-  if (this.feed['showarchive']) {
+  if (feeditem['status'] != 1) {
     item = tpl_cache['feed_item_newevent_archive'];
   } else {
     item = tpl_cache['feed_item_newevent'];
@@ -796,10 +946,9 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
   // Options for the API call
   apioptions = { 'limit': limit, 'page': page }
 
-  // Check if we need to load the archive or the 'normal' feed
-  if (this.feed['showarchive'] == true) {
-    apioptions['dismissed'] = '1';
-    apioptions['sort'] = 'dismissed';
+  // Check if we need to add a filter to the query
+  if (this.feed['filter'] != '') {
+    apioptions['flt'] = this.feed['filter'];
   }
 
   // Start the API call

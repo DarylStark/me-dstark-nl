@@ -12,6 +12,7 @@ import time
 import os
 import sqlalchemy
 import flask
+import re
 from flask import request
 from flask import session as flasksession
 from google.oauth2 import id_token
@@ -717,7 +718,7 @@ class API:
         else:
 	        flask.abort(403)
 
-    def get_feed(self, limit = 15, page = 1, dismissed = 0):
+    def get_feed(self, limit = 15, page = 1, flt = None):
         """ API method for '/feed.Get'. Returns all or filtered feeditems from the database """
 
         if is_logged_in():
@@ -732,39 +733,13 @@ class API:
             data = []
             length = 0
 
-            # Check the dismissed status and transform it to the correct status
-            status = 1
-            if dismissed > 0:
-                status = 2
-
             try:
                 # Create a object for database interaction
                 db = database.Database()
 
-                # Get the count of rows in the database
-                session = db._session_factory()
-                length = session.query(
-                    database.FeedItem
-                ).add_entity(
-                    database.Event
-                ).add_entity(
-                    database.Stage
-                ).add_entity(
-                    database.Venue
-                ).outerjoin(
-                    database.Event
-                ).outerjoin(
-                    database.Stage
-                ).outerjoin(
-                    database.Venue
-                ).filter(
-                    database.FeedItem.status == status
-                ).count()
-                session.close()
-
                 # Get the feeditems for the requested page
                 session = db._session_factory()
-                feeditems = session.query(
+                query = session.query(
                     database.FeedItem
                 ).add_entity(
                     database.Event
@@ -778,21 +753,100 @@ class API:
                     database.Stage
                 ).outerjoin(
                     database.Venue
-                ).filter(
-                    database.FeedItem.status == status
                 ).order_by(
                     database.FeedItem.changedate.desc(),
                     database.FeedItem.date.desc(),
                     database.FeedItem.id.desc()
-                ).limit(
+                )
+
+                # Needed later
+                statusset = False
+
+                # Get the filter and disect it
+                if flt:
+                    # Add extra colons to the filter. We need this for the regex later
+                    words = []
+                    for word in flt.split():
+                        if ':' in word:
+                            word = ':' + word
+                        words.append(word)
+                    flt = ' '.join(words)
+                    
+                    # Get the specific filters
+                    filters = re.findall('(\:[a-zA-Z0-9\-]*\:[^\:]+)', flt)
+
+                    # Create a dict for all filters
+                    allfilters = {}
+
+                    # Walk through the filters and create a dict with the needed filters
+                    for f in filters:
+                        try:
+                            field, value = re.findall('^:([a-z]*):(.+)', f)[0]
+                            field = field.strip()
+                            value = value.strip()
+                            allfilters[field] = value.split()
+                        except KeyboardInterrupt:
+                            pass
+                    
+                    # Loop through the dict and add the filters to the query
+                    for field in allfilters.keys():
+                        value = allfilters[field]
+
+                        if field == 'archive':
+                            value = ''.join(value)
+                            if value == 'yes':
+                                query = query.filter(database.FeedItem.status == 2)
+                                statusset = True
+                            elif value == 'no':
+                                query = query.filter(database.FeedItem.status == 1)
+                                statusset = True
+                        
+                        if field == 'title':
+                            for v in value:
+                                query = query.filter(database.Event.title.like('%{0}%'.format(v)))
+                        
+                        if field == 'type':
+                            value = ''.join(value)
+                            if value == 'newevent':
+                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_NEW_EVENT)
+                            elif value == 'changedevent':
+                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_EVENT_CHANGED)
+                            elif value == 'trackedevent':
+                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_TRACKED_EVENT_CHANGED)
+                        
+                        if field == 'stage':
+                            for v in value:
+                                query = query.filter(database.Stage.name.like('%{0}%'.format(v)))
+                        
+                        if field == 'support':
+                            for v in value:
+                                query = query.filter(database.Event.support.like('%{0}%'.format(v)))
+                                                
+                        if field == 'venue':
+                            for v in value:
+                                query = query.filter(database.Venue.name.like('%{0}%'.format(v)))
+
+                # Apply a filter for the status (if not set already)
+                if not statusset:
+                    query = query.filter(
+                        database.FeedItem.status == 1
+                    )
+
+                # Get the length
+                length = query.count()
+
+                # Only get pages
+                query = query.limit(
                     limit
                 ).offset(
                     (page - 1) * limit
                 )
+
+                # Close the session
                 session.close()
 
                 # Create a list with dicts
-                for feeditem in feeditems:
+                for feeditem in query:
                     # Create a dict for the feeditem
                     item = feeditem.FeedItem.get_dict()
 
@@ -1041,6 +1095,193 @@ class API:
                 error_text = error_text,
                 data = data,
                 length = len(data),
+                runtime = time_end - time_start
+            )
+        else:
+	        flask.abort(403)
+
+    def get_filters(self, page = None):
+        """ API method for '/filters.Get'. Returns all or filtered filters from the database """
+
+        if is_logged_in():
+            # Get the start time
+            time_start = time.time()
+
+            # Set a default error code and text
+            error_code = 0
+            error_text = ''
+
+            # Create default values
+            data = []
+            length = 0
+
+            try:
+                # Create a object for database interaction
+                db = database.Database()
+
+                # Get the count of rows in the database
+                session = db._session_factory()
+                query = session.query(
+                    database.Filter
+                )
+
+                # Add the filters, when needed
+                if page is not None:
+                    query = query.filter(
+                        database.Filter.page == page
+                    )
+
+                # Create one query for the length
+                length = query.count()
+
+                # Close the session
+                session.close()
+
+                # Create a list with dicts
+                for filter in query:
+                    # Create a dict for the feeditem
+                    item = filter.get_dict()
+                    
+                    # Append the created dict to the list
+                    data.append(item)
+            except:
+                error_code = 1
+                error_text = 'Unknown error'
+
+            # Get the end time
+            time_end = time.time()
+
+            # Return the feed
+            return self.create_api_return(
+                api = 'filters.Get',
+                error_code = error_code,
+                error_text = error_text,
+                data = data,
+                length = length,
+                page = 0,
+                limit = 0,
+                runtime = time_end - time_start
+            )
+        else:
+	        flask.abort(403)
+
+    def save_filter(self, page, name, flt):
+        """ API method for '/filters.Save'. Save a filter """
+
+        if is_logged_in():
+            # Get the start time
+            time_start = time.time()
+
+            # Set a default error code and text
+            error_code = 0
+            error_text = ''
+
+            # Create default values
+            data = []
+            length = 0
+
+            try:
+                # Create a object for database interaction
+                db = database.Database()
+
+                # Check if the filter exists
+                session = db._session_factory()
+                query = session.query(
+                    database.Filter
+                ).filter(
+                    database.Filter.name == name
+                ).filter(
+                    database.Filter.page == page
+                )
+
+                # If it exists, update it. Otherwise, add it
+                if query.count() > 0:
+                    query[0].filter = flt
+                    session.commit()
+                else:
+                    newfilter = database.Filter(
+                        name = name,
+                        page = page,
+                        filter = flt
+                    )
+                    session.add(newfilter)
+                    session.commit()
+
+                # Close the session
+                session.close()
+            except:
+                error_code = 1
+                error_text = 'Unknown error'
+
+            # Get the end time
+            time_end = time.time()
+
+            # Return the feed
+            return self.create_api_return(
+                api = 'filters.Save',
+                error_code = error_code,
+                error_text = error_text,
+                data = [],
+                length = 0,
+                page = 0,
+                limit = 0,
+                runtime = time_end - time_start
+            )
+        else:
+	        flask.abort(403)
+
+    def delete_filter(self, page, name):
+        """ API method for '/filters.Delete'. Deletes a filter """
+
+        if is_logged_in():
+            # Get the start time
+            time_start = time.time()
+
+            # Set a default error code and text
+            error_code = 0
+            error_text = ''
+
+            # Create default values
+            data = []
+            length = 0
+
+            try:
+                # Create a object for database interaction
+                db = database.Database()
+
+                # Check if the filter exists
+                session = db._session_factory()
+                query = session.query(
+                    database.Filter
+                ).filter(
+                    database.Filter.name == name
+                ).filter(
+                    database.Filter.page == page
+                )
+
+                # If it exists, update it. Otherwise, add it
+                if query.count() > 0:
+                    session.delete(query[0])
+                    session.commit()
+
+                # Close the session
+                session.close()
+            except:
+                error_code = 1
+                error_text = 'Unknown error'
+
+            # Get the end time
+            time_end = time.time()
+
+            # Return the feed
+            return self.create_api_return(
+                api = 'filters.Save',
+                error_code = error_code,
+                error_text = error_text,
+                data = [],
+                length = 0,
+                page = 0,
+                limit = 0,
                 runtime = time_end - time_start
             )
         else:

@@ -151,11 +151,11 @@ paths:
           schema:
             type: integer
           description: The pagenumber you want to retrieve
-        - name: dismissed
+        - name: flt
           in: query
           schema:
-            type: integer
-          description: Set to any integer higher then 0 to only return dismissed items
+            type: string
+          description: The filter to apply
       responses:
         '200':
           description: Return feeditems
@@ -220,3 +220,75 @@ paths:
             application/json:
               schema:
                 type: arrays
+  '/filters.Get':
+    get:
+      tags:
+        - filters
+      operationId: api.api.get_filters
+      summary: Get filters
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+          description: The page for the filter
+      responses:
+        '200':
+          description: Return filters
+          content:
+            application/json:
+              schema:
+                type: array
+  '/filters.Save':
+    get:
+      tags:
+        - filters
+      operationId: api.api.save_filter
+      summary: Get filters
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+          description: The page for the filter
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: The name for the filter
+        - name: flt
+          in: query
+          schema:
+            type: string
+          description: The filter for the filter
+      responses:
+        '200':
+          description: Save filters
+          content:
+            application/json:
+              schema:
+                type: array
+  '/filters.Delete':
+    get:
+      tags:
+        - filters
+      operationId: api.api.delete_filter
+      summary: Delete filters
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+          description: The page for the filter
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: The name for the filter
+      responses:
+        '200':
+          description: Delete filters
+          content:
+            application/json:
+              schema:
+                type: array
