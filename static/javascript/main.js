@@ -430,9 +430,7 @@ GUI.prototype.pageFeed = function() {
 
     // Get the custom filters
     t.apiCall('filters.Get', { 'page': 'feed' }, function(data, status, request) {
-      console.log(data['data']['data']);
       $.each(data['data']['data'], function(index, item) {
-        console.log(item);
         t.feed['filters'].push(
           { 'name': item['name'], 'filter': item['filter'] }
         );
@@ -539,8 +537,6 @@ GUI.prototype.pageFeed = function() {
 }
 /*----------------------------------------------------------------------------*/
 GUI.prototype.pageFeedApplyFilter = function() {
-  console.log(this);
-
   // Show the loading bar
   this.startLoading();
 
