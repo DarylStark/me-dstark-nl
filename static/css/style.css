@@ -380,6 +380,10 @@ div.me-filter p:last-child i:hover {
   padding: 0px;
 }
 
+.mdl-card__supporting-text .mdl-chip {
+  cursor: pointer;
+}
+
 /* Planning */
 
 .events .mdl-card__supporting-text {

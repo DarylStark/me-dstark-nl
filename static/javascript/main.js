@@ -428,6 +428,14 @@ GUI.prototype.pageFeed = function() {
       { 'name': '(New items)', 'filter': '', 'changable': false }
     ]
 
+    $('#filter_button').click(function() {
+      if ($('.filter-block').css('display') == 'none') {
+        $('.filter-block').show();
+      } else {
+        $('.filter-block').hide();
+      }
+    });
+
     // Get the custom filters
     t.apiCall('filters.Get', { 'page': 'feed' }, function(data, status, request) {
       // Update the button
