@@ -405,7 +405,8 @@ GUI.prototype.pageFeed = function() {
     'max_page': 0,
     'to_top_button': false,
     'empty': false,
-    'filter': ''
+    'filter': '',
+    'filters': []
   };
 
   // Preload the templates
@@ -422,8 +423,34 @@ GUI.prototype.pageFeed = function() {
     // Attach the new element to the content div
     $('#content').append(feed);
 
+    // Standard filters
+    t.feed['filters'] = [
+      { 'id': 0, 'name': '(New items)', 'filter': '' },
+      { 'id': 1, 'name': 'Archived items', 'filter': 'archive:yes' }
+    ]
+
+    // TODO: Get the custom filters
+
+    // Add the filters to the list
+    $.each(t.feed['filters'], function(index, item) {
+      $("#filters").append(new Option(item['name'], index));
+    });
+
+    // Add an handler to the 'filters' dropdown
+    $('#filters').change(function() {
+      // Get the new value
+      newfilter = t.feed['filters'][$("#filters").val()]
+      
+      // Set the filter to the textbar
+      $('#searchquery').val(newfilter['filter']);
+
+      // Apply the filter
+      t.pageFeedApplyFilter();
+    });
+
     // Add an handler to the 'filter' button
     $('#filter').click(function() {
+      // TODO: save or add the filter
       t.pageFeedApplyFilter();
     });
 
@@ -522,7 +549,8 @@ GUI.prototype.pageFeedApplyFilter = function() {
     'max_page': 0,
     'to_top_button': false,
     'empty': false,
-    'filter': flt
+    'filter': flt,
+    'filters': this.feed['filters']
   }
 
   // Remove the current elements (after the filter)
