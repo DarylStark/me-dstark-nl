@@ -405,13 +405,8 @@ GUI.prototype.pageFeed = function() {
     'max_page': 0,
     'to_top_button': false,
     'empty': false,
-    'showarchive': false
+    'filter': ''
   };
-
-  // Check if we need to show the archive
-  if (currenturl.indexOf('archive') > -1) {
-    this.feed['showarchive'] = true;
-  }
 
   // Preload the templates
   this.preloadTemplates([ 'feed', 'feed_item_newevent', 'feed_item_newevent_archive', 'feed_empty' ], function () {
@@ -424,13 +419,20 @@ GUI.prototype.pageFeed = function() {
     // Upgrade the element for MDL
     t.upgradeElement(feed);
 
-    // Set the switch to the correct state
-    if (t.feed['showarchive']) {
-      feed.find('#label-archive')[0].MaterialSwitch.on();
-    }
-
     // Attach the new element to the content div
     $('#content').append(feed);
+
+    // Add an handler to the 'filter' button
+    $('#filter').click(function() {
+      t.pageFeedApplyFilter();
+    });
+
+    // Add an event listener to the filter-input so we can catch 'enters'
+    $('#searchquery').keyup(function(event) {
+      if (event.keyCode === 13) {
+        t.pageFeedApplyFilter();
+      }
+    });
 
     // Attach an handler to the buttons for the filter
     $('#filter_buttons').find('.mdl-chip').click(function (event) {
@@ -499,6 +501,35 @@ GUI.prototype.pageFeed = function() {
     t.showNotification('Could not load the needed templates');
     t.stopLoading();
   });
+}
+/*----------------------------------------------------------------------------*/
+GUI.prototype.pageFeedApplyFilter = function() {
+  console.log(this);
+
+  // Show the loading bar
+  this.startLoading();
+
+  // Get the new filter
+  flt = $('#searchquery').val()
+
+  // Reset the feed settings
+  // TODO: do this better.. maybe a default method or something
+  this.feed = {
+    'items_on_screen': 0,
+    'current_page': 1,
+    'limit': 15,
+    'loading_for_page': 1,
+    'max_page': 0,
+    'to_top_button': false,
+    'empty': false,
+    'filter': flt
+  }
+
+  // Remove the current elements (after the filter)
+  $('.last-filter').nextAll().remove();
+
+  // Add the new elements
+  t.pageFeedLoaditems(t.feed['limit'], this.feed['current_page']);
 }
 /*----------------------------------------------------------------------------*/
 // Method to dismiss a speficic feed item, or undimiss it
@@ -636,7 +667,7 @@ GUI.prototype.pageFeedItemEventTrackedToggle = function(eventid, trackedtoggle =
 // TODO: Remove this
 GUI.prototype.pageFeedItemEvent = function(feeditem) {
   // Get the correct template from the cache
-  if (this.feed['showarchive']) {
+  if (feeditem['status'] != 1) {
     item = tpl_cache['feed_item_newevent_archive'];
   } else {
     item = tpl_cache['feed_item_newevent'];
@@ -767,10 +798,9 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
   // Options for the API call
   apioptions = { 'limit': limit, 'page': page }
 
-  // Check if we need to load the archive or the 'normal' feed
-  if (this.feed['showarchive'] == true) {
-    apioptions['dismissed'] = '1';
-    apioptions['sort'] = 'dismissed';
+  // Check if we need to add a filter to the query
+  if (this.feed['filter'] != '') {
+    apioptions['flt'] = this.feed['filter'];
   }
 
   // Start the API call
