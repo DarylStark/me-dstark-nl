@@ -430,6 +430,9 @@ GUI.prototype.pageFeed = function() {
 
     // Get the custom filters
     t.apiCall('filters.Get', { 'page': 'feed' }, function(data, status, request) {
+      // Update the button
+      t.updateFeedFilterButton();
+
       $.each(data['data']['data'], function(index, item) {
         t.feed['filters'].push(
           { 'name': item['name'], 'filter': item['filter'], 'changable': true }
@@ -467,30 +470,45 @@ GUI.prototype.pageFeed = function() {
           // Start loading
           t.startLoading();
 
-          t.apiCall('filters.Save', { 'page': 'feed', 'flt': $('#searchquery').val(), 'name': $('#filtername').val() }, function(data, status, request) {
-            // Check if the filter is already in the dropdown
-            opt = $('#filters option:contains("' + $('#filtername').val() + '")');
-            if (opt.length == 0) {
-              // Add the filter to the dropdown
-              t.feed['filters'].push(
-                { 'name': $('#filtername').val(), 'filter': $('#searchquery').val(), 'changable': true }
-              );
-              $("#filters").append(new Option($('#filtername').val(), t.feed['filters'].length - 1, true, true));
-            } else {
-              // Update the current filter
-              flt = $('#searchquery').val();
-              if (flt != '') {
-                t.feed['filters'][opt[0].value]['filter'] = $('#searchquery').val();
+          // Check the values
+          fltname = $('#filtername').val().trim();
+          flt = $('#searchquery').val().trim();
+          filtercnt = $('#filters option:contains("' + fltname + '")');
+          filteroptions = 0;
+
+          $.each(filtercnt, function(index, element) {
+            if ($(element).html() == fltname) {
+              filteroptions = 1;
+              filterelement = $(element)
+            }
+          });
+
+          if (flt != '' && fltname != '') {
+            t.apiCall('filters.Save', { 'page': 'feed', 'flt': flt, 'name': fltname }, function(data, status, request) {
+              if (filteroptions == 0) {
+                // Add the filter to the dropdown
+                t.feed['filters'].push(
+                  { 'name': fltname, 'filter': flt, 'changable': true }
+                );
+                $("#filters").append(new Option(fltname, t.feed['filters'].length - 1, true, true));
               } else {
-                t.apiCall('filters.Delete', { 'page': 'feed', 'name': $('#filtername').val() }, function(data, status, request) {
-                  $(opt[0]).remove();
-                });
+                // Update the current filter
+                t.feed['filters'][filterelement.val()]['filter'] = flt;
               }
+
+              // Apply the filter
+              t.pageFeedApplyFilter();
+            });
+          } else {
+            if (fltname != '' && filteroptions == 1 && flt == '') {
+              t.apiCall('filters.Delete', { 'page': 'feed', 'name': fltname }, function(data, status, request) {
+                filterelement.remove();
+              });
             }
 
             // Apply the filter
             t.pageFeedApplyFilter();
-          });
+          }
         } else {
           // Apply the filter
           t.pageFeedApplyFilter();
@@ -502,6 +520,9 @@ GUI.prototype.pageFeed = function() {
         if (event.keyCode === 13) {
           $('#filter').click();
         }
+
+        // Update the button
+        t.updateFeedFilterButton();
       });
 
       // Add an event listener to the filter-name so we can catch 'enters'
@@ -509,6 +530,9 @@ GUI.prototype.pageFeed = function() {
         if (event.keyCode === 13) {
           $('#filter').click();
         }
+
+        // Update the button
+        t.updateFeedFilterButton();
       });
 
       // Attach an handler to the buttons for the filter
@@ -581,9 +605,35 @@ GUI.prototype.pageFeed = function() {
   });
 }
 /*----------------------------------------------------------------------------*/
+GUI.prototype.updateFeedFilterButton = function() {
+  // Check the values
+  fltname = $('#filtername').val().trim();
+  flt = $('#searchquery').val().trim();
+  filtercnt = $('#filters option:contains("' + fltname + '")');
+  filteroptions = 0;
+
+  $.each(filtercnt, function(index, element) {
+    if ($(element).html() == fltname) {
+      filteroptions = 1;
+    }
+  });
+
+  // Update the filterbutton
+  if (fltname == '') {
+    $('#filter').html('Apply');
+  } else if (fltname != '' && flt == '' && filteroptions == 1) {
+    $('#filter').html('Delete filter');
+  } else if (fltname != '' && flt != '') {
+    $('#filter').html('Apply and save');
+  }
+}
+/*----------------------------------------------------------------------------*/
 GUI.prototype.pageFeedApplyFilter = function() {
   // Show the loading bar
   this.startLoading();
+
+  // Update the button
+  this.updateFeedFilterButton();
 
   // Get the new filter
   flt = $('#searchquery').val()
@@ -600,6 +650,19 @@ GUI.prototype.pageFeedApplyFilter = function() {
     'empty': false,
     'filter': flt,
     'filters': this.feed['filters']
+  }
+
+  fltname = $('#filtername').val().trim();
+  filtercnt = $('#filters option:contains("' + fltname + '")');
+
+  if (fltname != '') {
+    $.each(filtercnt, function(index, element) {
+      if ($(element).html() == fltname) {
+        $('#filters').val($(element).val());
+      }
+    });
+  } else {
+    $('#filters').val(0);
   }
 
   // Remove the current elements (after the filter)
