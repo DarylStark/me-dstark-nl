@@ -425,14 +425,14 @@ GUI.prototype.pageFeed = function() {
 
     // Standard filters
     t.feed['filters'] = [
-      { 'name': '(New items)', 'filter': '' }
+      { 'name': '(New items)', 'filter': '', 'changable': false }
     ]
 
     // Get the custom filters
     t.apiCall('filters.Get', { 'page': 'feed' }, function(data, status, request) {
       $.each(data['data']['data'], function(index, item) {
         t.feed['filters'].push(
-          { 'name': item['name'], 'filter': item['filter'] }
+          { 'name': item['name'], 'filter': item['filter'], 'changable': true }
         );
       });
 
@@ -449,20 +449,65 @@ GUI.prototype.pageFeed = function() {
         // Set the filter to the textbar
         $('#searchquery').val(newfilter['filter']);
 
+        // Set the filtername
+        if (newfilter['changable']) {
+          $('#filtername').val(newfilter['name']);
+        } else {
+          $('#filtername').val('');
+        }
+
         // Apply the filter
         t.pageFeedApplyFilter();
       });
 
       // Add an handler to the 'filter' button
       $('#filter').click(function() {
-        // TODO: save or add the filter
-        t.pageFeedApplyFilter();
+        // Save the filter
+        if ($('#filtername').val() != '') {
+          // Start loading
+          t.startLoading();
+
+          t.apiCall('filters.Save', { 'page': 'feed', 'flt': $('#searchquery').val(), 'name': $('#filtername').val() }, function(data, status, request) {
+            // Check if the filter is already in the dropdown
+            opt = $('#filters option:contains("' + $('#filtername').val() + '")');
+            if (opt.length == 0) {
+              // Add the filter to the dropdown
+              t.feed['filters'].push(
+                { 'name': $('#filtername').val(), 'filter': $('#searchquery').val(), 'changable': true }
+              );
+              $("#filters").append(new Option($('#filtername').val(), t.feed['filters'].length - 1, true, true));
+            } else {
+              // Update the current filter
+              flt = $('#searchquery').val();
+              if (flt != '') {
+                t.feed['filters'][opt[0].value]['filter'] = $('#searchquery').val();
+              } else {
+                t.apiCall('filters.Delete', { 'page': 'feed', 'name': $('#filtername').val() }, function(data, status, request) {
+                  $(opt[0]).remove();
+                });
+              }
+            }
+
+            // Apply the filter
+            t.pageFeedApplyFilter();
+          });
+        } else {
+          // Apply the filter
+          t.pageFeedApplyFilter();
+        }
       });
 
       // Add an event listener to the filter-input so we can catch 'enters'
       $('#searchquery').keyup(function(event) {
         if (event.keyCode === 13) {
-          t.pageFeedApplyFilter();
+          $('#filter').click();
+        }
+      });
+
+      // Add an event listener to the filter-name so we can catch 'enters'
+      $('#filtername').keyup(function(event) {
+        if (event.keyCode === 13) {
+          $('#filter').click();
         }
       });
 

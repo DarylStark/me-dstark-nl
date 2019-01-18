@@ -892,7 +892,7 @@ class API:
                     
                     # Append the created dict to the list
                     data.append(item)
-            except KeyboardInterrupt:
+            except:
                 error_code = 1
                 error_text = 'Unknown error'
             
@@ -1158,6 +1158,128 @@ class API:
                 error_text = error_text,
                 data = data,
                 length = length,
+                page = 0,
+                limit = 0,
+                runtime = time_end - time_start
+            )
+        else:
+	        flask.abort(403)
+
+    def save_filter(self, page, name, flt):
+        """ API method for '/filters.Save'. Save a filter """
+
+        if is_logged_in():
+            # Get the start time
+            time_start = time.time()
+
+            # Set a default error code and text
+            error_code = 0
+            error_text = ''
+
+            # Create default values
+            data = []
+            length = 0
+
+            try:
+                # Create a object for database interaction
+                db = database.Database()
+
+                # Check if the filter exists
+                session = db._session_factory()
+                query = session.query(
+                    database.Filter
+                ).filter(
+                    database.Filter.name == name
+                ).filter(
+                    database.Filter.page == page
+                )
+
+                # If it exists, update it. Otherwise, add it
+                if query.count() > 0:
+                    query[0].filter = flt
+                    session.commit()
+                else:
+                    newfilter = database.Filter(
+                        name = name,
+                        page = page,
+                        filter = flt
+                    )
+                    session.add(newfilter)
+                    session.commit()
+
+                # Close the session
+                session.close()
+            except:
+                error_code = 1
+                error_text = 'Unknown error'
+
+            # Get the end time
+            time_end = time.time()
+
+            # Return the feed
+            return self.create_api_return(
+                api = 'filters.Save',
+                error_code = error_code,
+                error_text = error_text,
+                data = [],
+                length = 0,
+                page = 0,
+                limit = 0,
+                runtime = time_end - time_start
+            )
+        else:
+	        flask.abort(403)
+
+    def delete_filter(self, page, name):
+        """ API method for '/filters.Delete'. Deletes a filter """
+
+        if is_logged_in():
+            # Get the start time
+            time_start = time.time()
+
+            # Set a default error code and text
+            error_code = 0
+            error_text = ''
+
+            # Create default values
+            data = []
+            length = 0
+
+            try:
+                # Create a object for database interaction
+                db = database.Database()
+
+                # Check if the filter exists
+                session = db._session_factory()
+                query = session.query(
+                    database.Filter
+                ).filter(
+                    database.Filter.name == name
+                ).filter(
+                    database.Filter.page == page
+                )
+
+                # If it exists, update it. Otherwise, add it
+                if query.count() > 0:
+                    session.delete(query[0])
+                    session.commit()
+
+                # Close the session
+                session.close()
+            except:
+                error_code = 1
+                error_text = 'Unknown error'
+
+            # Get the end time
+            time_end = time.time()
+
+            # Return the feed
+            return self.create_api_return(
+                api = 'filters.Save',
+                error_code = error_code,
+                error_text = error_text,
+                data = [],
+                length = 0,
                 page = 0,
                 limit = 0,
                 runtime = time_end - time_start

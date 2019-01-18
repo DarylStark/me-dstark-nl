@@ -277,6 +277,10 @@ input.mdl-textfield__input {
   font-size: 1rem;
 }
 
+input:focus {
+  outline: none;
+}
+
 /* Feed filter */
 
 div.me-filter {
@@ -346,6 +350,34 @@ div.me-filter p:last-child i:hover {
 
 .me-card-filter .mdl-card__actions {
   border-top: 0px;
+  padding: 0px;
+  text-align: left;
+  display: table;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-filtername {
+  background-color: #f3f3f3;
+  border-right: 1px solid #cccccc;
+  text-align: left;
+  padding: 15px;
+  padding-top: 24px;
+  padding-bottom: 23px;
+  display: table-cell;
+  width: 100%;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-buttons {
+  padding: 15px;
+  display: table-cell;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-buttons a {
+  white-space: nowrap;
+}
+
+.mdl-card__actions.mdl-card--border.me-card__actions .me-card__actions-filtername .mdl-textfield__input {
+  border-bottom: 0px;
+  padding: 0px;
 }
 
 /* Planning */
