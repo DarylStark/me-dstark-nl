@@ -260,13 +260,13 @@ html, body
 select {
   background-color: transparent;
   border: 0px;
-  font-size: 11pt;
-  text-align: right;
+  font-size: 1rem;
 }
 
 select option {
   background-color: #ffffff;
   border: none;
+  font-size: 1rem;
 }
 
 select:focus {
@@ -288,6 +288,8 @@ div.me-filter p:first-child {
   margin-top: 2px;
   margin-right: 5px;
   font-size: 11pt;
+  padding-left: 5px;
+  border-left: 1px solid #cccccc;
 }
 
 .me-card__title-small {
