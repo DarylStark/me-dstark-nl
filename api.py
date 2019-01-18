@@ -717,7 +717,7 @@ class API:
         else:
 	        flask.abort(403)
 
-    def get_feed(self, limit = 15, page = 1, dismissed = 0):
+    def get_feed(self, limit = 15, page = 1):
         """ API method for '/feed.Get'. Returns all or filtered feeditems from the database """
 
         if is_logged_in():
@@ -732,39 +732,13 @@ class API:
             data = []
             length = 0
 
-            # Check the dismissed status and transform it to the correct status
-            status = 1
-            if dismissed > 0:
-                status = 2
-
             try:
                 # Create a object for database interaction
                 db = database.Database()
 
-                # Get the count of rows in the database
-                session = db._session_factory()
-                length = session.query(
-                    database.FeedItem
-                ).add_entity(
-                    database.Event
-                ).add_entity(
-                    database.Stage
-                ).add_entity(
-                    database.Venue
-                ).outerjoin(
-                    database.Event
-                ).outerjoin(
-                    database.Stage
-                ).outerjoin(
-                    database.Venue
-                ).filter(
-                    database.FeedItem.status == status
-                ).count()
-                session.close()
-
                 # Get the feeditems for the requested page
                 session = db._session_factory()
-                feeditems = session.query(
+                query = session.query(
                     database.FeedItem
                 ).add_entity(
                     database.Event
@@ -778,21 +752,32 @@ class API:
                     database.Stage
                 ).outerjoin(
                     database.Venue
-                ).filter(
-                    database.FeedItem.status == status
                 ).order_by(
                     database.FeedItem.changedate.desc(),
                     database.FeedItem.date.desc(),
                     database.FeedItem.id.desc()
-                ).limit(
+                )
+
+                # Apply the needed filters
+                query = query.filter(
+                    database.FeedItem.status == 1
+                )
+
+                # Get the length
+                length = query.count()
+
+                # Only get pages
+                query = query.limit(
                     limit
                 ).offset(
                     (page - 1) * limit
                 )
+
+                # Close the session
                 session.close()
 
                 # Create a list with dicts
-                for feeditem in feeditems:
+                for feeditem in query:
                     # Create a dict for the feeditem
                     item = feeditem.FeedItem.get_dict()
 
@@ -838,7 +823,7 @@ class API:
                     
                     # Append the created dict to the list
                     data.append(item)
-            except:
+            except KeyboardInterrupt:
                 error_code = 1
                 error_text = 'Unknown error'
             
