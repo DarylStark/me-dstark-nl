@@ -1099,6 +1099,71 @@ class API:
             )
         else:
 	        flask.abort(403)
+
+    def get_filters(self, page = None):
+        """ API method for '/filters.Get'. Returns all or filtered filters from the database """
+
+        if is_logged_in():
+            # Get the start time
+            time_start = time.time()
+
+            # Set a default error code and text
+            error_code = 0
+            error_text = ''
+
+            # Create default values
+            data = []
+            length = 0
+
+            try:
+                # Create a object for database interaction
+                db = database.Database()
+
+                # Get the count of rows in the database
+                session = db._session_factory()
+                query = session.query(
+                    database.Filter
+                )
+
+                # Add the filters, when needed
+                if page is not None:
+                    query = query.filter(
+                        database.Filter.page == page
+                    )
+
+                # Create one query for the length
+                length = query.count()
+
+                # Close the session
+                session.close()
+
+                # Create a list with dicts
+                for filter in query:
+                    # Create a dict for the feeditem
+                    item = filter.get_dict()
+                    
+                    # Append the created dict to the list
+                    data.append(item)
+            except:
+                error_code = 1
+                error_text = 'Unknown error'
+
+            # Get the end time
+            time_end = time.time()
+
+            # Return the feed
+            return self.create_api_return(
+                api = 'filters.Get',
+                error_code = error_code,
+                error_text = error_text,
+                data = data,
+                length = length,
+                page = 0,
+                limit = 0,
+                runtime = time_end - time_start
+            )
+        else:
+	        flask.abort(403)
 #---------------------------------------------------------------------------------------------------
 api = API()
 #---------------------------------------------------------------------------------------------------

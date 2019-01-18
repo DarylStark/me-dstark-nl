@@ -425,108 +425,116 @@ GUI.prototype.pageFeed = function() {
 
     // Standard filters
     t.feed['filters'] = [
-      { 'id': 0, 'name': '(New items)', 'filter': '' },
-      { 'id': 1, 'name': 'Archived items', 'filter': 'archive:yes' }
+      { 'name': '(New items)', 'filter': '' }
     ]
 
-    // TODO: Get the custom filters
-
-    // Add the filters to the list
-    $.each(t.feed['filters'], function(index, item) {
-      $("#filters").append(new Option(item['name'], index));
-    });
-
-    // Add an handler to the 'filters' dropdown
-    $('#filters').change(function() {
-      // Get the new value
-      newfilter = t.feed['filters'][$("#filters").val()]
-      
-      // Set the filter to the textbar
-      $('#searchquery').val(newfilter['filter']);
-
-      // Apply the filter
-      t.pageFeedApplyFilter();
-    });
-
-    // Add an handler to the 'filter' button
-    $('#filter').click(function() {
-      // TODO: save or add the filter
-      t.pageFeedApplyFilter();
-    });
-
-    // Add an event listener to the filter-input so we can catch 'enters'
-    $('#searchquery').keyup(function(event) {
-      if (event.keyCode === 13) {
-        t.pageFeedApplyFilter();
-      }
-    });
-
-    // Attach an handler to the buttons for the filter
-    $('#filter_buttons').find('.mdl-chip').click(function (event) {
-      // Get the value from the current input and add the new one
-      entry = ' ' + $(event.currentTarget).find('span').html();
-      oldval = $('#searchquery').val().trim();
-      newval = $.trim(oldval + entry);
-
-      // Set the new value
-      $('#searchquery').val(newval);
-
-      // Give the query the focus again
-      $('#searchquery').focus();
-    });
-
-    // Attach a handler to the 'go up' button
-    $('.me-upbutton').click(function() {
-      $('#scroller').animate({
-        scrollTop: 0
+    // Get the custom filters
+    t.apiCall('filters.Get', { 'page': 'feed' }, function(data, status, request) {
+      console.log(data['data']['data']);
+      $.each(data['data']['data'], function(index, item) {
+        console.log(item);
+        t.feed['filters'].push(
+          { 'name': item['name'], 'filter': item['filter'] }
+        );
       });
-    });
 
-    // Add a handler to retrieve the next page when scrolling
-    $('#scroller').on('scroll', function() {
-      // If we scroll beneauth the top of the page, show a button to go to the
-      // top of the page. Otherwise, remove it
-      if ($(this).scrollTop() > 0 && t.feed['to_top_button'] == false) {
-        // Show the button
-        t.feed['to_top_button'] = true;
-        $('.me-upbutton').fadeIn(400);
-      } else if ($(this).scrollTop() == 0 && t.feed['to_top_button'] == true) {
-        // Hide the button
-        t.feed['to_top_button'] = false;
-        $('.me-upbutton').fadeOut(200);
-      }
+      // Add the filters to the list
+      $.each(t.feed['filters'], function(index, item) {
+        $("#filters").append(new Option(item['name'], index));
+      });
 
-      // When we are 100px from the bottom, start loading the next
-      if($(this).scrollTop() + $(this).innerHeight() + 100 >= $(this)[0].scrollHeight) {
-        // Only when we're not already loading that page
-        if (t.feed['loading_for_page'] != (t.feed['current_page'] + 1)) {
-          // Check if we didn't reach the max page yet
-          if (t.feed['max_page'] >= (t.feed['current_page'] + 1)) {
-            // Show the loading bar
-            t.startLoading();
+      // Add an handler to the 'filters' dropdown
+      $('#filters').change(function() {
+        // Get the new value
+        newfilter = t.feed['filters'][$("#filters").val()]
+        
+        // Set the filter to the textbar
+        $('#searchquery').val(newfilter['filter']);
 
-            // Set the page we are loading for
-            t.feed['loading_for_page'] = t.feed['current_page'] + 1;
+        // Apply the filter
+        t.pageFeedApplyFilter();
+      });
 
-            // Load the new page
-            t.pageFeedLoaditems(t.feed['limit'], t.feed['loading_for_page'], function() {
-              // And set the new current page
-              t.feed['current_page'] = t.feed['loading_for_page'];
-            });
+      // Add an handler to the 'filter' button
+      $('#filter').click(function() {
+        // TODO: save or add the filter
+        t.pageFeedApplyFilter();
+      });
+
+      // Add an event listener to the filter-input so we can catch 'enters'
+      $('#searchquery').keyup(function(event) {
+        if (event.keyCode === 13) {
+          t.pageFeedApplyFilter();
+        }
+      });
+
+      // Attach an handler to the buttons for the filter
+      $('#filter_buttons').find('.mdl-chip').click(function (event) {
+        // Get the value from the current input and add the new one
+        entry = ' ' + $(event.currentTarget).find('span').html();
+        oldval = $('#searchquery').val().trim();
+        newval = $.trim(oldval + entry);
+
+        // Set the new value
+        $('#searchquery').val(newval);
+
+        // Give the query the focus again
+        $('#searchquery').focus();
+      });
+
+      // Attach a handler to the 'go up' button
+      $('.me-upbutton').click(function() {
+        $('#scroller').animate({
+          scrollTop: 0
+        });
+      });
+
+      // Add a handler to retrieve the next page when scrolling
+      $('#scroller').on('scroll', function() {
+        // If we scroll beneauth the top of the page, show a button to go to the
+        // top of the page. Otherwise, remove it
+        if ($(this).scrollTop() > 0 && t.feed['to_top_button'] == false) {
+          // Show the button
+          t.feed['to_top_button'] = true;
+          $('.me-upbutton').fadeIn(400);
+        } else if ($(this).scrollTop() == 0 && t.feed['to_top_button'] == true) {
+          // Hide the button
+          t.feed['to_top_button'] = false;
+          $('.me-upbutton').fadeOut(200);
+        }
+
+        // When we are 100px from the bottom, start loading the next
+        if($(this).scrollTop() + $(this).innerHeight() + 100 >= $(this)[0].scrollHeight) {
+          // Only when we're not already loading that page
+          if (t.feed['loading_for_page'] != (t.feed['current_page'] + 1)) {
+            // Check if we didn't reach the max page yet
+            if (t.feed['max_page'] >= (t.feed['current_page'] + 1)) {
+              // Show the loading bar
+              t.startLoading();
+
+              // Set the page we are loading for
+              t.feed['loading_for_page'] = t.feed['current_page'] + 1;
+
+              // Load the new page
+              t.pageFeedLoaditems(t.feed['limit'], t.feed['loading_for_page'], function() {
+                // And set the new current page
+                t.feed['current_page'] = t.feed['loading_for_page'];
+              });
+            }
           }
         }
-      }
-    });
+      });
 
-    // Get the first page of the feed
-    t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page'] + 1, function() {
-      t.feed['current_page'] = 1;
+      // Get the first page of the feed
+      t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page'] + 1, function() {
+        t.feed['current_page'] = 1;
+      });
+    }, function() {
+      // The templates couldn't be loaded
+      // Give an error to the user
+      t.showNotification('Could not load the needed templates');
+      t.stopLoading();
     });
-  }, function() {
-    // The templates couldn't be loaded
-    // Give an error to the user
-    t.showNotification('Could not load the needed templates');
-    t.stopLoading();
   });
 }
 /*----------------------------------------------------------------------------*/

@@ -220,3 +220,22 @@ paths:
             application/json:
               schema:
                 type: arrays
+  '/filters.Get':
+    get:
+      tags:
+        - filters
+      operationId: api.api.get_filters
+      summary: Get filters
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: string
+          description: The page for the filter
+      responses:
+        '200':
+          description: Return feeditems
+          content:
+            application/json:
+              schema:
+                type: array
