@@ -432,47 +432,18 @@ GUI.prototype.pageFeed = function() {
     // Attach the new element to the content div
     $('#content').append(feed);
 
-    // Attach a handler to the switch for the archive
-    $('#switch-archive').change(function() {
-      // Check the new position of the switch
-      newstate_archive = $('#switch-archive').prop('checked');
+    // Attach an handler to the buttons for the filter
+    $('#filter_buttons').find('.mdl-chip').click(function (event) {
+      // Get the value from the current input and add the new one
+      entry = ' ' + $(event.currentTarget).find('span').html();
+      oldval = $('#searchquery').val().trim();
+      newval = $.trim(oldval + entry);
 
-      // Show the loading bar
-      t.startLoading();
+      // Set the new value
+      $('#searchquery').val(newval);
 
-      // Check if the switch is set to 'archive' or to 'not archive'
-
-      // Reset the feed settings
-      // TODO: do this better.. maybe a default method or something
-      t.feed = {
-        'items_on_screen': 0,
-        'current_page': 0,
-        'limit': 15,
-        'loading_for_page': 1,
-        'max_page': 0,
-        'to_top_button': false,
-        'empty': false
-      }
-
-      // If the switch is set to 'show archive', show the archive. Otherwise,
-      // don't show the archive but the new items.
-      t.feed['showarchive'] = newstate_archive;
-
-      // Set the new feed settings
-      t.feed['current_page'] = 1;
-
-      // Remove the current elements (after the filter)
-      $('.last-filter').nextAll().remove();
-
-      // TODO: Update the URL
-      if ($('#switch-archive').prop('checked')) {
-        window.history.pushState({ 'current_item': 'feed' }, 'Feed', '/feed/archive');
-      } else {
-        window.history.pushState({ 'current_item': 'feed' }, 'Feed', '/feed');
-      }
-
-      // Add the new elements
-      t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page']);
+      // Give the query the focus again
+      $('#searchquery').focus();
     });
 
     // Attach a handler to the 'go up' button

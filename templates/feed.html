@@ -25,42 +25,16 @@
       </div>
       <div class='mdl-card__supporting-text me-card-textfield'>
         <div class='mdl-textfield mdl-js-textfield'>
-          <input type='text' id='search' class='mdl-textfield__input' placeholder='Search for text'>
+          <input type='text' id='searchquery' class='mdl-textfield__input' placeholder='Enter your query here using the fields below'>
         </div>
       </div>
-      <div class='mdl-card__supporting-text me-card-filter-field'>
-        <div class='me-card-filter-field-left'>
-          Archive
-        </div>
-        <div class='me-card-filter-field-right'>
-          <label class='mdl-switch mdl-js-switch mdl-js-ripple-effect' for='switch-archive' id='label-archive'>
-            <input type='checkbox' id='switch-archive' class='mdl-switch__input'>
-            <span class='mdl-switch__label'></span>
-          </label>
-        </div>
-      </div>
-      <div class='mdl-card__supporting-text me-card-filter-field'>
-        <div class='me-card-filter-field-left'>
-          Types
-        </div>
-        <div class='me-card-filter-field-right'>
-          <label class='mdl-checkbox mdl-js-checkbox' for='types_all'>
-            <input type='checkbox' id='types_all' class='mdl-checkbox__input'>
-            <span class='mdl-checkbox__label'>All item types</span>
-          </label><br />
-          <label class='mdl-checkbox mdl-js-checkbox' for='types_1'>
-            <input type='checkbox' id='types_1' class='mdl-checkbox__input'>
-            <span class='mdl-checkbox__label'>New events</span>
-          </label><br />
-          <label class='mdl-checkbox mdl-js-checkbox' for='types_2'>
-            <input type='checkbox' id='types_2' class='mdl-checkbox__input'>
-            <span class='mdl-checkbox__label'>Tracked event changed</span>
-          </label><br />
-          <label class='mdl-checkbox mdl-js-checkbox' for='types_3'>
-            <input type='checkbox' id='types_3' class='mdl-checkbox__input'>
-            <span class='mdl-checkbox__label'>Event changed</span>
-          </label><br />
-        </div>
+      <div class='mdl-card__supporting-text' id='filter_buttons'>
+        <span class='mdl-chip'><span class='mdl-chip__text'>archive:</span></span>
+        <span class='mdl-chip'><span class='mdl-chip__text'>title:</span></span>
+        <span class='mdl-chip'><span class='mdl-chip__text'>type:</span></span>
+        <span class='mdl-chip'><span class='mdl-chip__text'>stage:</span></span>
+        <span class='mdl-chip'><span class='mdl-chip__text'>support:</span></span>
+        <span class='mdl-chip'><span class='mdl-chip__text'>venue:</span></span>
       </div>
       <div class='mdl-card__actions mdl-card--border me-card__actions'>
         <a class='mdl-button mdl-button--raised mdl-button--colored mdl-js-button mdl-js-ripple-effect' id='button-buy' target='_blank'>Save and apply</a>

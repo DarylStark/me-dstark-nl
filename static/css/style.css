@@ -277,10 +277,6 @@ input.mdl-textfield__input {
   font-size: 1rem;
 }
 
-.mdl-checkbox {
-  text-align: left;
-}
-
 /* Feed filter */
 
 div.me-filter {
@@ -346,31 +342,6 @@ div.me-filter p:last-child i:hover {
 .me-card-filter .me-card-textfield .mdl-textfield__input {
   border-bottom: 0px;
   padding: 0px;
-}
-
-.mdl-card__supporting-text.me-card-filter-field {
-  width: auto;
-  padding: 0px;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.mdl-card__supporting-text.me-card-filter-field .me-card-filter-field-left {
-  display: inline-block;
-  padding: 11px 16px 11px 16px;
-  text-align: left;
-  white-space: nowrap;
-  position: absolute;
-  float: left;
-  font-style: italic;
-}
-
-.mdl-card__supporting-text.me-card-filter-field .me-card-filter-field-right {
-  display: inline-block;
-  padding: 8px 16px 8px 16px;
-  text-align: right;
-  white-space: nowrap;
-  float: right;
-  font-style: italic;
 }
 
 .me-card-filter .mdl-card__actions {
