@@ -273,6 +273,14 @@ select:focus {
   outline: none;
 }
 
+input.mdl-textfield__input {
+  font-size: 1rem;
+}
+
+.mdl-checkbox {
+  text-align: left;
+}
+
 /* Feed filter */
 
 div.me-filter {
@@ -292,6 +300,20 @@ div.me-filter p:first-child {
   border-left: 1px solid #cccccc;
 }
 
+div.me-filter p:last-child i {
+  margin: 0px;
+  padding: 0px;
+}
+
+div.me-filter p:last-child i:hover {
+  background-color: #dedede;
+  cursor: pointer;
+}
+
+.me-card-filter-item {
+  border-bottom: 1px solid #cccccc;
+}
+
 .me-card__title-small {
   height: 48px !important;
 }
@@ -302,6 +324,57 @@ div.me-filter p:first-child {
 
 .mdl-cell .mdl-card:last-child {
   margin-bottom: 0px;
+}
+
+/* Filters */
+
+.me-card-filter .mdl-card__supporting-text {
+  border-bottom: 1px solid #cccccc;
+  width: auto;
+}
+
+.me-card-filter .me-card-textfield {
+  padding: 15px;
+  background-color: #f3f3f3;
+}
+
+.me-card-filter .mdl-textfield {
+  padding: 0px;
+  width: 100%;
+}
+
+.me-card-filter .me-card-textfield .mdl-textfield__input {
+  border-bottom: 0px;
+  padding: 0px;
+}
+
+.mdl-card__supporting-text.me-card-filter-field {
+  width: auto;
+  padding: 0px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.mdl-card__supporting-text.me-card-filter-field .me-card-filter-field-left {
+  display: inline-block;
+  padding: 11px 16px 11px 16px;
+  text-align: left;
+  white-space: nowrap;
+  position: absolute;
+  float: left;
+  font-style: italic;
+}
+
+.mdl-card__supporting-text.me-card-filter-field .me-card-filter-field-right {
+  display: inline-block;
+  padding: 8px 16px 8px 16px;
+  text-align: right;
+  white-space: nowrap;
+  float: right;
+  font-style: italic;
+}
+
+.me-card-filter .mdl-card__actions {
+  border-top: 0px;
 }
 
 /* Planning */
