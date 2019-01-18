@@ -151,7 +151,7 @@ paths:
           schema:
             type: integer
           description: The pagenumber you want to retrieve
-        - name: filter
+        - name: flt
           in: query
           schema:
             type: string

@@ -12,6 +12,7 @@ import time
 import os
 import sqlalchemy
 import flask
+import re
 from flask import request
 from flask import session as flasksession
 from google.oauth2 import id_token
@@ -717,7 +718,7 @@ class API:
         else:
 	        flask.abort(403)
 
-    def get_feed(self, limit = 15, page = 1):
+    def get_feed(self, limit = 15, page = 1, flt = None):
         """ API method for '/feed.Get'. Returns all or filtered feeditems from the database """
 
         if is_logged_in():
@@ -758,10 +759,78 @@ class API:
                     database.FeedItem.id.desc()
                 )
 
-                # Apply the needed filters
-                query = query.filter(
-                    database.FeedItem.status == 1
-                )
+                # Needed later
+                statusset = False
+
+                # Get the filter and disect it
+                if flt:
+                    # Add extra colons to the filter. We need this for the regex later
+                    words = []
+                    for word in flt.split():
+                        if ':' in word:
+                            word = ':' + word
+                        words.append(word)
+                    flt = ' '.join(words)
+                    
+                    # Get the specific filters
+                    filters = re.findall('(\:[a-zA-Z0-9\-]*\:[^\:]+)', flt)
+
+                    # Create a dict for all filters
+                    allfilters = {}
+
+                    # Walk through the filters and create a dict with the needed filters
+                    for f in filters:
+                        try:
+                            field, value = re.findall('^:([a-z]*):(.+)', f)[0]
+                            field = field.strip()
+                            value = value.strip()
+                            allfilters[field] = value.split()
+                        except KeyboardInterrupt:
+                            pass
+                    
+                    # Loop through the dict and add the filters to the query
+                    for field in allfilters.keys():
+                        value = allfilters[field]
+
+                        if field == 'archive':
+                            value = ''.join(value)
+                            if value == 'yes':
+                                query = query.filter(database.FeedItem.status == 2)
+                                statusset = True
+                            elif value == 'no':
+                                query = query.filter(database.FeedItem.status == 1)
+                                statusset = True
+                        
+                        if field == 'title':
+                            for v in value:
+                                query = query.filter(database.Event.title.like('%{0}%'.format(v)))
+                        
+                        if field == 'type':
+                            value = ''.join(value)
+                            if value == 'newevent':
+                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_NEW_EVENT)
+                            elif value == 'changedevent':
+                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_EVENT_CHANGED)
+                            elif value == 'trackedevent':
+                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_TRACKED_EVENT_CHANGED)
+                        
+                        if field == 'stage':
+                            for v in value:
+                                query = query.filter(database.Stage.name.like('%{0}%'.format(v)))
+                        
+                        if field == 'support':
+                            for v in value:
+                                query = query.filter(database.Event.support.like('%{0}%'.format(v)))
+                                                
+                        if field == 'venue':
+                            for v in value:
+                                query = query.filter(database.Venue.name.like('%{0}%'.format(v)))
+
+                # Apply a filter for the status (if not set already)
+                if not statusset:
+                    query = query.filter(
+                        database.FeedItem.status == 1
+                    )
 
                 # Get the length
                 length = query.count()

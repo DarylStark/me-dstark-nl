@@ -32,7 +32,7 @@ class Database:
         self._database = os.getenv('DEV_SQL_DATABASE', '')
         self._instance = os.getenv('DEV_SQL_INSTANCE', '')
         self._connection = None
-        self._echo = True
+        self._echo = False
 
         # Check if we are on the production environment and set the values for production
         if 'gunicorn' in os.getenv('SERVER_SOFTWARE', ''):
