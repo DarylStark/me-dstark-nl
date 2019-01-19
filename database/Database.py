@@ -66,7 +66,6 @@ class Database:
             self.connection_string,
             echo = self._echo,
             pool_pre_ping = True,
-            pool_size = 10,
             pool_recycle = 300
         )
 
