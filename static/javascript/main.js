@@ -452,6 +452,9 @@ GUI.prototype.pageFeed = function() {
         $("#filters").append(new Option(item['name'], index));
       });
 
+      // Sort the filter-list
+      t.sortFilterList();
+
       // Add an handler to the 'filters' dropdown
       $('#filters').change(function() {
         // Get the new value
@@ -499,6 +502,9 @@ GUI.prototype.pageFeed = function() {
                   { 'name': fltname, 'filter': flt, 'changable': true }
                 );
                 $("#filters").append(new Option(fltname, t.feed['filters'].length - 1, true, true));
+
+                // Sort the filter-list
+                t.sortFilterList();
               } else {
                 // Update the current filter
                 t.feed['filters'][filterelement.val()]['filter'] = flt;
@@ -611,6 +617,13 @@ GUI.prototype.pageFeed = function() {
       t.stopLoading();
     });
   });
+}
+/*----------------------------------------------------------------------------*/
+GUI.prototype.sortFilterList = function() {
+  $("#filters").html($('#filters option').sort(function(x, y) {
+      return $(x).text().toLowerCase() < $(y).text().toLowerCase() ? -1 : 1;
+  }))
+  $("#filters").get(0).selectedIndex = 0;
 }
 /*----------------------------------------------------------------------------*/
 GUI.prototype.updateFeedFilterButton = function() {
