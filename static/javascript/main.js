@@ -429,10 +429,14 @@ GUI.prototype.pageFeed = function() {
     ]
 
     $('#filter_button').click(function() {
-      if ($('.filter-block').css('display') == 'none') {
+      classlist = $('.filter-block').attr('class');
+
+      if (classlist.indexOf('filter-shown') == -1) {
         $('.filter-block').show();
+        $('.filter-block').addClass('filter-shown');
       } else {
         $('.filter-block').hide();
+        $('.filter-block').removeClass('filter-shown');
       }
     });
 
