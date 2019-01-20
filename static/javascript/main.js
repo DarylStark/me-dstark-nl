@@ -434,6 +434,7 @@ GUI.prototype.pageFeed = function() {
       if (classlist.indexOf('filter-shown') == -1) {
         $('.filter-block').show();
         $('.filter-block').addClass('filter-shown');
+        $('#searchquery').focus();
       } else {
         $('.filter-block').hide();
         $('.filter-block').removeClass('filter-shown');
