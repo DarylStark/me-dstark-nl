@@ -94,4 +94,10 @@ class Database:
         
         # They were the same, return None
         return None
+    
+    def dispose(self):
+        """ Disposes all unused connections. By doing this, the pool with 'dead' connections get
+            flushed. This might solve the issues with 'Connection timeouts' on Google App Engine """
+        
+        self._engine.dispose()
 #---------------------------------------------------------------------------------------------------

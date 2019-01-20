@@ -134,8 +134,10 @@ class API:
 
                 # Close the session
                 session.close()
+                db.dispose()
             else:
                 session.close()
+                db.dispose()
                 error_code = 2
                 error_text = 'User is not allowed to log in'
                 raise ValueError()
@@ -201,6 +203,7 @@ class API:
 
             # Close the session
             session.close()
+            db.dispose()
 
             # We set events to a empty list so we won't get errors later on
             events = []
@@ -258,6 +261,7 @@ class API:
                     session.commit()
                     original_id = event.id
                     session.close()
+                    db.dispose()
 
                     # Add a Feed Item for the new Event
                     item = database.FeedItem()
@@ -271,6 +275,7 @@ class API:
                     session.add(item)
                     session.commit()
                     session.close()
+                    db.dispose()
 
                     # Increase the counter
                     data['new_events'] += 1
@@ -278,6 +283,7 @@ class API:
                     # The object already existed. Rollback the changes and update the existing object
                     session.rollback()
                     session.close()
+                    db.dispose()
 
                     # Find the original object
                     session = db._session_factory()
@@ -305,6 +311,7 @@ class API:
                     # The original event is now updated with the new info and can be saved
                     session.commit()
                     session.close()
+                    db.dispose()
 
                     # For every change in the event, we create a logentry that can be used later
                     eventchange_ids = []
@@ -327,6 +334,7 @@ class API:
 
                         # Close the session
                         session.close()
+                        db.dispose()
 
                     # Add a new Feed Item for this change
                     if len(changes) > 0 and (original_tracked > 0 or 'support' in [ c[0] for c in changes ]):
@@ -351,6 +359,7 @@ class API:
 
                         # Close the session
                         session.close()
+                        db.dispose()
 
                         # Add Feed Item Event Changes
                         for change in eventchange_ids:
@@ -364,6 +373,7 @@ class API:
                             session.add(itemchange)
                             session.commit()
                             session.close()
+                            db.dispose()
                         
                     # Increase the counter
                     if len(eventchange_ids) > 0:
@@ -392,6 +402,7 @@ class API:
                 session.add(syncresults)
                 session.commit()
                 session.close()
+                db.dispose()
             
             # Get the end time
             time_end = time.time()
@@ -676,6 +687,7 @@ class API:
 
                 # Close the session
                 session.close()
+                db.dispose()
 
                 # Create a list with dicts
                 for event in events:
@@ -844,6 +856,7 @@ class API:
 
                 # Close the session
                 session.close()
+                db.dispose()
 
                 # Create a list with dicts
                 for feeditem in query:
@@ -885,6 +898,7 @@ class API:
                             database.FeedItemEventChange.feeditem == feeditem.FeedItem.id
                         )
                         session.close()
+                        db.dispose()
 
                         item['changes'] = []
                         for change in changes:
@@ -892,7 +906,7 @@ class API:
                     
                     # Append the created dict to the list
                     data.append(item)
-            except:
+            except KeyboardInterrupt:
                 error_code = 1
                 error_text = 'Unknown error'
             
@@ -972,6 +986,7 @@ class API:
 
             # Close the session
             session.close()
+            db.dispose()
 
             # Get the end time
             time_end = time.time()
@@ -1046,6 +1061,7 @@ class API:
 
             # Close the session
             session.close()
+            db.dispose()
 
             # Get the end time
             time_end = time.time()
@@ -1136,6 +1152,7 @@ class API:
 
                 # Close the session
                 session.close()
+                db.dispose()
 
                 # Create a list with dicts
                 for filter in query:
@@ -1209,6 +1226,7 @@ class API:
 
                 # Close the session
                 session.close()
+                db.dispose()
             except:
                 error_code = 1
                 error_text = 'Unknown error'
@@ -1266,6 +1284,7 @@ class API:
 
                 # Close the session
                 session.close()
+                db.dispose()
             except:
                 error_code = 1
                 error_text = 'Unknown error'
