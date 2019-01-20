@@ -384,6 +384,12 @@ div.me-filter p:last-child i:hover {
   cursor: pointer;
 }
 
+/* Feed */
+
+#feedItems {
+  margin-bottom: 90px;
+}
+
 /* Planning */
 
 .events .mdl-card__supporting-text {
