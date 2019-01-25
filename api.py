@@ -26,6 +26,12 @@ from is_logged_in import is_logged_in
 class API:
     """ Class for the REST API of the website """
 
+    def __init__(self):
+        """ The initiator creates a DB object for use in this class """
+
+        # Create a object for database interaction
+        self._db = database.Database()
+
     def create_api_return(self, api, error_code = 0, error_text = '', data = [], length = 0, retval = {}, page = 0, limit = 0, runtime = 0):
         """ Creates the default API return code """
         
@@ -105,8 +111,8 @@ class API:
             # Check if there is a profile for this user. If there is, allow him to login, otherwise
             # raise a ValueError so the user cannot login
 
-            # Create a object for database interaction
-            db = database.Database()
+            # Get the databaseobject
+            db = self._db
 
             # Create a session and look for the user, based on emailaddress
             session = db._session_factory()
@@ -180,8 +186,8 @@ class API:
             error_code = 0
             error_text = ''
 
-            # Create a object for database interaction
-            db = database.Database()
+            # Get the databaseobject
+            db = self._db
 
             # Get all stages from the database
             stagelist = {}
@@ -436,8 +442,8 @@ class API:
             },
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Find the item
                 session = db._session_factory()
@@ -507,8 +513,8 @@ class API:
             },
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Find the item
                 session = db._session_factory()
@@ -578,8 +584,8 @@ class API:
             },
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Find the item
                 session = db._session_factory()
@@ -647,8 +653,8 @@ class API:
             length = 0
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Get the count of rows in the database
                 session = db._session_factory()
@@ -746,8 +752,8 @@ class API:
             length = 0
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Get the feeditems for the requested page
                 session = db._session_factory()
@@ -945,8 +951,8 @@ class API:
             },
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Find the item
                 session = db._session_factory()
@@ -1020,8 +1026,8 @@ class API:
             },
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Find the item
                 session = db._session_factory()
@@ -1132,8 +1138,8 @@ class API:
             length = 0
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Get the count of rows in the database
                 session = db._session_factory()
@@ -1198,8 +1204,8 @@ class API:
             length = 0
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Check if the filter exists
                 session = db._session_factory()
@@ -1264,8 +1270,8 @@ class API:
             length = 0
 
             try:
-                # Create a object for database interaction
-                db = database.Database()
+                # Get the databaseobject
+                db = self._db
 
                 # Check if the filter exists
                 session = db._session_factory()
