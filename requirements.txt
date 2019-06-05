@@ -9,7 +9,7 @@ bs4
 requests
 
 # Requirements for the database engine
-sqlalchemy
+sqlalchemy==1.2.15
 pymysql
 
 # Requirements for Google
