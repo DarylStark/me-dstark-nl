@@ -777,6 +777,8 @@ class API:
                     database.FeedItem.id.desc()
                 )
 
+                return(str(query))
+
                 # Needed later
                 statusset = False
 
