@@ -131,7 +131,7 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                 try:
                     # Find all images on the page and use only the first one. The first one is the big
                     # image used for the event.
-                    image = parsed_page.find_all('img')[0].get('src')
+                    image = parsed_page.find_all('img')[0].get('data-src')
                     event.image = image
                 except (AttributeError, IndexError):
                     pass
