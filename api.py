@@ -22,6 +22,7 @@ from google.auth.transport import requests
 import eventretriever
 import database
 from is_logged_in import is_logged_in
+from filter import Filter
 #---------------------------------------------------------------------------------------------------
 class API:
     """ Class for the REST API of the website """
@@ -782,33 +783,21 @@ class API:
 
                 # Get the filter and disect it
                 if flt:
-                    # Add extra colons to the filter. We need this for the regex later
-                    words = []
-                    for word in flt.split():
-                        if ':' in word:
-                            word = ':' + word
-                        words.append(word)
-                    flt = ' '.join(words)
-                    
-                    # Get the specific filters
-                    filters = re.findall('(\:[a-zA-Z0-9\-]*\:[^\:]+)', flt)
-
-                    # Create a dict for all filters
-                    allfilters = {}
-
-                    # Walk through the filters and create a dict with the needed filters
-                    for f in filters:
-                        try:
-                            field, value = re.findall('^:([a-z]*):(.+)', f)[0]
-                            field = field.strip()
-                            value = value.strip()
-                            allfilters[field] = value.split()
-                        except KeyboardInterrupt:
-                            pass
+                    # Parse the filter. We can use the Filter object for this
+                    filter = Filter(flt)
+                    allfilters = filter.fields
+                    print('----------------------------')
+                    print(allfilters)
+                    print('----------------------------')
                     
                     # Loop through the dict and add the filters to the query
                     for field in allfilters.keys():
                         value = allfilters[field]
+
+                        print('----------------------------')
+                        print(field)
+                        print(value)
+                        print('----------------------------')
 
                         if field == 'archive':
                             value = ''.join(value)
