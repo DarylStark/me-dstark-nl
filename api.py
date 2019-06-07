@@ -813,10 +813,6 @@ class API:
                             # Status is set, so we set 'statusset' to True. Later on,
                             # we can see that the status is set.
                             statusset = True
-
-                            print('-----------')
-                            print(filter_archive)
-                            print('-----------')
                         
                         if field == 'title':
                             for v in value:
