@@ -1196,7 +1196,7 @@ class API:
 	        flask.abort(403)
 
     def save_filter(self, page, name, flt):
-        """ API method for '/filters.Save'. Save a filter """
+        """ API method for '    '. Save a filter """
 
         if is_logged_in():
             # Get the start time
@@ -1219,14 +1219,15 @@ class API:
                 query = session.query(
                     database.Filter
                 ).filter(
-                    database.Filter.name == name
+                    sqlalchemy.func.lower(database.Filter.name) == sqlalchemy.func.lower(name)
                 ).filter(
-                    database.Filter.page == page
+                    sqlalchemy.func.lower(database.Filter.page) == sqlalchemy.func.lower(page)
                 )
 
                 # If it exists, update it. Otherwise, add it
                 if query.count() > 0:
                     query[0].filter = flt
+                    query[0].name = name
                     session.commit()
                 else:
                     newfilter = database.Filter(

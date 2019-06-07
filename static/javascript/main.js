@@ -23,6 +23,13 @@ months = [
   { 'short': 'dec', 'long': 'december' }
 ]
 /*------------------------------------------------------------------------------
+- Add a new case insensitive selector for JQuery
+------------------------------------------------------------------------------*/
+jQuery.expr[':'].icontains = function(a, i, m) {
+  return jQuery(a).text().toUpperCase()
+      .indexOf(m[3].toUpperCase()) >= 0;
+};
+/*------------------------------------------------------------------------------
 - The object with all the pages
 ------------------------------------------------------------------------------*/
 pages = {
@@ -489,11 +496,11 @@ GUI.prototype.pageFeed = function() {
           // Check the values
           fltname = $('#filtername').val().trim();
           flt = $('#searchquery').val().trim();
-          filtercnt = $('#filters option:contains("' + fltname + '")');
+          filtercnt = $('#filters option:icontains("' + fltname + '")');
           filteroptions = 0;
 
           $.each(filtercnt, function(index, element) {
-            if ($(element).html() == fltname) {
+            if ($(element).html().toLowerCase() == fltname.toLowerCase()) {
               filteroptions = 1;
               filterelement = $(element)
             }
@@ -513,6 +520,9 @@ GUI.prototype.pageFeed = function() {
               } else {
                 // Update the current filter
                 t.feed['filters'][filterelement.val()]['filter'] = flt;
+
+                // Update the item in the dropdown. Needs to get a new title
+                filterelement.html(fltname);
               }
 
               // Apply the filter
