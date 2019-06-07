@@ -786,27 +786,37 @@ class API:
                     # Parse the filter. We can use the Filter object for this
                     filter = Filter(flt)
                     allfilters = filter.fields
-                    print('----------------------------')
-                    print(allfilters)
-                    print('----------------------------')
                     
                     # Loop through the dict and add the filters to the query
                     for field in allfilters.keys():
                         value = allfilters[field]
 
-                        print('----------------------------')
-                        print(field)
-                        print(value)
-                        print('----------------------------')
-
                         if field == 'archive':
-                            value = ''.join(value)
-                            if value == 'yes':
-                                query = query.filter(database.FeedItem.status == 2)
-                                statusset = True
-                            elif value == 'no':
-                                query = query.filter(database.FeedItem.status == 1)
-                                statusset = True
+                            # If we have multiple values, we put them in a 'or' clause so we can
+                            # filter on things inside and outside the archive. Before we do this,
+                            # we have convert yes to two and no to one
+                            newvalues = []
+                            for item in value:
+                                if item == 'yes': newvalues.append(2)
+                                if item == 'no': newvalues.append(1)
+                            
+                            # Then, we remove the douplicates
+                            newvalues = list(set(newvalues))
+
+                            # Now, we can add the filter to the query. By using a list
+                            # comprehension, we can make a list and add that to the
+                            # query for filtering. We do a 'OR' here because a archive
+                            # can be either true or false, not both.
+                            filter_archive = [database.FeedItem.status == x for x in newvalues]
+                            query = query.filter(sqlalchemy.or_(*filter_archive))
+
+                            # Status is set, so we set 'statusset' to True. Later on,
+                            # we can see that the status is set.
+                            statusset = True
+
+                            print('-----------')
+                            print(filter_archive)
+                            print('-----------')
                         
                         if field == 'title':
                             for v in value:
@@ -833,7 +843,8 @@ class API:
                             for v in value:
                                 query = query.filter(database.Venue.name.like('%{0}%'.format(v)))
 
-                # Apply a filter for the status (if not set already)
+                # Apply a filter for the status (if not set already). If no status is set, we can
+                # set the status to '1' so we only get archived items.
                 if not statusset:
                     query = query.filter(
                         database.FeedItem.status == 1
