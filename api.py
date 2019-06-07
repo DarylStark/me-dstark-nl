@@ -819,13 +819,24 @@ class API:
                                 query = query.filter(database.Event.title.like('%{0}%'.format(v)))
                         
                         if field == 'type':
-                            value = ''.join(value)
-                            if value == 'newevent':
-                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_NEW_EVENT)
-                            elif value == 'changedevent':
-                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_EVENT_CHANGED)
-                            elif value == 'trackedevent':
-                                query = query.filter(database.FeedItem.itemtype == database.FeedItem.TYPE_TRACKED_EVENT_CHANGED)
+                            # If we have multiple values, we put them in a 'or' clause so we can
+                            # filter on things inside and outside the archive. Before we do this,
+                            # we have convert the values to real values
+                            newvalues = []
+                            for item in value:
+                                if item == 'newevent': newvalues.append(database.FeedItem.TYPE_NEW_EVENT)
+                                if item == 'changedevent': newvalues.append(database.FeedItem.TYPE_EVENT_CHANGED)
+                                if item == 'trackedevent': newvalues.append(database.FeedItem.TYPE_TRACKED_EVENT_CHANGED)
+                            
+                            # Then, we remove the douplicates
+                            newvalues = list(set(newvalues))
+
+                            # Now, we can add the filter to the query. By using a list
+                            # comprehension, we can make a list and add that to the
+                            # query for filtering. We do a 'OR' here because a archive
+                            # can be either true or false, not both.
+                            filter_types = [database.FeedItem.itemtype == x for x in newvalues]
+                            query = query.filter(sqlalchemy.or_(*filter_types))
                         
                         if field == 'stage':
                             for v in value:
