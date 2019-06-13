@@ -63,6 +63,7 @@ function GUI() {
   this.loading = false;
   this.done = 0;
   this.donecounter = 0;
+  this.current_item = 'blaat';
 }
 /*----------------------------------------------------------------------------*/
 // Method that is fired when a item in the menu is clicked
@@ -121,9 +122,12 @@ GUI.prototype.changePage = function(menuitemid = '', checkloading = true) {
     // Set the 'active' attribute to the right menuitem
     $('#' + current_item['menuitemid']).addClass('me-navigation__link_active');
 
+    // Save 'current_item' for later
+    this.current_item = current_item;
+
     // If this came from the menu, we have to update the history of the user
     if (menuitemid != '') {
-      // update history
+      // Update history
       window.history.pushState({ 'current_item': current_item }, current_item['title'], '/' + current_item['url'])
     }
 
@@ -403,6 +407,12 @@ GUI.prototype.pageFeed = function() {
   // Retrieve the parts of the page URLs
   currenturl = window.location.pathname.split('/');
 
+  // Find the filter that is given in the URL
+  urlfilter = '';
+  if (currenturl.length > 2) {
+    urlfilter = currenturl[2];
+  }
+
   // Set the feeds settings and properties
   this.feed = {
     'items_on_screen': 0,
@@ -460,12 +470,38 @@ GUI.prototype.pageFeed = function() {
       });
 
       // Add the filters to the list
+      urlindex = 0
       $.each(t.feed['filters'], function(index, item) {
-        $("#filters").append(new Option(item['name'], index));
+        opt = $(new Option(item['name'], index));
+        $("#filters").append(opt);
+
+        if (item['name'] == urlfilter) {
+          urlindex = index
+        }
       });
 
-      // Sort the filter-list
+      // Sort the filter-list and set the active filter
       t.sortFilterList();
+      if (urlindex > 0) {
+        // Set the current filter active
+        $('#filters').val(urlindex);
+
+        // Get the new value
+        newfilter = t.feed['filters'][$("#filters").val()]
+
+        // Set the filter to the textbar
+        $('#searchquery').val(newfilter['filter']);
+
+        // Set the filtername
+        if (newfilter['changable']) {
+          $('#filtername').val(newfilter['name']);
+        } else {
+          $('#filtername').val('');
+        }
+
+        // Apply the filter
+        t.pageFeedApplyFilter(false);
+      }
 
       // Add an handler to the 'filters' dropdown
       $('#filters').change(function() {
@@ -622,9 +658,11 @@ GUI.prototype.pageFeed = function() {
       });
 
       // Get the first page of the feed
-      t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page'] + 1, function() {
-        t.feed['current_page'] = 1;
-      });
+      if (urlindex == 0) {
+        t.pageFeedLoaditems(t.feed['limit'], t.feed['current_page'] + 1, function() {
+          t.feed['current_page'] = 1;
+        });
+      }
     }, function() {
       // The templates couldn't be loaded
       // Give an error to the user
@@ -664,7 +702,7 @@ GUI.prototype.updateFeedFilterButton = function() {
   }
 }
 /*----------------------------------------------------------------------------*/
-GUI.prototype.pageFeedApplyFilter = function() {
+GUI.prototype.pageFeedApplyFilter = function(update_history = true) {
   // Show the loading bar
   this.startLoading();
 
@@ -703,6 +741,11 @@ GUI.prototype.pageFeedApplyFilter = function() {
 
   // Remove the current elements (after the filter)
   $('.last-filter').nextAll().remove();
+
+  // Update history
+  if (update_history == true) {
+    window.history.pushState({ 'current_item': this.current_item }, this.current_item['title'], '/' + this.current_item['url'] + '/' + fltname)
+  }
 
   // Add the new elements
   t.pageFeedLoaditems(t.feed['limit'], this.feed['current_page']);
@@ -1336,7 +1379,6 @@ $(document).ready(function() {
 
   // Add an event listener to the static menu
   $('#logout').click(function() {
-    console.log('Logging off');
     logout();
   });
 
