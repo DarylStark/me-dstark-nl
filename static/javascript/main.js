@@ -1072,7 +1072,7 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
       });
     } else {
       // Change the item count to a empty line
-      $('#filter-items-found').html('Nothing found for this filter')
+      $('#filter-items-found').html('')
 
       if (t.feed['items_on_screen'] == 0) {
         // Nothing on the screen; show an 'empty' screen
