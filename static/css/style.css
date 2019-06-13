@@ -288,6 +288,12 @@ div.me-filter {
   border-bottom: 1px solid #cccccc;
 }
 
+#filter-items-found {
+  position: relative;
+  top: -6px;
+  left: 20px;
+}
+
 div.me-filter p {
   margin: 0px
 }

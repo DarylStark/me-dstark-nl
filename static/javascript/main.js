@@ -1036,6 +1036,13 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
     }
 
     if (data['data']['data_len'] > 0) {
+      // Display how many items we have
+      if (data['data']['length'] > 1) {
+        $('#filter-items-found').html('<b>' + data['data']['length'] + '</b> items')
+      } else {
+        $('#filter-items-found').html('<b>' + data['data']['length'] + '</b> item')
+      }
+
       // Walk through the items and add them to the feed
       $.each(data['data']['data'], function(index, feeditem) {
         // Get the type for the item
@@ -1064,6 +1071,9 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
         }
       });
     } else {
+      // Change the item count to a empty line
+      $('#filter-items-found').html('Nothing found for this filter')
+
       if (t.feed['items_on_screen'] == 0) {
         // Nothing on the screen; show an 'empty' screen
         t.pageFeedEmpty();
