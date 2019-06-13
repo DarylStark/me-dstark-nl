@@ -66,6 +66,51 @@ function GUI() {
   this.current_item = 'blaat';
 }
 /*----------------------------------------------------------------------------*/
+// Method to decode an URI with dashes to an string with spaces. An example of
+// a inputstring might be:
+//
+// this-is-a-test---with-dashes
+//
+// This would get converted to
+// this is a test - with dashes
+GUI.prototype.decodeURI = function(uri) {
+  // First, we remove any special characters that came with the URL
+  uri = decodeURI(uri);
+
+  // Then, we replace all three dashes with three spaces
+  uri = uri.replace(/---/g, '   ');
+
+  // Then, we replace all dashes with spaces
+  uri = uri.replace(/-/g, ' ');
+
+  // Lastly, we replace three spaces with a ' - ', so we get our dashes back
+  uri = uri.replace(/   /g, '-');
+
+  // Return new URI
+  return uri;
+}
+/*----------------------------------------------------------------------------*/
+// Method to encode an URI with spaces to an string with dashes. An example of
+// a inputstring might be:
+//
+// this is a test - with dashes
+//
+// This would get converted to
+// this-is-a-test---with-dashes
+GUI.prototype.encodeURI = function(uri) {
+  // We replace all dashes with three dashses
+  uri = uri.replace(/-/g, '---');
+
+  // We replace all spaces with a dash
+  uri = uri.replace(/ /g, '-');
+
+  // Then, we encode the string
+  uri = encodeURI(uri);
+
+  // Return new URI
+  return uri;
+}
+/*----------------------------------------------------------------------------*/
 // Method that is fired when a item in the menu is clicked
 GUI.prototype.clickMenuItem = function(menuitemid) {
   // Hide the menu, but only if the current layout is optimized for a small
@@ -410,7 +455,7 @@ GUI.prototype.pageFeed = function() {
   // Find the filter that is given in the URL
   urlfilter = '';
   if (currenturl.length > 2) {
-    urlfilter = currenturl[2];
+    urlfilter = this.decodeURI(currenturl[2]);
   }
 
   // Set the feeds settings and properties
@@ -744,7 +789,7 @@ GUI.prototype.pageFeedApplyFilter = function(update_history = true) {
 
   // Update history
   if (update_history == true) {
-    window.history.pushState({ 'current_item': this.current_item }, this.current_item['title'], '/' + this.current_item['url'] + '/' + fltname)
+    window.history.pushState({ 'current_item': this.current_item }, this.current_item['title'], '/' + this.current_item['url'] + '/' + this.encodeURI(fltname))
   }
 
   // Add the new elements
