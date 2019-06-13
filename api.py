@@ -245,6 +245,13 @@ class API:
                 if 'AFAS Live' in stagelist.keys():
                     retriever.set_stages(stagelist['AFAS Live'])
                 events = retriever.retrieve_events()
+            elif service == 'ZiggoDome':
+                # Create a object for the eventretriever for ZiggoDome and download all the
+                # events for this Service
+                retriever = eventretriever.EventRetrieverZiggoDome()
+                if 'Ziggo Dome' in stagelist.keys():
+                    retriever.set_stages(stagelist['Ziggo Dome'])
+                events = retriever.retrieve_events()
             else:
                 error_code = 1
                 error_text = 'Unknown service'
