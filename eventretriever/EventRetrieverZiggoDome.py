@@ -12,10 +12,6 @@ import datetime
 import re
 #---------------------------------------------------------------------------------------------------
 # TODO:
-#    price = sqlalchemy.Column('Event_Price', sqlalchemy.Integer)
-#    soldout = sqlalchemy.Column('Event_Soldout', sqlalchemy.Boolean)
-#    doorsopen = sqlalchemy.Column('Event_DoorsOpen', sqlalchemy.Time)
-#    starttime = sqlalchemy.Column('Event_StartTime', sqlalchemy.Time)
 #    url_tickets = sqlalchemy.Column('Event_URLTickets', sqlalchemy.Text)
 
 # Local imports
@@ -70,7 +66,8 @@ class EventRetrieverZiggoDome(eventretriever.EventRetriever):
 
             # Get the URLs
             self.events = [ Event(url = x, unique = x, free = False, stage = stage) for x in re.findall('https://www.ziggodome.nl/event/[0-9]+/[^"]+', html) ]
-        except KeyboardInterrupt:
+            #self.events = [ Event(url = x, unique = x, free = False, stage = stage) for x in [ 'https://www.ziggodome.nl/event/8434720721/backstreet-boys' ] ]
+        except:
             pass
     
     def retrieve_event_details(self):
@@ -118,7 +115,65 @@ class EventRetrieverZiggoDome(eventretriever.EventRetriever):
                 try:
                     support = re.findall('<p class="supportact_name">([^<]+)</p>', page.content.decode('utf-8'))[0]
                     event.support = support
-                    print(event.support)
                 except:
                     event.support = None
+                
+                # Find the price
+                try:
+                    price = [ int(x.replace(',', '')) for x in re.findall('Staanplaatsen \(&euro; ([0-9,]+)\)', page.content.decode('utf-8')) ]
+                    
+                    # If we didn't find anything; try the next method
+                    if len(price) == 0:
+                        price = [ int(x.replace(',', '')) for x in re.findall('Zitplaatsen \(&euro; ([0-9,]+)\)', page.content.decode('utf-8')) ]
+                    
+                    # If we didn't find anything; try the next method
+                    if len(price) == 0:
+                        price = [ int(x.replace(',', '')) for x in re.findall('1e rang \(&euro; ([0-9,]+)\)', page.content.decode('utf-8')) ]
+                    
+                    # If we didn't find anything; try the next method
+                    if len(price) == 0:
+                        price = [ int(x.replace(',', '')) for x in re.findall('Veld \(&euro; ([0-9,]+)\)', page.content.decode('utf-8')) ]
+
+                    # If we didn't find anything; try the next method
+                    if len(price) == 0:
+                        price = [ int(x.replace(',', '')) for x in re.findall('Ring 1 \(&euro; ([0-9,]+)\)', page.content.decode('utf-8')) ]
+
+                    event.price = max(price)
+                except:
+                    event.price = None
+                
+                # Find if the event is soldout
+                try:
+                    if 'Dit concert is uitverkocht' in page.content.decode('utf-8'):
+                        event.soldout = True
+                    else:
+                        event.soldout = False
+                except:
+                    event.soldout = False
+                
+                # Find when the doors go open
+                try:
+                    doors = re.findall('<td>([0-9:]+)</td>.+<td>Deuren open</td>', page.content.decode('utf-8'), flags = re.DOTALL)
+                    event.doorsopen = datetime.datetime.strptime(doors[0], '%H:%M').time()
+                except:
+                    event.doorsopen = None
+                
+                # Find when the event starts
+                try:
+                    starttime = re.findall('<td>([0-9:]+)</td>\s+<td>&nbsp;</td>\s+<td>Aanvang show</td>', page.content.decode('utf-8'), flags = re.DOTALL)
+                    
+                    # If we can't find it, try another way
+                    if len(starttime) == 0:
+                        starttime = re.findall('<td>([0-9:]+)</td>\s+<td>&nbsp;</td>\s+<td>' + event.title + '</td>', page.content.decode('utf-8'), flags = re.DOTALL)
+ 
+                    event.starttime = datetime.datetime.strptime(starttime[0], '%H:%M').time()
+                except:
+                    event.starttime = None
+                
+                # Find the ticket URL
+                try:
+                    tickets = parsed_page.find('a', { 'title': 'bestel tickets' })
+                    event.url_tickets = tickets.get('href')
+                except:
+                    event.url_tickets = None
 #---------------------------------------------------------------------------------------------------
