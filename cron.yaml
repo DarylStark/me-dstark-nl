@@ -17,4 +17,7 @@ cron:
 - description: Event synchronization for Afas Live
   url: /api/events.Sync?service=AfasLive
   schedule: every day 01:30
+- description: Event synchronization for Ziggo Dome
+  url: /api/events.Sync?service=ZiggoDome
+  schedule: every day 01:45
 #-------------------------------------------------------------------------------
