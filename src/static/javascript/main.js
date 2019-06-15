@@ -441,7 +441,8 @@ GUI.prototype.pageFeed = function() {
     'to_top_button': false,
     'empty': false,
     'filter': '',
-    'filters': []
+    'filters': [],
+    'items': 0
   };
 
   // Preload the templates
@@ -741,7 +742,8 @@ GUI.prototype.pageFeedApplyFilter = function(update_history = true) {
     'to_top_button': false,
     'empty': false,
     'filter': flt,
-    'filters': this.feed['filters']
+    'filters': this.feed['filters'],
+    'items': 0
   }
 
   fltname = $('#filtername').val().trim();
@@ -818,6 +820,9 @@ GUI.prototype.pageFeedItemDismiss = function(itemid, undismiss = false) {
     // First, fade out the card by changing it's opacity. Then slide it up, so
     // the feed slides up
     if (remove_item) {
+      new_count = t.feed['items'] -= 1;
+      t.pageFeedUpdateTotal(new_count);
+
       $('.me-js-card_inner_' + itemid).animate({ opacity: 0 }, 200);
       $('.me-js-card_' + itemid).slideUp(200, function() {
         // Increase the counter
@@ -1050,6 +1055,19 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
 }
 /*----------------------------------------------------------------------------*/
 // Method to load the feed items from the API and put them in the queue
+GUI.prototype.pageFeedUpdateTotal = function(total) {
+  this.feed['items'] = total;
+
+  if (total > 1) {
+    $('#filter-items-found').html('<b>' + total + '</b> items')
+  } else if (total == 0) {
+    $('#filter-items-found').html('')
+  } else {
+    $('#filter-items-found').html('<b>' + total + '</b> item')
+  }
+}
+/*----------------------------------------------------------------------------*/
+// Method to load the feed items from the API and put them in the queue
 GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
   // A variable for the callback methods below
   t = this;
@@ -1080,11 +1098,7 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
 
     if (data['data']['data_len'] > 0) {
       // Display how many items we have
-      if (data['data']['length'] > 1) {
-        $('#filter-items-found').html('<b>' + data['data']['length'] + '</b> items')
-      } else {
-        $('#filter-items-found').html('<b>' + data['data']['length'] + '</b> item')
-      }
+      t.pageFeedUpdateTotal(data['data']['length']);
 
       // Walk through the items and add them to the feed
       $.each(data['data']['data'], function(index, feeditem) {
@@ -1115,7 +1129,7 @@ GUI.prototype.pageFeedLoaditems = function(limit, page, complete) {
       });
     } else {
       // Change the item count to a empty line
-      $('#filter-items-found').html('')
+      t.pageFeedUpdateTotal(0)
 
       if (t.feed['items_on_screen'] == 0) {
         // Nothing on the screen; show an 'empty' screen
