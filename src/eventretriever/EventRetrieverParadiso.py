@@ -61,7 +61,7 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                         free = False,
                         soldout = event['sold_out'] == 'option_1',
                         # TODO: make sure this time is in UTC
-                        starttime = datetime.datetime.strptime(event['start_date_time'].split()[1] + ' +0200', '%H:%M:%S %z').astimezone(pytz.timezone('UTC')).time()
+                        starttime = datetime.datetime.strptime(event['start_date_time'].split()[1] + ' +0100', '%H:%M:%S %z').astimezone(pytz.timezone('UTC')).time()
                     )
 
                     # Check if there is an support and if there is; fill it
@@ -95,7 +95,7 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                     try:
                         event = detaildata[0]
                         # TODO: make sure this time is in UTC
-                        event_object.doorsopen = datetime.datetime.strptime(event['content']['doors_open__disabled'].split()[1] + ' +0200', '%H:%M:%S %z').astimezone(pytz.timezone('UTC')).time()
+                        event_object.doorsopen = datetime.datetime.strptime(event['content']['doors_open__disabled'].split()[1] + ' +0100', '%H:%M:%S %z').astimezone(pytz.timezone('UTC')).time()
                         event_object.image = image_url.format(image = event['content']['main_image__focus_events']['filename'])
                         stagename = event['content']['locations'][0]['content']['title']
 

@@ -967,7 +967,12 @@ GUI.prototype.pageFeedItemEvent = function(feeditem) {
   // Get the doors start time
   starttime = feeditem['event']['starttime'];
   if (starttime != null) {
-    starttime_formatted = starttime.split(':')[0] + ':' + starttime.split(':')[1];
+    starttime_object = new Date('1986-10-26 ' + starttime + ' UTC');
+    minutes = starttime_object.getMinutes();
+    sminutes = ''
+    if (minutes < 10) { sminutes = '0' }
+    sminutes += minutes
+    starttime_formatted = starttime_object.getHours() + ':'+ sminutes;
   } else {
     starttime_formatted = 'unknown time'
   }

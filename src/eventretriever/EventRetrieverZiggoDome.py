@@ -151,7 +151,7 @@ class EventRetrieverZiggoDome(eventretriever.EventRetriever):
                 # Find when the doors go open
                 try:
                     doors = re.findall('<td>([0-9:]+)</td>.+<td>Deuren open</td>', page.content.decode('utf-8'), flags = re.DOTALL)
-                    event.doorsopen = datetime.datetime.strptime(doors[0] + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
+                    event.doorsopen = datetime.datetime.strptime(doors[0] + ' +0100', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                 except:
                     event.doorsopen = None
                 
@@ -163,7 +163,7 @@ class EventRetrieverZiggoDome(eventretriever.EventRetriever):
                     if len(starttime) == 0:
                         starttime = re.findall('<td>([0-9:]+)</td>\s+<td>&nbsp;</td>\s+<td>' + event.title + '</td>', page.content.decode('utf-8'), flags = re.DOTALL)
  
-                    event.starttime = datetime.datetime.strptime(starttime[0] + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
+                    event.starttime = datetime.datetime.strptime(starttime[0] + ' +0100', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                 except:
                     event.starttime = None
                 
