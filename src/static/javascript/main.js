@@ -493,9 +493,6 @@ GUI.prototype.pageFeed = function() {
         opt = $(new Option(item['name'], index));
         $("#filters").append(opt);
 
-        //console.log(urlfilter);
-        console.log(t.encodeURI(item['name']));
-
         if (t.encodeURI(item['name']) == urlfilter) {
           urlindex = index
         }
@@ -798,34 +795,59 @@ GUI.prototype.pageFeedItemDismiss = function(itemid, undismiss = false) {
     t.done = $('.me-js-card_' + itemid).length;
     t.donecounter = 0;
 
+    // Check if we need to remove the card
+    show_archive = $('#searchquery').val().includes('archive:yes');
+    show_new = $('#searchquery').val().includes('archive:no');
+
+    if (show_archive == true && show_new == true) {
+      // The user is filtering on items in archive and not in archive
+      remove_item = false;
+    } else if (show_archive == false && show_new == true) {
+      // The user is filtering on new items only
+      remove_item = true;
+    } else if (show_archive == true && show_new == false) {
+      // The user if fltering on archive items only
+      remove_item = true;
+    } else if (show_archive == false && show_new == false) {
+      // The user is filtering on new items only
+      remove_item = true;
+    } else {
+      remove_item = true;
+    }
+
     // First, fade out the card by changing it's opacity. Then slide it up, so
     // the feed slides up
-    $('.me-js-card_inner_' + itemid).animate({ opacity: 0 }, 200);
-    $('.me-js-card_' + itemid).slideUp(200, function() {
-      // Increase the counter
-      t.donecounter += 1;
+    if (remove_item) {
+      $('.me-js-card_inner_' + itemid).animate({ opacity: 0 }, 200);
+      $('.me-js-card_' + itemid).slideUp(200, function() {
+        // Increase the counter
+        t.donecounter += 1;
 
-      // When we're done, do the rest
-      if (t.donecounter == t.done) {
-        // Subtract it from the number of items on the page
-        t.feed['items_on_screen'] -= 1;
+        // When we're done, do the rest
+        if (t.donecounter == t.done) {
+          // Subtract it from the number of items on the page
+          t.feed['items_on_screen'] -= 1;
 
-        // Add one new item to the queue
-        if (t.feed['max_page'] > (t.feed['current_page'])) {
-          t.pageFeedLoaditems(1, (t.feed['items_on_screen'] + 1));
+          // Add one new item to the queue
+          if (t.feed['max_page'] > (t.feed['current_page'])) {
+            t.pageFeedLoaditems(1, (t.feed['items_on_screen'] + 1));
+          }
+
+          if (t.feed['items_on_screen'] == 0) {
+            t.pageFeedEmpty();
+          }
+
+          // Update the badge with the amount of items
+          t.updateFeedCount();
+
+          // Stop the loading bar
+          t.stopLoading();
         }
-
-        if (t.feed['items_on_screen'] == 0) {
-          t.pageFeedEmpty();
-        }
-
-        // Update the badge with the amount of items
-        t.updateFeedCount();
-
-        // Stop the loading bar
-        t.stopLoading();
-      }
-    });
+      });
+    } else {
+      // Stop the loading bar
+      t.stopLoading();
+    }
   }, function(request, status, error) {
     // The item couldn't be dismissed
     t.showNotification('Could not dismiss this item');
