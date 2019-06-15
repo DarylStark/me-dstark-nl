@@ -10,6 +10,7 @@ import requests
 import bs4
 import datetime
 import re
+import pytz
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -104,7 +105,7 @@ class EventRetrieverEffenaar(eventretriever.EventRetriever):
                         int(day)
                     )
 
-                    event.starttime = datetime.datetime.strptime(time, '%H:%M').time()
+                    event.starttime = datetime.datetime.strptime(time + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                 except IndexError:
                     event.date = None
                 
@@ -136,7 +137,7 @@ class EventRetrieverEffenaar(eventretriever.EventRetriever):
                 # Find when the doors go open
                 try:
                     doors = re.findall('<dt>Zaal open</dt>[^<]+<dd>([0-9:]+) uur</dd>', page.content.decode('utf-8'), flags = re.DOTALL)
-                    event.doorsopen = datetime.datetime.strptime(doors[0], '%H:%M').time()
+                    event.doorsopen = datetime.datetime.strptime(doors[0] + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                 except:
                     event.doorsopen = None
                 

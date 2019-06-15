@@ -11,6 +11,7 @@ import bs4
 import datetime
 import json
 import re
+import pytz
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -114,9 +115,9 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
 
                                 # Set the times in the object
                                 if re.match('[0-9]{2}:[0-9]{2}', alltimes[0]):
-                                    event_object.doorsopen = datetime.datetime.strptime(alltimes[0], '%H:%M').time()
+                                    event_object.doorsopen = datetime.datetime.strptime(alltimes[0] + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                                 if re.match('[0-9]{2}:[0-9]{2}', alltimes[1]):
-                                    event_object.starttime = datetime.datetime.strptime(alltimes[1], '%H:%M').time()
+                                    event_object.starttime = datetime.datetime.strptime(alltimes[1] + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                             except:
                                 pass
                             

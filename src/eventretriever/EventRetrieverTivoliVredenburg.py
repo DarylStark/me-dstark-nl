@@ -10,6 +10,7 @@ import requests
 import bs4
 import datetime
 import re
+import pytz
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -181,7 +182,7 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                 # TODO: make sure this time is in UTC
                 try:
                     doorsopen = parsed_page.find('span', string = 'zaal open').parent.find_next_sibling().find('span').text.strip()
-                    event.doorsopen = datetime.datetime.strptime(doorsopen, '%H:%M').time()
+                    event.doorsopen = datetime.datetime.strptime(doorsopen + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                 except AttributeError:
                     event.doorsopen = None
                 
@@ -189,7 +190,7 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                 # TODO: make sure this time is in UTC
                 try:
                     start = parsed_page.find('span', string = 'aanvang').parent.find_next_sibling().find('span').text.strip()
-                    event.starttime = datetime.datetime.strptime(start, '%H:%M').time()
+                    event.starttime = datetime.datetime.strptime(start + ' +0200', '%H:%M %z').astimezone(pytz.timezone('UTC')).time()
                 except AttributeError:
                     event.starttime = None
 
@@ -198,5 +199,5 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
                     tickets = parsed_page.find('a', { 'class': 'order-tickets' })
                     event.url_tickets = tickets.get('href')
                 except AttributeError:
-                    event.doorsopen = None
+                    event.url_tickets = None
 #---------------------------------------------------------------------------------------------------
