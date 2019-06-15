@@ -132,9 +132,9 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
                                 # Get all 'spans' with the in the 'div' with class 'mid'
                                 prices = parsed_page.find('div', { 'class': 'mid' }).findAll('span')
 
-                                # Afas Live has multiple prices, so we add them all up
-                                total = 0
-                                count = len(prices)
+                                # Afas Live has multiple prices, so we collect them all and get the
+                                # highest
+                                total = []
 
                                 for price in prices:
                                     price = price.text
@@ -143,13 +143,13 @@ class EventRetrieverAfasLive(eventretriever.EventRetriever):
                                     price = price.replace('€ ', '')
                                     price = price.replace('&euro; ', '')
                                     price = price.replace(' ', '')
-                                    total += int(price)
+                                    total += [ int(price) ]
                                 
                                 # And we get the average price
-                                average = int(total / count)
+                                price = max(total)
 
                                 # The average price will be the price for the event
-                                event_object.price = average
+                                event_object.price = price
                             except:
                                 pass
                             
