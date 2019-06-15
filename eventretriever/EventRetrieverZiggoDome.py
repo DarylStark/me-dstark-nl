@@ -11,9 +11,6 @@ import bs4
 import datetime
 import re
 #---------------------------------------------------------------------------------------------------
-# TODO:
-#    url_tickets = sqlalchemy.Column('Event_URLTickets', sqlalchemy.Text)
-
 # Local imports
 import eventretriever
 from database import Event, Stage
@@ -66,7 +63,6 @@ class EventRetrieverZiggoDome(eventretriever.EventRetriever):
 
             # Get the URLs
             self.events = [ Event(url = x, unique = x, free = False, stage = stage) for x in re.findall('https://www.ziggodome.nl/event/[0-9]+/[^"]+', html) ]
-            #self.events = [ Event(url = x, unique = x, free = False, stage = stage) for x in [ 'https://www.ziggodome.nl/event/8434720721/backstreet-boys' ] ]
         except:
             pass
     
@@ -108,7 +104,7 @@ class EventRetrieverZiggoDome(eventretriever.EventRetriever):
                         )
                     else:
                         raise IndexError
-                except KeyboardInterrupt:
+                except IndexError:
                     event.date = None
                 
                 # Find the support act

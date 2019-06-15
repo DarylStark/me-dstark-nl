@@ -252,6 +252,13 @@ class API:
                 if 'Ziggo Dome' in stagelist.keys():
                     retriever.set_stages(stagelist['Ziggo Dome'])
                 events = retriever.retrieve_events()
+            elif service == 'Effenaar':
+                # Create a object for the eventretriever for Effenaar and download all the
+                # events for this Service
+                retriever = eventretriever.EventRetrieverEffenaar()
+                if 'Effenaar' in stagelist.keys():
+                    retriever.set_stages(stagelist['Effenaar'])
+                events = retriever.retrieve_events()
             else:
                 error_code = 1
                 error_text = 'Unknown service'

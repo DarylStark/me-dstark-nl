@@ -20,4 +20,7 @@ cron:
 - description: Event synchronization for Ziggo Dome
   url: /api/events.Sync?service=ZiggoDome
   schedule: every day 01:45
+- description: Event synchronization for Effenaar
+  url: /api/events.Sync?service=Effenaar
+  schedule: every day 02:00
 #-------------------------------------------------------------------------------

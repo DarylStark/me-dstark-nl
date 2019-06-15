@@ -11,4 +11,5 @@ from eventretriever.EventRetrieverTivoliVredenburg import EventRetrieverTivoliVr
 from eventretriever.EventRetrieverParadiso import EventRetrieverParadiso
 from eventretriever.EventRetrieverAfasLive import EventRetrieverAfasLive
 from eventretriever.EventRetrieverZiggoDome import EventRetrieverZiggoDome
+from eventretriever.EventRetrieverEffenaar import EventRetrieverEffenaar
 #---------------------------------------------------------------------------------------------------
