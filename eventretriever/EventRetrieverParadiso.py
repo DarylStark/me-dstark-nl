@@ -66,7 +66,10 @@ class EventRetrieverParadiso(eventretriever.EventRetriever):
                     # Check if there is an support and if there is; fill it
                     splitted_title = event['title'].split('+')
                     if len(splitted_title) > 1:
-                        event_object.support = splitted_title[1].strip()
+                        if splitted_title[0].strip() == '':
+                            event_object.title = splitted_title[1].strip()
+                        else:
+                            event_object.support = splitted_title[1].strip()
 
                     # Convert the ticketprice
                     if ',' in event['ticket_price']:
