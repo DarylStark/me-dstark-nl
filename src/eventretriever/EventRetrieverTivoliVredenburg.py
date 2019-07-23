@@ -11,6 +11,7 @@ import bs4
 import datetime
 import re
 import pytz
+import time
 #---------------------------------------------------------------------------------------------------
 # Local imports
 import eventretriever
@@ -88,7 +89,22 @@ class EventRetrieverTivoliVredenburg(eventretriever.EventRetriever):
 
         # Loop over the events in the object and open the URL in the Event. Retrieve extra details
         # from the event from that page and set it in the Event
+        starttime = time.time()
+        max_runtime = 60 * 6
+        index = 0
         for event in self.events:
+            # Check our runtime. If we are running for more then 6 minutes, we stop the loop We do
+            # this is order to stop the script before it is stopped by Google. This definitly needs
+            # some improving.
+            endtime = time.time()
+            runtime = endtime - starttime
+            if runtime >= max_runtime:
+                print('Runtime of {} seconds exceeded. Stop downloading'.format(max_runtime))
+                del(self.events[index:])
+                break
+            else:
+                index += 1
+
             # Download the page and parse the HTML
             try:
                 page = requests.get(event.url)
