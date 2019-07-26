@@ -1,5 +1,6 @@
+# Don't sync binary python cache
 *.pyc
 __pycache__
-.vscode
-me-dstark-nl.code-workspace
+
+# Don't sync virtual environments
 env
