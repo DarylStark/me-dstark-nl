@@ -6,6 +6,7 @@
 # Imports
 from me import Me
 #---------------------------------------------------------------------------------------------------
+# TODO: Create something that Google can use as starting point for the Google App Engine application
 if __name__ == '__main__':
     # Start the application
     Me.start()

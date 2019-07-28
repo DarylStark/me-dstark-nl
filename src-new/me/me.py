@@ -8,20 +8,116 @@
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
+import flask
+import re
 #---------------------------------------------------------------------------------------------------
 class Me:
     """ Main class for the Me application; creates all needed objects and does all needed tasks.
         This class is meant to run as a static class; it is impossible to create instances of it """
 
-    # Class attributes. Will be filled as soon as the application is started
-    # [...]
+    # Class attributes for Flask;
+    # - The 'flask_app' is a class attribute that will be used as the main object for Flask. All
+    #   Flask requests will be using this.
+    # - The 'registered_urls' will be a dictionary. The keys are going to be regular expressions
+    #   that can match a specific URL to a specific class. Within this class, a method will be
+    #   mapped to every specific URL and will check if there is a matching regex. If there is, the
+    #   class associated with the regex will be called to show the correct page. To register a class
+    #   with a regex to this, the class should use the decorator Me.register_url.
+    flask_app = flask.Flask(__name__)
+    registered_urls = {}
 
     def __new__(cls):
         """ When someone tries to create a instance of it, we give an error """
         raise Exception('It is impossible to create a instance of this class')
     
+    @flask_app.route('/', defaults={'path': ''})
+    @flask_app.route('/<path:path>')
+    def show_page(path):
+        """ Show the correct page based on registered regular expressions """
+
+        # Search the registered_urls to see if there is any request that has a regex that matches
+        # the given path. We do this for *all* registered URLs, even if we already found one to
+        # see if there is a ambigious name. If there is, we have to throw an error
+        matched_urls = [ (key, obj) for key, obj in Me.registered_urls.items() if obj['regex'].match(path) ]
+
+        # Check how many results we have. If it is exactly one, we can continue. If it is zero, we
+        # have to given the user a 404. If it is more then one, we have a ambigious name and we have
+        # to give the user a error.
+        if len(matched_urls) == 1:
+            # Perfect match! Let's initiate a instance of the class that belongs to this registered
+            # URL and start the 'show_page' method for that instance. We also have to give any
+            # arguments that were given by the user (those things after the ? in the URL), if any.
+
+            # Get the arguments that were given with the request
+            args = dict(flask.request.values)
+
+            # Initiate a instance of the registered class
+            instance = matched_urls[0][1]['cls']()
+
+            # Run the 'show_page' method and return the value of that method to Flask so it can show
+            # the page
+            return instance.show_page(**args)
+        elif len(matched_urls) > 1:
+            # Too many results; ambigious. Raise an error and tell the user which URLs are
+            # conflicting. We tell the regexes that match as well.
+            # TODO: Create custom Exception for this
+            raise NameError('Ambigious path; matches regex of registered URLs: {urls}'.format(
+                urls = ', '.join( [ '"{name}" ("{regex}")'.format(name = name, regex = obj['regex_text'] ) for name, obj in matched_urls ] )
+            ))
+
+        # No results; give a 404
+        flask.abort(404)
+    
+    @classmethod
+    def register_url(cls, regex, name):
+        """ Decorator to register a URL to this static class. To register a URL, a class has to use
+            this method as decorator. The decorator should be called with a regex that can match
+            every URL that it should be used for and a unique name. This name isn't really used
+            anywhere but can be very usefull in debugging """
+        
+        def decorator(class_):
+            """ The real decorator method; will check if the regex is valid and register the class
+                within this static class """
+        
+            # First, we check if the regex is valid. We do this trying to compile it. If it fails,
+            # we know the regex is valid. AFAIK there is no other/better way of doing this
+            try:
+                compiled_regex = re.compile(regex)
+            except re.error as Err:
+                # Regex is not correct; raise an error
+                # TODO: Create custom Exception for this
+                raise NameError(Err)
+            else:
+                # If the regex was valid, no error is raised. We need to check if this name is
+                # unique. If it isn't; thrown an error
+                if name in cls.registered_urls.keys():
+                    # TODO: Create custom Exception for this
+                    raise NameError('There is already a registered url with name "{name}"'.format(
+                        name = name
+                    ))
+
+                # We can now register the URL. We
+                # register URLs by their name. Within the dict for this key we register the given
+                # compiled regular expression and the class that is given.
+                cls.registered_urls[name] = {
+                    'regex': compiled_regex,
+                    'regex_text': regex,
+                    'cls': class_
+                }
+
+                # After we register the class, we can return the class. If we don't do that, the
+                # class will be unusable for other uses then this; it will simply stop existing in
+                # the original form.
+                return class_
+            
+            # Return the method
+            return class_
+        
+        # Return the decorator
+        return decorator
+    
     @classmethod
     def start(cls):
         """ The start method start the actual application """
-        pass
+        cls.flask_app.run()
 #---------------------------------------------------------------------------------------------------

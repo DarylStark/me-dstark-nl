@@ -6,4 +6,11 @@
 #---------------------------------------------------------------------------------------------------
 # Main class: Me
 from me.me import Me
+
+# Abstract base class for 'Pages'
+from me.page import Page
+
+# Pages that are registered to do something
+from me.page_main import PageMain
+from me.page_api import PageAPI
 #---------------------------------------------------------------------------------------------------
