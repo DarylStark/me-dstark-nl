@@ -15,7 +15,7 @@ class PageUI(Page):
     """ Class for the UI page of the application. Will show the default UI template and adjust the
         variables in that """
 
-    def show_page(self, **kwargs):
+    def show_page(self, page, **kwargs):
         # TODO: Implement and add DOCSTRING
         return 'You are looking at the UI'
 #---------------------------------------------------------------------------------------------------

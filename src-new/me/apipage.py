@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """
-    me - page.py
+    me - apipage.py
 
-    Abstract main class for pages. Can and should be used as base class for pages. Sets the default
-    values in the __init__ method and defines methods that should be used in any derived class.
+    Base class for API pages
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
-from abc import ABC, abstractmethod
+from me import Page
+from abc import abstractmethod
 #---------------------------------------------------------------------------------------------------
-class Page(ABC):
-    """ Abstract base class for pages. Can and should be used as base class for pages """
+class APIPage(Page):
+    """ Base class for API pages. This class is abstract, meaning that it is impossible to create a
+        instance of it """
 
     @abstractmethod
-    def show_page(self, page, **kwargs):
+    def show_page(self, **kwargs):
         """ This method should exist in every class derived from this one. It gives the application
             a method to start when a instance of this class is started """
         pass

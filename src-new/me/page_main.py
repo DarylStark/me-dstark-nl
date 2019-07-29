@@ -15,7 +15,7 @@ class PageMain(Page):
     """ Class for the Main page of the application. Will open the default template and set the
         default values for this template. This class is dervived from the Page class """
 
-    def show_page(self, **kwargs):
+    def show_page(self, path, **kwargs):
         # TODO: Implement and add DOCSTRING
         return 'Main Page'
 #---------------------------------------------------------------------------------------------------

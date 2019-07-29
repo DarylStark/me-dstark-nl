@@ -14,4 +14,8 @@ from me.page import Page
 from me.page_main import PageMain
 from me.page_api import PageAPI
 from me.page_ui import PageUI
+
+# API modules
+from me.apipage import APIPage
+from me.page_api_events import PageAPIEvents
 #---------------------------------------------------------------------------------------------------

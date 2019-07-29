@@ -69,7 +69,7 @@ class Me:
 
             # Run the 'show_page' method and return the value of that method to Flask so it can show
             # the page
-            return instance.show_page(**args)
+            return instance.show_page(path = path, **args)
         elif len(matched_urls) > 1:
             # Too many results; ambigious. Raise an error and tell the user which URLs are
             # conflicting. We tell the regexes that match as well.
