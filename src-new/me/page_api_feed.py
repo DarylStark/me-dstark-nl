@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-    me - page_api_events.py
+    me - page_api_feed.py
 
-    API module for '/api/events'
+    API module for '/api/feed'
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
 from me import APIPage
 from me import PageAPI
 #---------------------------------------------------------------------------------------------------
-@PageAPI.register_api_group('events')
-class PageAPIEvents(APIPage):
-    """ Class that can be called to run the API for Events """
+@PageAPI.register_api_group('feed')
+class PageAPIFeed(APIPage):
+    """ Class that can be called to run the API for the Feed """
 
     def __init__(self):
         """ The initiator for this object sets the API calls and the methods that are associated
@@ -23,5 +23,5 @@ class PageAPIEvents(APIPage):
         }
     
     def get(self, path, **kwargs):
-        return 'Getting some event info?'
+        return 'Getting some feed info?'
 #---------------------------------------------------------------------------------------------------

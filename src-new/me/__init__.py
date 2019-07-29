@@ -18,4 +18,5 @@ from me.page_ui import PageUI
 # API modules
 from me.apipage import APIPage
 from me.page_api_events import PageAPIEvents
+from me.page_api_feed import PageAPIFeed
 #---------------------------------------------------------------------------------------------------

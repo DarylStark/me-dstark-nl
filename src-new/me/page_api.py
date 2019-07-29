@@ -22,6 +22,7 @@ class PageAPI(Page):
             raise an Exception """
         
         # Get the group that the user requested
+        # TODO: do this with an regex instead of splitting
         splitted_path = path.split('/')
         if len(splitted_path) > 1:
             group = splitted_path[1].strip()
@@ -31,7 +32,7 @@ class PageAPI(Page):
                     instance = type(self)._registered_api_groups[group]()
 
                     # Get the return value for it
-                    return instance.show_page()
+                    return instance.show_page(path, **kwargs)
                 else:
                     # TODO: Create custom Exception for this
                     raise NameError('API group "{group}" is not registered'.format(group = group))
@@ -55,6 +56,10 @@ class PageAPI(Page):
                 # TODO: Create custom Exception for this
                 raise NameError('API group "{group}" is already registered'.format(group = groupname))
             else:
+                # Add a variable to the class with the name of the group. The class can use this to
+                # display errors, for instance
+                class_.group = groupname
+
                 # Then we register the group
                 cls._registered_api_groups[groupname] = class_
             
