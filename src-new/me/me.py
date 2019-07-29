@@ -10,6 +10,7 @@
 # Imports
 import flask
 import re
+import json
 #---------------------------------------------------------------------------------------------------
 class Me:
     """ Main class for the Me application; creates all needed objects and does all needed tasks.
@@ -23,8 +24,20 @@ class Me:
     #   mapped to every specific URL and will check if there is a matching regex. If there is, the
     #   class associated with the regex will be called to show the correct page. To register a class
     #   with a regex to this, the class should use the decorator Me.register_url.
+    
     flask_app = flask.Flask(__name__)
     registered_urls = {}
+
+    # Class attributes for Me;
+    # - The 'configfile' is the file contains all the configuration for the application. It defaults
+    #   to 'me-configuration.json', but can be changed by the calling script
+    # - The 'config' will be the dict that contains the actual config.
+    # - The 'environment' tells the class what environment we are in. The environment has to match a
+    #   JSON key configuration file
+
+    configfile = 'me-configuration.json'
+    config = None
+    environment = None
 
     def __new__(cls):
         """ When someone tries to create a instance of it, we give an error """
@@ -115,6 +128,41 @@ class Me:
         
         # Return the decorator
         return decorator
+    
+    @classmethod
+    def load_config(cls):
+        """ Load the configuration file """
+        try:
+            with open(cls.configfile, 'r') as cfgfile:
+                cls.config = json.load(cfgfile)
+        except FileNotFoundError:
+            # TODO: Create custom Exception for this
+            raise NameError('File "{file}" doesn\'t exist'.format(file = cls.configfile))
+        except json.decoder.JSONDecodeError:
+            # TODO: Create custom Exception for this
+            raise NameError('File "{file}" is not valid JSON'.format(file = cls.configfile))
+    
+    @classmethod
+    def set_environment(cls, environment):
+        """ Set the environment of the configuration to use. Checks first if this environment is
+            available in the configuration """
+        
+        # Check if the configuration is still None. If it is, load the configuration first
+        if cls.config is None:
+            cls.load_config()
+
+        # Check if the asked environment exists and try to set it. If we get an AttributeError,
+        # the configuration is still 'None'. We have to give the user a error in that specific
+        # case.
+        try:
+            if environment in cls.config.keys():
+                cls.environment = environment
+            else:
+                # TODO: Create custom Exception for this
+                raise NameError('Environment "{environment}" does not exist'.format(environment = environment))
+        except AttributeError:
+            # TODO: Create custom Exception for this
+            raise NameError('Configuration is not valid')
     
     @classmethod
     def start(cls):

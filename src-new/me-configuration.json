@@ -1,0 +1,20 @@
+{
+  "development": {
+    "database": {
+      "server": "104.155.95.1",
+      "username": "me_dev",
+      "password": "6UDhG{Bz=aPhg6&}af8ww+B~wwt#AsW?",
+      "database": "me_dev",
+      "google_instance": ""
+    }
+  },
+  "production": {
+    "database": {
+      "server": "104.155.95.1",
+      "username": "me",
+      "password": "gP}=ZVgv??aczRgmb?9bB<-bp4K)r@@",
+      "database": "me",
+      "google_instance": "dstark-nl:europe-west1:sql-apps-dstark-nl"
+    }
+  }
+}
