@@ -6,6 +6,11 @@
       "password": "6UDhG{Bz=aPhg6&}af8ww+B~wwt#AsW?",
       "database": "me_dev",
       "google_instance": ""
+    },
+    "flask": {
+      "host": "0.0.0.0",
+      "port": 2610,
+      "debug": true
     }
   },
   "production": {
@@ -15,6 +20,11 @@
       "password": "gP}=ZVgv??aczRgmb?9bB<-bp4K)r@@",
       "database": "me",
       "google_instance": "dstark-nl:europe-west1:sql-apps-dstark-nl"
+    },
+    "flask": {
+      "host": "0.0.0.0",
+      "port": 80,
+      "debug": false
     }
   }
 }

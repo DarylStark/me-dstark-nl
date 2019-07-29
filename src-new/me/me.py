@@ -163,9 +163,36 @@ class Me:
         except AttributeError:
             # TODO: Create custom Exception for this
             raise NameError('Configuration is not valid')
+        
+    @classmethod
+    def get_configuration(cls, group, setting = None):
+        """ Returns a configuration setting for a given group (like 'database') and a given setting
+            (like 'database'). If 'setting' is not given, the complete dict for the group is
+            returned """
+        
+        # Check if the given group exists
+        if group in cls.config[cls.environment].keys():
+            # If a setting is given ...
+            if setting:
+                # ... check if the settings exists
+                if setting in cls.config[cls.environment][group].keys():
+                    # Return the setting
+                    return cls.config[cls.environment][group][setting]
+                else:
+                    # If the setting doesn't exist, raise an error
+                    # TODO: Create custom Exception for this
+                    raise NameError('Configuration group "{group}" does not contain a setting "{setting}"'.format(group = group, setting = setting))
+            else:
+                # If no setting is given, we return the complete dict for the group
+                return cls.config[cls.environment][group]
+        else:
+            # TODO: Create custom Exception for this
+            raise NameError('Configuration group "{group}" does not exist'.format(group = group))
     
     @classmethod
     def start(cls):
         """ The start method start the actual application """
-        cls.flask_app.run()
+
+        # Start Flask with the configuration that is red in
+        cls.flask_app.run(**cls.get_configuration('flask'))
 #---------------------------------------------------------------------------------------------------
