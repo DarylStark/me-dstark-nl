@@ -19,5 +19,29 @@
 			"#---------------------------------------------------------------------------------------------------",
 		],
 		"description": "Create a abstract class"
+	},
+	"Empty page class": {
+		"prefix": "empty_page_class",
+		"body": [
+			"#!/usr/bin/env python3",
+			"\"\"\"",
+    		"me - $TM_FILENAME",
+			"",
+    		"${1:module_docstring}",
+			"\"\"\"",
+			"#---------------------------------------------------------------------------------------------------",
+			"# Imports",
+			"from me import Me",
+			"from me import Page",
+			"#---------------------------------------------------------------------------------------------------",
+			"@Me.register_url(name = '${2:name}', regex = '${3:regex}')",
+			"class ${4:class_name}(Page):",
+    		"	\"\"\" ${5:class_docstring} \"\"\"",
+			"",
+    		"	def show_page(self, **kwargs):",
+        	"		# TODO: Implement and add DOCSTRING",
+        	"		return '${6:temporary_return_value}'",
+			"#---------------------------------------------------------------------------------------------------"
+		]
 	}
 }
