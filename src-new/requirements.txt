@@ -1,2 +1,5 @@
 # Requirements file for Me
 Flask
+# Requirements for the database engine
+sqlalchemy
+pymysql

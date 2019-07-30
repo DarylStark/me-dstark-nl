@@ -15,16 +15,24 @@ Me.load_config()
 
 # We have loaded the config. We can now set the environment that we want to use. As stated before,
 # we need to check the '__name__' variable to determine what environment to use.  We set the
-# enviroment to 'production' now. We can overwrite it later on in the application.
-Me.set_environment('production')
+# enviroment to 'development' now and overwrite it later on in the application.
+Me.set_environment('development')
 
 # We check if the '__name__' variable contains the string '__main__'. If it does, we are running
 # this as a script and therefor on the development server.
 if __name__ == '__main__':
-    # We are on a development server. Set the environment to 'development'.
-    Me.set_environment('development')
+    # Next, we can initiate the 'Me'-application. What this does, is creating a database connection
+    # and making sure all needed tables exsist
+    Me.initiate()
 
     # Start the application. We only need to do this on the development server; the Google App
     # Engine environment will start the application directly from the Flask-object in the Me class.
     Me.start()
+else:
+    # We are not running on the development server. Let's set the enviroment to 'production' so the
+    # application can use the correct values.
+    Me.set_environment('production')
+
+    # Initiate the application
+    Me.initiate()
 #---------------------------------------------------------------------------------------------------

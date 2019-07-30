@@ -8,6 +8,7 @@
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
+from me_database import Database
 import flask
 import re
 import json
@@ -188,6 +189,21 @@ class Me:
         else:
             # TODO: Create custom Exception for this
             raise NameError('Configuration group "{group}" does not exist'.format(group = group))
+        
+    @classmethod
+    def initiate(cls):
+        """ Method to do everything that needs to be done before the application can be started.
+            This method will create the database connection and will make sure all tables in this
+            database get created """
+        
+        # Check if the configuration is still None. If it is, load the configuration first
+        if cls.config is None:
+            cls.load_config()
+        
+        # Create a database connection. This will also add any tables that need to be added.
+        Database.connect(
+            'mysql+pymysql://{username}:{password}@{server}/{database}'.format(**cls.get_configuration(group = 'database') )
+        )
     
     @classmethod
     def start(cls):
