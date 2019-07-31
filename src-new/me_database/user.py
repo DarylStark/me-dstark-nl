@@ -8,6 +8,7 @@
 #---------------------------------------------------------------------------------------------------
 # Imports
 import sqlalchemy
+from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class User(Database.base_class):
