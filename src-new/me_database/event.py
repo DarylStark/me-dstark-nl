@@ -3,7 +3,7 @@
     me_database - event.py
     Author: Daryl Stark
 
-    Event class for events
+    Table for events
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class Event(Database.base_class):
-    """ Event class for events """
+    """ Table for events """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'events'

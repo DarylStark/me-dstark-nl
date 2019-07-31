@@ -3,7 +3,7 @@
     me_database - venue.py
     Author: Daryl Stark
 
-    Venue class for venues
+    Table for venues
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -13,7 +13,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class Venue(Database.base_class):
-    """ Venue class for venues """
+    """ Table for venues """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'venues'

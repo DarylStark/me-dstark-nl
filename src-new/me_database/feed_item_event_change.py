@@ -3,7 +3,7 @@
     me_database - feeditemeventchange.py
     Author: Daryl Stark
 
-    Table to connect Feeditems to Event Changes
+    Table to connect feed items to event changes
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class FeedItemEventChange(Database.base_class):
-    """ Table to connect Feeditems to Event Changes """
+    """ Table to connect feed items to event changes """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'feed_item_event_changes'

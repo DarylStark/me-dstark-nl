@@ -3,7 +3,7 @@
     me_database - stage.py
     Author: Daryl Stark
 
-    Class for stages
+    Table for stages
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class Stage(Database.base_class):
-    """ Class for stages """
+    """ Table for stages """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'stages'

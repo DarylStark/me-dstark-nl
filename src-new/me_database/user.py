@@ -3,7 +3,7 @@
     me_database - user.py
     Author: Daryl Stark
 
-    User column for users who are allowed to log in
+    Table for users
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -13,7 +13,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class User(Database.base_class):
-    """ User column for users who are allowed to log in """
+    """ Table for users """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'users'

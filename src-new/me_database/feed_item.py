@@ -3,7 +3,7 @@
     me_database - feed_item
     Author: Daryl Stark
 
-    Database object for feed items
+    Table for feed items
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class FeedItem(Database.base_class):
-    """ Database object for checks feed items """
+    """ Table for feed items """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'feed_items'

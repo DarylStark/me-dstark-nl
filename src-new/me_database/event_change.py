@@ -3,7 +3,7 @@
     me_database - event_change.py
     Author: Daryl Stark
 
-    Class for Event Change history
+    Table for event change history
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class EventChange(Database.base_class):
-    """ Class for Event Change history """
+    """ Table for event change history """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'event_changes'

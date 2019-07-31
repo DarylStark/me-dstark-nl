@@ -3,7 +3,7 @@
     me_database - filter.py
     Author: Daryl Stark
 
-    Column for filters
+    Table for filters
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class Filter(Database.base_class):
-    """ Column for filters """
+    """ Table for filters """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'filters'

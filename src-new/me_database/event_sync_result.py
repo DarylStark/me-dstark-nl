@@ -3,7 +3,7 @@
     me_database - event_sync_result.py
     Author: Daryl Stark
 
-    Table to log Synchronization results for events
+    Table to log synchronization results for events
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -12,7 +12,7 @@ from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class EventSyncResult(Database.base_class):
-    """ Table to log Synchronization results for events """
+    """ Table to log synchronization results for events """
 
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'event_sync_results'
