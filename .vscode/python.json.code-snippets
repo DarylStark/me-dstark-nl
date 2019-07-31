@@ -43,5 +43,32 @@
         	"		return '${6:temporary_return_value}'",
 			"#---------------------------------------------------------------------------------------------------"
 		]
+	},
+	"Empty database table class": {
+		"prefix": "empty_database_table_class",
+		"body": [
+			"#!/usr/bin/env python3",
+			"\"\"\",
+			"	me_database - $TM_FILENAME",
+			"	Author: Daryl Stark",
+			"",
+			"	${1:module_docstring}",
+			"\"\"\"",
+			"#---------------------------------------------------------------------------------------------------",
+			"# Imports",
+			"import sqlalchemy",
+			"from sqlalchemy.orm import relationship",
+			"from me_database import Database",
+			"#---------------------------------------------------------------------------------------------------",
+			"class ${2:Classname}(Database.base_class):",
+			"	\"\"\" ${1:module_docstring} \"\"\"",
+			"",
+			"	# Mandatory argument for Database objects within SQLAlchemy",
+			"	__tablename__ = '${3:Tablename}'",
+			"",
+			"	# Database columns for this table",
+			"	${4:Columns}",
+			"#---------------------------------------------------------------------------------------------------"
+		]
 	}
 }
