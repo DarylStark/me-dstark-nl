@@ -24,4 +24,7 @@ class EventChange(Database.base_class):
     field =         Column(String(256))
     oldvalue =      Column(String(256))
     newvalue =      Column(String(256))
+
+    # One-to-many relationship mappings
+    feed_items_event_change = relationship("FeedItemEventChange")
 #---------------------------------------------------------------------------------------------------

@@ -40,6 +40,10 @@ class Event(Database.base_class):
     url =           Column(String(256), nullable = False)
     url_tickets =   Column(String(256))
     image =         Column(String(256))
-    unique =        Column(String(256), nullable = False)
+    unique =        Column(String(255), nullable = False)
     cancelled =     Column(Boolean)
+
+    # One-to-many relationship mappings
+    feed_items = relationship("FeedItem")
+    changes = relationship("EventChange")
 #---------------------------------------------------------------------------------------------------

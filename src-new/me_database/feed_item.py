@@ -24,4 +24,7 @@ class FeedItem(Database.base_class):
     itemtype =      Column(Integer, nullable = False)
     status =        Column(Integer, default = 1, nullable = False)
     event =         Column(ForeignKey("events.id"))
+
+    # One-to-many relationship mappings
+    feed_items_event_change = relationship("FeedItemEventChange")
 #---------------------------------------------------------------------------------------------------

@@ -30,4 +30,7 @@ class Stage(Database.base_class):
     zipcode =       Column(String(128))
     city =          Column(String(128))
     country =       Column(String(128))
+
+    # One-to-many relationship mappings
+    events = relationship("Event")
 #---------------------------------------------------------------------------------------------------

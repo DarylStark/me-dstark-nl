@@ -9,6 +9,7 @@
 # Imports
 import sqlalchemy
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class User(Database.base_class):

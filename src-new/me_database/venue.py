@@ -9,6 +9,7 @@
 # Imports
 import sqlalchemy
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class Venue(Database.base_class):
@@ -24,5 +25,8 @@ class Venue(Database.base_class):
 
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
-    name =          Column(String(128), nullable = False) 
+    name =          Column(String(128), nullable = False)
+
+    # One-to-many relationship mappings
+    stages = relationship("Stage")
 #---------------------------------------------------------------------------------------------------
