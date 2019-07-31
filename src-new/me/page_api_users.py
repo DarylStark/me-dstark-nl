@@ -8,6 +8,7 @@
 # Imports
 from me import APIPage
 from me import PageAPI
+from me_database import *
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('users')
 class PageAPIUsers(APIPage):
@@ -24,5 +25,16 @@ class PageAPIUsers(APIPage):
     
     def get(self, path, **kwargs):
         """ API method to return users in the database """
-        return '[ users ]'
+        
+        # Get the users from the database
+        retval = ''
+        ses = Database.session()
+        for a in range(0, 1024):
+            users = ses.query(User).order_by(User.name)
+
+            for user in users:
+                retval += '<b>{name}</b> ({email})<br />'.format(name = user.name, email = user.email)
+        
+        ses.close()
+        return retval
 #---------------------------------------------------------------------------------------------------

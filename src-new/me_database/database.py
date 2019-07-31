@@ -11,6 +11,7 @@ import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 #---------------------------------------------------------------------------------------------------
 class Database():
     """ Main class for the Database object. Will be an static class that cannot be initiated. """
@@ -33,7 +34,7 @@ class Database():
             the command to create the tables in the database. """
         
         # Create the engine
-        cls._engine = create_engine(connection, echo = False)
+        cls._engine = create_engine(connection, echo = False, max_overflow = 25, pool_size = 75)
 
         # Create the configured tables
         cls.base_class.metadata.create_all(cls._engine)
