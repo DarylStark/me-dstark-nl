@@ -7,7 +7,7 @@
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
-import sqlalchemy
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
@@ -15,10 +15,10 @@ class FeedItemEventChange(Database.base_class):
     """ Table to connect Feeditems to Event Changes """
 
     # Mandatory argument for Database objects within SQLAlchemy
-    __tablename__ = 'tFeedItemsEventChanges'
+    __tablename__ = 'feed_item_event_changes'
 
     # Database columns for this table
-    id = sqlalchemy.Column('FeedItemChangeEvent_ID', sqlalchemy.Integer, primary_key = True)
-    feeditem = sqlalchemy.Column('FeedItemChangeEvent_FeedItem', sqlalchemy.ForeignKey("tFeedItems.FeedItem_ID"), nullable = False)
-    eventchange = sqlalchemy.Column('FeedItemChangeEvent_EventChange', sqlalchemy.ForeignKey("tEventChanges.EventChange_ID"), nullable = False)
+    id =            Column(Integer, primary_key = True)
+    feeditem =      Column(ForeignKey("feed_items.id"), nullable = False)
+    eventchange =   Column(ForeignKey("event_changes.id"), nullable = False)
 #---------------------------------------------------------------------------------------------------

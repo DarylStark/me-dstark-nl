@@ -8,19 +8,19 @@
 #---------------------------------------------------------------------------------------------------
 # Imports
 import sqlalchemy
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class User(Database.base_class):
     """ User column for users who are allowed to log in """
 
     # Mandatory argument for Database objects within SQLAlchemy
-    __tablename__ = 'tUsers'
+    __tablename__ = 'users'
 
     # Database columns for this table
-    id = sqlalchemy.Column('User_ID', sqlalchemy.Integer, primary_key = True)
-    name = sqlalchemy.Column('User_Name', sqlalchemy.VARCHAR(128), nullable = True)
-    email = sqlalchemy.Column('User_EMail', sqlalchemy.VARCHAR(128), nullable = False)
-    googleid = sqlalchemy.Column('User_GoogleID', sqlalchemy.VARCHAR(128), nullable = True)
-    image = sqlalchemy.Column('User_Image', sqlalchemy.VARCHAR(128), nullable = True)
+    id =            Column(Integer, primary_key = True)
+    name =          Column(String(128), nullable = True)
+    email =         Column(String(128), nullable = False)
+    googleid =      Column(String(128), nullable = True)
+    image =         Column(String(128), nullable = True)
 #---------------------------------------------------------------------------------------------------

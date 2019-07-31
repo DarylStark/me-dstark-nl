@@ -8,21 +8,21 @@
 #---------------------------------------------------------------------------------------------------
 # Imports
 import sqlalchemy
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class Venue(Database.base_class):
     """ Venue class for venues """
 
     # Mandatory argument for Database objects within SQLAlchemy
-    __tablename__ = 'tVenues'
+    __tablename__ = 'venues'
 
     # Set constrains for this table
     __table_args__ = (
-        sqlalchemy.UniqueConstraint('Venue_Name'),
+        UniqueConstraint('name'),
     )
 
     # Database columns for this table
-    id = sqlalchemy.Column('Venue_ID', sqlalchemy.Integer, primary_key = True)
-    name = sqlalchemy.Column('Venue_Name', sqlalchemy.VARCHAR(128), nullable = False) 
+    id =            Column(Integer, primary_key = True)
+    name =          Column(String(128), nullable = False) 
 #---------------------------------------------------------------------------------------------------

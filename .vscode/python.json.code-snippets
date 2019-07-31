@@ -56,7 +56,7 @@
 			"\"\"\"",
 			"#---------------------------------------------------------------------------------------------------",
 			"# Imports",
-			"import sqlalchemy",
+			"from sqlalchemy import Column, Integer, Datetime, String, Boolean, UniqueConstraint, ForeignKey",
 			"from sqlalchemy.orm import relationship",
 			"from me_database import Database",
 			"#---------------------------------------------------------------------------------------------------",

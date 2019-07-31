@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
 """
-    me_database - test
+    me_database - feed_item
     Author: Daryl Stark
 
     Database object for feed items
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
-import sqlalchemy
+from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
 class FeedItem(Database.base_class):
     """ Database object for checks feed items """
 
     # Mandatory argument for Database objects within SQLAlchemy
-    __tablename__ = 'tFeedItems'
+    __tablename__ = 'feed_items'
 
     # Database columns for this table
-    id = sqlalchemy.Column('FeedItem_ID', sqlalchemy.Integer, primary_key = True)
-    date = sqlalchemy.Column('FeedItem_Date', sqlalchemy.DateTime, nullable = False)
-    changedate = sqlalchemy.Column('FeedItem_ChangeDate', sqlalchemy.DateTime, nullable = False)
-    itemtype = sqlalchemy.Column('FeedItem_Type', sqlalchemy.Integer, nullable = False)
-    status = sqlalchemy.Column('FeedItem_Status', sqlalchemy.Integer, default = 1, nullable = False)
-    event = sqlalchemy.Column('FeedItem_Event', sqlalchemy.ForeignKey("tEvents.Event_ID"))
+    id =            Column(Integer, primary_key = True)
+    date =          Column(DateTime, nullable = False)
+    changedate =    Column(DateTime, nullable = False)
+    itemtype =      Column(Integer, nullable = False)
+    status =        Column(Integer, default = 1, nullable = False)
+    event =         Column(ForeignKey("events.id"))
 #---------------------------------------------------------------------------------------------------
