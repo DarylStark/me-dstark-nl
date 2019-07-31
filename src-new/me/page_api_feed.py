@@ -11,7 +11,7 @@ from me import PageAPI
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('feed')
 class PageAPIFeed(APIPage):
-    """ Class that can be called to run the API for the Feed """
+    """ Class that can be called to run the API for the feed """
 
     def __init__(self):
         """ The initiator for this object sets the API calls and the methods that are associated

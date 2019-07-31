@@ -70,5 +70,37 @@
 			"	${4:Columns}",
 			"#---------------------------------------------------------------------------------------------------"
 		]
+	},
+	"Empty class for a API group": {
+		"prefix": "empty_api_group_class",
+		"body": [
+			"#!/usr/bin/env python3",
+			"\"\"\"",
+			"    me - $TM_FILENAME",
+			"",
+			"    API module for '/api/${1:API-group}'",
+			"\"\"\"",
+			"#---------------------------------------------------------------------------------------------------",
+			"# Imports",
+			"from me import APIPage",
+			"from me import PageAPI",
+			"#---------------------------------------------------------------------------------------------------",
+			"@PageAPI.register_api_group('${1:API-group}')",
+			"class PageAPI${2:API-group-capatalized}(APIPage):",
+			"    \"\"\" Class that can be called to run the API for ${1:API-group} \"\"\"",
+			"",
+			"    def __init__(self):",
+			"        \"\"\" The initiator for this object sets the API calls and the methods that are associated",
+			"            with this call. The 'show_page' method in the base class will use that dict to decide",
+			"            what to do when a API call gets in \"\"\"",
+			"        ",
+			"        self._api_calls = {",
+			"            'get': self.get",
+			"        }",
+			"    ",
+			"    def get(self, path, **kwargs):",
+			"        return ''",
+			"#---------------------------------------------------------------------------------------------------",
+		]
 	}
 }

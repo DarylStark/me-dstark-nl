@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-    me - page_api_events.py
+    me - page_api_users.py
 
-    API module for '/api/events'
+    API module for '/api/users'
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
 from me import APIPage
 from me import PageAPI
 #---------------------------------------------------------------------------------------------------
-@PageAPI.register_api_group('events')
-class PageAPIEvents(APIPage):
-    """ Class that can be called to run the API for events """
+@PageAPI.register_api_group('users')
+class PageAPIUsers(APIPage):
+    """ Class that can be called to run the API for users """
 
     def __init__(self):
         """ The initiator for this object sets the API calls and the methods that are associated
@@ -23,5 +23,6 @@ class PageAPIEvents(APIPage):
         }
     
     def get(self, path, **kwargs):
-        return 'Getting some event info?'
+        """ API method to return users in the database """
+        return '[ users ]'
 #---------------------------------------------------------------------------------------------------
