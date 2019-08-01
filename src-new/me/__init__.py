@@ -20,4 +20,5 @@ from me.apipage import APIPage
 from me.page_api_events import PageAPIEvents
 from me.page_api_feed import PageAPIFeed
 from me.page_api_users import PageAPIUsers
+from me.page_api_aaa import PageAPIAAA
 #---------------------------------------------------------------------------------------------------
