@@ -12,6 +12,7 @@ from time import time
 import flask
 import json
 import math
+import re
 #---------------------------------------------------------------------------------------------------
 @Me.register_url(name = 'api', regex = 'api/.*')
 class PageAPI(Page):
@@ -26,10 +27,9 @@ class PageAPI(Page):
             raise an Exception """
         
         # Get the group that the user requested
-        # TODO: do this with an regex instead of splitting
-        splitted_path = path.split('/')
-        if len(splitted_path) > 1:
-            group = splitted_path[1].strip()
+        group = re.findall('^[^/]+/(.+)/', path)
+        if len(group) == 1:
+            group = group[0]
             if group != "":
                 if group in type(self)._registered_api_groups.keys():
                     # Found the correct group. Let's create an instance of it
