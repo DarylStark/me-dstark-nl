@@ -96,26 +96,39 @@ class PageAPI(Page):
             if 'path' in kwargs.keys():
                 path = kwargs['path']
 
-            # Set the limit
-            try:
-                kwargs['limit'] = int(kwargs['limit']) if 'limit' in kwargs.keys() else 25
-            except ValueError:
-                # TODO: Create custom Exception for this
-                raise ValueError('Variable "limit" should be an number')
+            # We create small lambda-functions to set default values for 'values'. The small lambda
+            # methods will set a value for the 'values' to a default value if not set.
+            default_int = lambda key, default: int(kwargs[key]) if key in kwargs.keys() else int(default)
+
+            # Set the default values for the the given variables. A variable is given using the URL.
+            # It is done by setting '?variable=value' in the URL. For every variable we need to set,
+            # we have a entry in the 'keys' list. Each entry is a tuple with three elements;
+            # - The first is the function to use to set the default. The lambda methods above can be
+            #   used for that
+            # - The second element is the variable that we need to set the default for
+            # - The thirs element is the default value
+            keys = [ (default_int, 'limit', 25), (default_int, 'page', 1) ]
+            for default_value in keys:
+                try:
+                    kwargs[default_value[1]] = default_value[0](*default_value[1:])
+                except ValueError:
+                    # TODO: Create custom Exception for this
+                    raise ValueError(
+                        'Variable "{key}" should be "{default_type}". Got "{value_type}" with the value "{value}".'.format(
+                            key = default_value[1],
+                            default_type = type(default_value[2]).__name__,
+                            value_type = type(kwargs[default_value[1]]).__name__,
+                            value = kwargs[default_value[1]]
+                        )
+                    )
             
-            # Set the pas
-            try:
-                kwargs['page'] = int(kwargs['page']) if 'page' in kwargs.keys() else 1
-            except ValueError:
-                # TODO: Create custom Exception for this
-                raise ValueError('Variable "limit" should be an number')
-            
-            # Run the given method
+            # Run the given method for the API endpoint. We save the result in a variable so we can
+            # put it in the resulting JSON later on
             endpoint_result = method(self, *args, **kwargs)
             if not type(endpoint_result) is tuple:
                 raise ValueError('Return value should be a tuple')
 
-            # Create a dictionary to return
+            # Create a dictionary to return later as JSON
             return_dict = {
                 'api_request': {
                     'path': path,
@@ -135,7 +148,9 @@ class PageAPI(Page):
                 }
             }
 
-            # Check if we need to format the JSON result in a need format
+            # Check if we need to format the JSON result in a need format. If we do, we create a
+            # dict with the json.dumps parameters to set it to pretty. We can pass this dict later
+            # to the json.dumps method
             json_variables = {}
             if 'pretty' in kwargs:
                 json_variables = {
