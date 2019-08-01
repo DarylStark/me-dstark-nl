@@ -123,8 +123,19 @@ class PageAPI(Page):
                     )
             
             # Run the given method for the API endpoint. We save the result in a variable so we can
-            # put it in the resulting JSON later on
-            endpoint_result = method(self, *args, **kwargs)
+            # put it in the resulting JSON later on.
+            try:
+                endpoint_result = method(self, *args, **kwargs)
+            except:
+                # TODO:
+                # If the method raises an error, we should create a error-element to return to the
+                # user. This element should contain enough information about the error so the user
+                # can find out what to do.
+                pass
+            
+            # Each API-endpoint should return a tuple. The tuple's first element will be the maximum
+            # number of items in the set if a endless limit is given. The second item of the tuple
+            # will be the returned data
             if not type(endpoint_result) is tuple:
                 raise ValueError('Return value should be a tuple')
 
