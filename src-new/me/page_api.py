@@ -101,6 +101,7 @@ class PageAPI(Page):
                 try:
                     kwargs['limit'] = int(kwargs['limit'])
                 except ValueError:
+                    # TODO: Create custom Exception for this
                     raise ValueError('Variable "limit" should be an number')
             else:
                 kwargs['limit'] = 25
@@ -110,6 +111,7 @@ class PageAPI(Page):
                 try:
                     kwargs['page'] = int(kwargs['page'])
                 except ValueError:
+                    # TODO: Create custom Exception for this
                     raise ValueError('Variable "page" should be an number')
             else:
                 kwargs['page'] = 1
@@ -131,7 +133,7 @@ class PageAPI(Page):
                 },
                 'result': {
                     'data': endpoint_result,
-                    'data_len': endpoint_result[0],
+                    'data_len': len(endpoint_result[0]),
                     'max_data_len': endpoint_result[1],
                     'limit': kwargs['limit'],
                     'max_page': math.ceil(endpoint_result[1] / kwargs['limit']),
