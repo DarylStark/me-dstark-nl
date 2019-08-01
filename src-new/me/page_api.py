@@ -105,8 +105,9 @@ class PageAPI(Page):
                 }
             }
 
-            # Get the runtime
+            # Get the runtime and set it in the returning object
             runtime = round(time() - start, 3)
+            return_dict['api_response']['runtime'] = runtime
             
             # Return the new value
             return json.dumps(return_dict)
