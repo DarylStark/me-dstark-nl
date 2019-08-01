@@ -11,6 +11,7 @@ from me import Page
 from time import time
 import flask
 import json
+import math
 #---------------------------------------------------------------------------------------------------
 @Me.register_url(name = 'api', regex = 'api/.*')
 class PageAPI(Page):
@@ -90,15 +91,33 @@ class PageAPI(Page):
             # Get the given arguments
             args = dict(flask.request.values)
 
-            # Run the given method
-            endpoint_result = method(self, *args, **kwargs)
-            if not type(endpoint_result) is tuple:
-                raise ValueError('Return value should be a tuple')
-
             # Get the path (if given)
             path = None
             if 'path' in kwargs.keys():
                 path = kwargs['path']
+
+            # Check if a limit is given
+            if 'limit' in kwargs.keys():
+                try:
+                    kwargs['limit'] = int(kwargs['limit'])
+                except ValueError:
+                    raise ValueError('Variable "limit" should be an number')
+            else:
+                kwargs['limit'] = 25
+            
+            # Check if a page is given
+            if 'page' in kwargs.keys():
+                try:
+                    kwargs['page'] = int(kwargs['page'])
+                except ValueError:
+                    raise ValueError('Variable "page" should be an number')
+            else:
+                kwargs['page'] = 1
+            
+            # Run the given method
+            endpoint_result = method(self, *args, **kwargs)
+            if not type(endpoint_result) is tuple:
+                raise ValueError('Return value should be a tuple')
 
             # Create a dictionary to return
             return_dict = {
@@ -113,7 +132,10 @@ class PageAPI(Page):
                 'result': {
                     'data': endpoint_result,
                     'data_len': endpoint_result[0],
-                    'max_data_len': endpoint_result[1]
+                    'max_data_len': endpoint_result[1],
+                    'limit': kwargs['limit'],
+                    'max_page': math.ceil(endpoint_result[1] / kwargs['limit']),
+                    'page': kwargs['page']
                 }
             }
 
