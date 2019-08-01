@@ -23,7 +23,8 @@ class PageAPIUsers(APIPage):
             'get': self.get
         }
     
-    def get(self, path, **kwargs):
+    @PageAPI.api_endpoint
+    def get(self, *args, **kwargs):
         """ API method to return users in the database """
         
         # Get the users from the database

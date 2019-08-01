@@ -2,12 +2,15 @@
 """
     me - page_aapi.py
 
-    Class for the REST API of the application.
+    Class for the REST API of the application. Contains a decorator as well to modify API endpoints.
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
 from me import Me
 from me import Page
+from time import time
+import flask
+import json
 #---------------------------------------------------------------------------------------------------
 @Me.register_url(name = 'api', regex = 'api/.*')
 class PageAPI(Page):
@@ -67,5 +70,47 @@ class PageAPI(Page):
             return class_
         
         # Return the decorator
+        return decorator
+    
+    @staticmethod
+    def api_endpoint(method):
+        """ Decorator for API endpoints. Returns the API result at a consistent way """
+
+        def decorator(self, *args, **kwargs):
+            """ Method that gets called for API endpoints with this decorator """
+
+            # Get the starting time of the call so we can calculate the runtime afterwards
+            start = time()
+
+            # Get the given arguments
+            args = dict(flask.request.values)
+
+            # Run the given method
+            endpoint_result = method(self, *args, **kwargs)
+
+            # Get the path (if given)
+            path = None
+            if 'path' in kwargs.keys():
+                path = kwargs['path']
+
+            # Create a dictionary to return
+            return_dict = {
+                'api_request': {
+                    'path': path,
+                    'group': self.group,
+                    'values': args
+                },
+                'api_response': {
+                    'runtime': None
+                }
+            }
+
+            # Get the runtime
+            runtime = round(time() - start, 3)
+            
+            # Return the new value
+            return json.dumps(return_dict)
+        
+        # Return the resulting method
         return decorator
 #---------------------------------------------------------------------------------------------------

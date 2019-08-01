@@ -22,6 +22,7 @@ class PageAPIFeed(APIPage):
             'get': self.get
         }
     
-    def get(self, path, **kwargs):
+    @PageAPI.api_endpoint
+    def get(self, *args, **kwargs):
         return 'Getting some feed info?'
 #---------------------------------------------------------------------------------------------------
