@@ -35,9 +35,7 @@ class PageAPIUsers(APIPage):
 
             for user in users:
                 retval += [ {'name': user.name} ]
-            
-            pass
         
         ses.close()
-        return retval
+        return (retval, 100)
 #---------------------------------------------------------------------------------------------------

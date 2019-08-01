@@ -74,7 +74,12 @@ class PageAPI(Page):
     
     @staticmethod
     def api_endpoint(method):
-        """ Decorator for API endpoints. Returns the API result at a consistent way """
+        """ Decorator for API endpoints. Returns the API result at a consistent way. Each API
+            endpoint using this decorator should return a tuple with the following values;
+            - The first parameter is the data that is to be returned
+            - The second element should be the maximum number of items in the table for the filter
+              that is set. This allows the decorator to calculate the amount of possible pages.
+         """
 
         def decorator(self, *args, **kwargs):
             """ Method that gets called for API endpoints with this decorator """
@@ -87,8 +92,8 @@ class PageAPI(Page):
 
             # Run the given method
             endpoint_result = method(self, *args, **kwargs)
-            if not type(endpoint_result) is list and not type(endpoint_result) is dict:
-                raise ValueError('Return value should be a list or a dict')
+            if not type(endpoint_result) is tuple:
+                raise ValueError('Return value should be a tuple')
 
             # Get the path (if given)
             path = None
@@ -107,7 +112,8 @@ class PageAPI(Page):
                 },
                 'result': {
                     'data': endpoint_result,
-                    'data_len': len(endpoint_result)
+                    'data_len': endpoint_result[0],
+                    'max_data_len': endpoint_result[1]
                 }
             }
 
