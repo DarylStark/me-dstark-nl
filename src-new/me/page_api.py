@@ -87,6 +87,8 @@ class PageAPI(Page):
 
             # Run the given method
             endpoint_result = method(self, *args, **kwargs)
+            if not type(endpoint_result) is list and not type(endpoint_result) is dict:
+                raise ValueError('Return value should be a list or a dict')
 
             # Get the path (if given)
             path = None
@@ -102,6 +104,10 @@ class PageAPI(Page):
                 },
                 'api_response': {
                     'runtime': None
+                },
+                'result': {
+                    'data': endpoint_result,
+                    'data_len': len(endpoint_result)
                 }
             }
 

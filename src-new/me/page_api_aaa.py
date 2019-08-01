@@ -25,5 +25,5 @@ class PageAPIAAA(APIPage):
     @PageAPI.api_endpoint
     def verify(self, *args, **kwargs):
         """ Method to verify the credentials of a logging in users """
-        return 'verify return'
+        return { 'value' : 'verify return' }
 #---------------------------------------------------------------------------------------------------

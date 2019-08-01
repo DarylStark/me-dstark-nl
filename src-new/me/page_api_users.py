@@ -28,13 +28,15 @@ class PageAPIUsers(APIPage):
         """ API method to return users in the database """
         
         # Get the users from the database
-        retval = ''
+        retval = list()
         ses = Database.session()
-        for a in range(0, 1024):
+        for a in range(0, 1):
             users = ses.query(User).order_by(User.name)
 
             for user in users:
-                retval += '<b>{name}</b> ({email})<br />'.format(name = user.name, email = user.email)
+                retval += [ {'name': user.name} ]
+            
+            pass
         
         ses.close()
         return retval
