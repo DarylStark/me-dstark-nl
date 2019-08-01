@@ -141,12 +141,20 @@ class PageAPI(Page):
                 }
             }
 
+            # Check if we need to format the JSON result in a need format
+            json_variables = {}
+            if 'pretty' in kwargs:
+                json_variables = {
+                    'indent': 4,
+                    'sort_keys': True
+                }
+
             # Get the runtime and set it in the returning object
             runtime = round(time() - start, 3)
             return_dict['api_response']['runtime'] = runtime
             
             # Return the new value
-            return json.dumps(return_dict)
+            return flask.Response(json.dumps(return_dict, **json_variables), mimetype = 'application/json')
         
         # Return the resulting method
         return decorator
