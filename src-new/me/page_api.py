@@ -96,25 +96,19 @@ class PageAPI(Page):
             if 'path' in kwargs.keys():
                 path = kwargs['path']
 
-            # Check if a limit is given
-            if 'limit' in kwargs.keys():
-                try:
-                    kwargs['limit'] = int(kwargs['limit'])
-                except ValueError:
-                    # TODO: Create custom Exception for this
-                    raise ValueError('Variable "limit" should be an number')
-            else:
-                kwargs['limit'] = 25
+            # Set the limit
+            try:
+                kwargs['limit'] = int(kwargs['limit']) if 'limit' in kwargs.keys() else 25
+            except ValueError:
+                # TODO: Create custom Exception for this
+                raise ValueError('Variable "limit" should be an number')
             
-            # Check if a page is given
-            if 'page' in kwargs.keys():
-                try:
-                    kwargs['page'] = int(kwargs['page'])
-                except ValueError:
-                    # TODO: Create custom Exception for this
-                    raise ValueError('Variable "page" should be an number')
-            else:
-                kwargs['page'] = 1
+            # Set the pas
+            try:
+                kwargs['page'] = int(kwargs['page']) if 'page' in kwargs.keys() else 1
+            except ValueError:
+                # TODO: Create custom Exception for this
+                raise ValueError('Variable "limit" should be an number')
             
             # Run the given method
             endpoint_result = method(self, *args, **kwargs)
