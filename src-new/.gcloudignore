@@ -15,8 +15,8 @@
 
 # Python pycache:
 __pycache__/
+*.pyc
+.pytest_cache
+
 # Ignored by the build system
 /setup.cfg
-
-# Include the .gitignore file
-#!include:../.gitignore
