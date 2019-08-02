@@ -21,9 +21,9 @@ class EventChange(Database.base_class):
     id =            Column(Integer, primary_key = True)
     event =         Column(ForeignKey("events.id"), nullable = False)
     changed =       Column(DateTime, nullable = False)
-    field =         Column(String(256))
-    oldvalue =      Column(String(256))
-    newvalue =      Column(String(256))
+    field =         Column(String(256), nullable = False)
+    oldvalue =      Column(String(256), nullable = True)
+    newvalue =      Column(String(256), nullable = True)
 
     # One-to-many relationship mappings
     feed_items_event_change = relationship("FeedItemEventChange")

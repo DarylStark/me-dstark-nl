@@ -18,9 +18,16 @@ class User(Database.base_class):
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'users'
 
+    # Set constrains for this table
+    __table_args__ = (
+        UniqueConstraint('name'),
+        UniqueConstraint('email'),
+        UniqueConstraint('googleid')
+    )
+
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
-    name =          Column(String(128), nullable = True)
+    name =          Column(String(128), nullable = False)
     email =         Column(String(128), nullable = False)
     googleid =      Column(String(128), nullable = True)
     image =         Column(String(128), nullable = True)

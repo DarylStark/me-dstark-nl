@@ -24,8 +24,8 @@ class EventSyncResult(Database.base_class):
     service =           Column(String(256), nullable = False)
     cron =              Column(Boolean, nullable = False)
     success =           Column(Boolean, nullable = False)
-    found =             Column(Integer)
-    errors =            Column(Integer)
-    new_events =        Column(Integer)
-    updated_events =    Column(Integer)
+    found =             Column(Integer, nullable = False)
+    errors =            Column(Integer, nullable = False)
+    new_events =        Column(Integer, nullable = False)
+    updated_events =    Column(Integer, nullable = False)
 #---------------------------------------------------------------------------------------------------

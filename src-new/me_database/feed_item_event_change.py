@@ -17,6 +17,11 @@ class FeedItemEventChange(Database.base_class):
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'feed_item_event_changes'
 
+    # Set constrains for this table
+    __table_args__ = (
+        UniqueConstraint('feeditem', 'eventchange'),
+    )
+
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
     feeditem =      Column(ForeignKey("feed_items.id"), nullable = False)

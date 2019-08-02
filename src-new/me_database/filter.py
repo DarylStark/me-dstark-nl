@@ -17,6 +17,11 @@ class Filter(Database.base_class):
     # Mandatory argument for Database objects within SQLAlchemy
     __tablename__ = 'filters'
 
+    # Set constrains for this table
+    __table_args__ = (
+        UniqueConstraint('page', 'name'),
+    )
+
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
     page =          Column(String(128), nullable = False)

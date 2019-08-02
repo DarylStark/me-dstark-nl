@@ -25,11 +25,11 @@ class Stage(Database.base_class):
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
     venue =         Column(ForeignKey("venues.id"), nullable = False)
-    name =          Column(String(128))
-    address =       Column(String(128))
-    zipcode =       Column(String(128))
-    city =          Column(String(128))
-    country =       Column(String(128))
+    name =          Column(String(128), nullable = False)
+    address =       Column(String(128), nullable = True)
+    zipcode =       Column(String(128), nullable = True)
+    city =          Column(String(128), nullable = True)
+    country =       Column(String(128), nullable = True)
 
     # One-to-many relationship mappings
     events = relationship("Event")
