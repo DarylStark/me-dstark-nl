@@ -10,6 +10,7 @@
 # Imports
 from me_database import Database
 from me.exceptions import *
+from template_loader import TemplateLoader
 import flask
 import re
 import json
@@ -203,6 +204,9 @@ class Me:
         
         # Create a database connection. This will also add any tables that need to be added.
         Database.connect(connection_string.format(**sql_settings))
+
+        # Configure the TemplateLoader
+        TemplateLoader.template_directory = 'html/templates'
     
     @classmethod
     def start(cls):
