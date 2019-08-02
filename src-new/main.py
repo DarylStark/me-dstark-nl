@@ -36,5 +36,6 @@ else:
     # Initiate the application
     Me.initiate()
 
+    # Set the 'app' environment variable for Google App Engine
     app = Me.flask_app
 #---------------------------------------------------------------------------------------------------
