@@ -4,7 +4,7 @@
       "server": "104.155.95.1",
       "username": "me_dev",
       "password": "6UDhG{Bz=aPhg6&}af8ww+B~wwt#AsW?",
-      "database": "me_dev2",
+      "database": "me_new_dev",
       "google_instance": ""
     },
     "flask": {
@@ -16,9 +16,9 @@
   "production": {
     "database": {
       "server": "104.155.95.1",
-      "username": "m",
+      "username": "me",
       "password": "qgP}=ZVgv??aczRgmb?9bB<-bp4K)r@@",
-      "database": "me",
+      "database": "me_new",
       "google_instance": "dstark-nl:europe-west1:sql-apps-dstark-nl"
     },
     "flask": {
