@@ -7,6 +7,7 @@
 #---------------------------------------------------------------------------------------------------
 # Imports
 from me import Me
+from me.exceptions import *
 from me import Page
 from time import time
 import flask
@@ -38,14 +39,12 @@ class PageAPI(Page):
                     # Get the return value for it
                     return instance.show_page(path, **kwargs)
                 else:
-                    # TODO: Create custom Exception for this
-                    raise NameError('API group "{group}" is not registered'.format(group = group))
+                    raise MeAPIGroupNotRegisteredException('API group "{group}" is not registered'.format(group = group))
             else:
-                raise NameError('No API group specified')
+                raise MeAPINoAPIGroupException('No API group specified')
         else:
             # No good API group given, raise an error
-            # TODO: Create custom Exception for this
-            raise NameError('No API group specified')
+            raise MeAPINoAPIGroupException('No API group specified')
     
     @classmethod
     def register_api_group(cls, groupname):
@@ -57,8 +56,7 @@ class PageAPI(Page):
             
             # First we check if the groupname is already registered
             if groupname in cls._registered_api_groups.keys():
-                # TODO: Create custom Exception for this
-                raise NameError('API group "{group}" is already registered'.format(group = groupname))
+                raise MeAPIGroupAlreadyRegisteredException('API group "{group}" is already registered'.format(group = groupname))
             else:
                 # Add a variable to the class with the name of the group. The class can use this to
                 # display errors, for instance
@@ -113,8 +111,7 @@ class PageAPI(Page):
                 try:
                     kwargs[default_value[1]] = default_value[0](*default_value[1:])
                 except ValueError:
-                    # TODO: Create custom Exception for this
-                    raise ValueError(
+                    raise MeValueException(
                         'Variable "{key}" should be "{default_type}". Got "{value_type}" with the value "{value}".'.format(
                             key = default_value[1],
                             default_type = type(default_value[2]).__name__,
@@ -183,8 +180,7 @@ class PageAPI(Page):
                 result = json.dumps(return_dict, **json_variables)
                 result_mimetype = 'application/json'
             else:
-                # TODO: Create custom Exception for this
-                raise ValueError('The format "{format}" is not supported'.format(format = kwargs['format']))
+                raise MeAPIUnsupportedFormatException('The format "{format}" is not supported'.format(format = kwargs['format']))
             
             # Return the new value
             return flask.Response(result, mimetype = result_mimetype)

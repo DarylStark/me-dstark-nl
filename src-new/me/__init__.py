@@ -7,6 +7,9 @@
 # Main class: Me
 from me.me import Me
 
+# Customer exceptions
+from me.exceptions import *
+
 # Abstract base class for 'Pages'
 from me.page import Page
 

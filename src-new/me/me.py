@@ -9,6 +9,7 @@
 #---------------------------------------------------------------------------------------------------
 # Imports
 from me_database import Database
+from me.exceptions import *
 import flask
 import re
 import json
@@ -74,8 +75,7 @@ class Me:
         elif len(matched_urls) > 1:
             # Too many results; ambigious. Raise an error and tell the user which URLs are
             # conflicting. We tell the regexes that match as well.
-            # TODO: Create custom Exception for this
-            raise NameError('Ambigious path; matches regex of registered URLs: {urls}'.format(
+            raise MeAmbigiousPathException('Ambigious path; matches regex of registered URLs: {urls}'.format(
                 urls = ', '.join( [ '"{name}" ("{regex}")'.format(name = name, regex = obj['regex_text'] ) for name, obj in matched_urls ] )
             ))
 
@@ -99,14 +99,12 @@ class Me:
                 compiled_regex = re.compile(regex)
             except re.error as Err:
                 # Regex is not correct; raise an error
-                # TODO: Create custom Exception for this
-                raise NameError(Err)
+                raise MeRegexException(Err)
             else:
                 # If the regex was valid, no error is raised. We need to check if this name is
                 # unique. If it isn't; thrown an error
                 if name in cls.registered_urls.keys():
-                    # TODO: Create custom Exception for this
-                    raise NameError('There is already a registered url with name "{name}"'.format(
+                    raise MeAbigiousURLNameException('There is already a registered url with name "{name}"'.format(
                         name = name
                     ))
 
@@ -137,11 +135,9 @@ class Me:
             with open(cls.configfile, 'r') as cfgfile:
                 cls.config = json.load(cfgfile)
         except FileNotFoundError:
-            # TODO: Create custom Exception for this
-            raise NameError('File "{file}" doesn\'t exist'.format(file = cls.configfile))
+            raise MeConfigFileException('File "{file}" doesn\'t exist'.format(file = cls.configfile))
         except json.decoder.JSONDecodeError:
-            # TODO: Create custom Exception for this
-            raise NameError('File "{file}" is not valid JSON'.format(file = cls.configfile))
+            raise MeConfigFileException('File "{file}" is not valid JSON'.format(file = cls.configfile))
     
     @classmethod
     def set_environment(cls, environment):
@@ -155,15 +151,10 @@ class Me:
         # Check if the asked environment exists and try to set it. If we get an AttributeError,
         # the configuration is still 'None'. We have to give the user a error in that specific
         # case.
-        try:
-            if environment in cls.config.keys():
-                cls.environment = environment
-            else:
-                # TODO: Create custom Exception for this
-                raise NameError('Environment "{environment}" does not exist'.format(environment = environment))
-        except AttributeError:
-            # TODO: Create custom Exception for this
-            raise NameError('Configuration is not valid')
+        if environment in cls.config.keys():
+            cls.environment = environment
+        else:
+            raise MeEnvironmentException('Environment "{environment}" does not exist'.format(environment = environment))
         
     @classmethod
     def get_configuration(cls, group, setting = None):
@@ -181,14 +172,12 @@ class Me:
                     return cls.config[cls.environment][group][setting]
                 else:
                     # If the setting doesn't exist, raise an error
-                    # TODO: Create custom Exception for this
-                    raise NameError('Configuration group "{group}" does not contain a setting "{setting}"'.format(group = group, setting = setting))
+                    raise MeConfigException('Configuration group "{group}" does not contain a setting "{setting}"'.format(group = group, setting = setting))
             else:
                 # If no setting is given, we return the complete dict for the group
                 return cls.config[cls.environment][group]
         else:
-            # TODO: Create custom Exception for this
-            raise NameError('Configuration group "{group}" does not exist'.format(group = group))
+            raise MeConfigException('Configuration group "{group}" does not exist'.format(group = group))
         
     @classmethod
     def initiate(cls):
