@@ -16,8 +16,8 @@
   "production": {
     "database": {
       "server": "104.155.95.1",
-      "username": "me",
-      "password": "gP}=ZVgv??aczRgmb?9bB<-bp4K)r@@",
+      "username": "m",
+      "password": "qgP}=ZVgv??aczRgmb?9bB<-bp4K)r@@",
       "database": "me",
       "google_instance": "dstark-nl:europe-west1:sql-apps-dstark-nl"
     },

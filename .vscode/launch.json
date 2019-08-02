@@ -5,14 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File (Integrated Terminal)",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "cwd": "${fileDirname}"
-        },
-        {
             "name": "Google App Engine application",
             "type": "python",
             "request": "launch",
@@ -26,6 +18,21 @@
             "request": "launch",
             "program": "${workspaceFolder}/src-new/main.py",
             "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}/src-new/"
+        },
+        {
+            "name": "Google App Engine application (new source) - via Flask",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "main",
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload"
+            ],
             "cwd": "${workspaceFolder}/src-new/"
         }
     ]
