@@ -189,10 +189,20 @@ class Me:
         if cls.config is None:
             cls.load_config()
         
+        # Get the database configuration
+        sql_settings = cls.get_configuration(group = 'database')
+        
+        # There are a few ways to connect to the MySQL server. The first way is connecting the
+        # normal way using a TCP socket. The other way is with a Unix socket. This last method is
+        # used by Google App Engine. When a instance is available in the configuration, we have to
+        # use the Unix socket.
+        if sql_settings['google_instance'] != '':
+            connection_string = 'mysql+pymysql://{username}:{password}@/{database}?unix_socket=/cloudsql/{google_instance}'
+        else:
+            connection_string = 'mysql+pymysql://{username}:{password}@{server}/{database}'
+        
         # Create a database connection. This will also add any tables that need to be added.
-        Database.connect(
-            'mysql+pymysql://{username}:{password}@{server}/{database}'.format(**cls.get_configuration(group = 'database') )
-        )
+        Database.connect(connection_string.format(**sql_settings))
     
     @classmethod
     def start(cls):
