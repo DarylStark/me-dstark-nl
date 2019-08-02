@@ -38,10 +38,8 @@ class APIPage(Page):
                 return self._api_calls[call[0]](path = path, **kwargs)
             else:
                 # If we cannot find the call in the dict, we raise an error
-                # TODO: Create custom Exception for this
                 raise MeAPIEndPointInvalidException('API call "{call}" is not a valid API call in group "{group}"'.format(call = call[0], group = self.group))
         else:
             # If we didn't get any results; raise an error
-            # TODO: Create custom Exception for this
             raise MeAPINoEndPointException('No API call specified')
 #---------------------------------------------------------------------------------------------------
