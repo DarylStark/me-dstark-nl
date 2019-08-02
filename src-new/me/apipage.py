@@ -9,6 +9,7 @@
 import re
 from me import Page
 from abc import abstractmethod
+from me.exceptions import *
 #---------------------------------------------------------------------------------------------------
 class APIPage(Page):
     """ Base class for API pages. This class is abstract, meaning that it is impossible to create a
@@ -38,9 +39,9 @@ class APIPage(Page):
             else:
                 # If we cannot find the call in the dict, we raise an error
                 # TODO: Create custom Exception for this
-                raise NameError('API call "{call}" is not a valid API call in group "{group}"'.format(call = call[0], group = self.group))
+                raise MeAPIEndPointInvalidException('API call "{call}" is not a valid API call in group "{group}"'.format(call = call[0], group = self.group))
         else:
             # If we didn't get any results; raise an error
             # TODO: Create custom Exception for this
-            raise NameError('No API call specified')
+            raise MeAPINoEndPointException('No API call specified')
 #---------------------------------------------------------------------------------------------------

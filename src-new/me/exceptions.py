@@ -51,3 +51,15 @@ class MeAPIUnsupportedFormatException(MeException):
     """ Exception for when a API format gets requested that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIEndPointInvalidException(MeException):
+    """ Exception for when a invalid API endcall get's called    """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPINoEndPointException(MeException):
+    """ Exception for when a no API endcall is specified """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIInvalidReturnException(MeException):
+    """ Exception for when a API endpoints returns the wrong format """
+    pass
+#---------------------------------------------------------------------------------------------------

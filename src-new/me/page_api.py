@@ -135,7 +135,7 @@ class PageAPI(Page):
             # number of items in the set if a endless limit is given. The second item of the tuple
             # will be the returned data
             if not type(endpoint_result) is tuple:
-                raise ValueError('Return value should be a tuple')
+                raise MeAPIInvalidReturnException('Return value should be a tuple')
 
             # Create a dictionary to return later to the client
             return_dict = {
