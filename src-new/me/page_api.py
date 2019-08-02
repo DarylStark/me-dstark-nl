@@ -99,6 +99,7 @@ class PageAPI(Page):
             # We create small lambda-functions to set default values for 'values'. The small lambda
             # methods will set a value for the 'values' to a default value if not set.
             default_int = lambda key, default: int(kwargs[key]) if key in kwargs.keys() else int(default)
+            default_str = lambda key, default: str(kwargs[key]) if key in kwargs.keys() else str(default)
 
             # Set the default values for the the given variables. A variable is given using the URL.
             # It is done by setting '?variable=value' in the URL. For every variable we need to set,
@@ -107,7 +108,7 @@ class PageAPI(Page):
             #   used for that
             # - The second element is the variable that we need to set the default for
             # - The thirs element is the default value
-            keys = [ (default_int, 'limit', 25), (default_int, 'page', 1) ]
+            keys = [ (default_int, 'limit', 25), (default_int, 'page', 1), (default_str, 'format', 'json') ]
             for default_value in keys:
                 try:
                     kwargs[default_value[1]] = default_value[0](*default_value[1:])
@@ -139,12 +140,12 @@ class PageAPI(Page):
             if not type(endpoint_result) is tuple:
                 raise ValueError('Return value should be a tuple')
 
-            # Create a dictionary to return later as JSON
+            # Create a dictionary to return later to the client
             return_dict = {
                 'api_request': {
                     'path': path,
                     'group': self.group,
-                    'values': args
+                    'values': kwargs
                 },
                 'api_response': {
                     'runtime': None
@@ -157,24 +158,36 @@ class PageAPI(Page):
                     'max_page': math.ceil(endpoint_result[1] / kwargs['limit']),
                     'page': kwargs['page']
                 }
-            }
-
-            # Check if we need to format the JSON result in a need format. If we do, we create a
-            # dict with the json.dumps parameters to set it to pretty. We can pass this dict later
-            # to the json.dumps method
-            json_variables = {}
-            if 'pretty' in kwargs:
-                json_variables = {
-                    'indent': 4,
-                    'sort_keys': True
-                }
+            }       
 
             # Get the runtime and set it in the returning object
             runtime = round(time() - start, 3)
             return_dict['api_response']['runtime'] = runtime
+
+            # Check what kind of output we need. The default will be 'json'. The user can choose
+            # between multiple options:
+            # - json
+            # - json_pretty
+            if kwargs['format'] in [ 'json', 'json_pretty' ]:
+                json_variables = {}
+                if kwargs['format'] == 'json_pretty':
+                    # Check if we need to format the JSON result in a nice format. If we do, we
+                    # create a dict with the json.dumps parameters to set it to pretty. We can pass
+                    # this dict later to the json.dumps method
+                    json_variables = {
+                        'indent': 4,
+                        'sort_keys': True
+                    }
+                
+                # Set the result for JSON
+                result = json.dumps(return_dict, **json_variables)
+                result_mimetype = 'application/json'
+            else:
+                # TODO: Create custom Exception for this
+                raise ValueError('The format "{format}" is not supported'.format(format = kwargs['format']))
             
             # Return the new value
-            return flask.Response(json.dumps(return_dict, **json_variables), mimetype = 'application/json')
+            return flask.Response(result, mimetype = result_mimetype)
         
         # Return the resulting method
         return decorator
