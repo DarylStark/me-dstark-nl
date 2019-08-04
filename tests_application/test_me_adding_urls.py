@@ -7,7 +7,7 @@ import pytest
 import sys
 sys.path.append("src-new/")
 #---------------------------------------------------------------------------------------------------
-from me import Me, Page
+from me import Me, Page, PageAPI
 #---------------------------------------------------------------------------------------------------
 class TestAddingURLs:
     """ Unit testing class to test if we can register URLs for the application """
@@ -34,6 +34,27 @@ class TestAddingURLs:
                     assert True
                 else:
                     assert False, 'The Me-class registered our test URL, but saved the wrong regex'
+            else:
+                assert False, 'The Me-class didn\'t register our test URL'
+    
+    def test_adding_api_groups(self):
+        """ Method to test if we can add API groups to the PageAPI class """
+
+        # Create a list of strings with names to register
+        groups = [
+            'test1', 'test2', 'test3', 'test4'
+        ]
+
+        # Loop through the list and try to register each group
+        for name in groups:
+            # Create a class and use the decorator for it
+            @PageAPI.register_api_group(name)
+            class PageAPITest(Page):
+                pass
+            
+            # Check if it is registered
+            if name in PageAPI._registered_api_groups:
+                assert True
             else:
                 assert False, 'The Me-class didn\'t register our test URL'
 #---------------------------------------------------------------------------------------------------
