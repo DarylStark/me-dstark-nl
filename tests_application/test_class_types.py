@@ -23,6 +23,31 @@ from template_loader import *
 # TODO:
 # Create a decorator for the test-methods so the boilerplate code can be reduced
 #---------------------------------------------------------------------------------------------------
+def classes(classes):
+    """ Decorator for the test methods. Accepts the classes to be tested """
+
+    def decorator(method):
+        """ Decorator for the test methods. Raises the AssertionError when the method returns errors """
+        
+        def inner(self):
+            """ The real decorator class. Runs the test and gets errors in return. If there are errors,
+                we 'assert False' with the errors """
+
+            # Run the method
+            errors = method(self, classes = classes)
+
+            # Check if we have errors. If we have, raise and False assertion so the check fails.
+            # Otherwise, raise an True assertion for a succesfull test
+            if len(errors) == 0:
+                assert True
+            else:
+                # Create an string with the errors
+                error_string = ', '.join([ 'Class "{class_}": "{error}"'.format(class_ = class_, error = error) for class_, error in errors.items() ])
+                assert False, error_string
+
+        return inner
+    return decorator
+#---------------------------------------------------------------------------------------------------
 class TestClassTypes:
     """ Unit testing class to test the types of classes in the application. There are a few types of
         classes:
@@ -33,16 +58,12 @@ class TestClassTypes:
         - Some classes are exception classes, meaning they can be used as Exceptions
         This Test Class tests if all the classes are from the correct type """
     
-    def test_normal_classes(self):
+    @classes(classes = [ PageAPIAAA, PageAPIEvents, PageAPIFeed, PageAPIUsers,
+                         PageAPI, PageMain, PageUI, EventChange,
+                         EventSyncResult, Event, FeedItemEventChange, FeedItem,
+                         Filter, Stage, User, Venue ])
+    def test_normal_classes(self, classes):
         """ Method to test all normal classes """
-
-        # Set the classes to test
-        classes = [
-            PageAPIAAA, PageAPIEvents, PageAPIFeed, PageAPIUsers,
-            PageAPI, PageMain, PageUI, EventChange,
-            EventSyncResult, Event, FeedItemEventChange, FeedItem,
-            Filter, Stage, User, Venue
-        ]
 
         # Empty list of errourness classes
         errors = {}
@@ -66,30 +87,12 @@ class TestClassTypes:
             except Exception as err_message:
                 errors[class_.__name__] = err_message
         
-        # Check if we have errors. If we have, raise and False assertion so the check fails.
-        # Otherwise, raise an True assertion for a succesfull test
-        if len(errors) == 0:
-            assert True
-        else:
-            # Create an string with the errors
-            error_string = ', '.join([ 'Class "{class_}": "{error}"'.format(class_ = class_, error = error) for class_, error in errors.items() ])
-            assert False, error_string
+        # Return the errors to the decorator
+        return errors
     
-    def test_singleton_classes(self):
-        """ Method to test singleton classes """
-
-        # TODO: Write this. Not yet used though
-
-        classes = []
-        assert True
-    
-    def test_static_classes(self):
+    @classes(classes = [ Me, Database, TemplateLoader ])
+    def test_static_classes(self, classes):
         """ Method to test static classes """
-
-        # Set the classes to test
-        classes = [
-            Me, Database, TemplateLoader
-        ]
 
         # Empty list of errourness classes
         errors = {}
@@ -104,23 +107,13 @@ class TestClassTypes:
                 pass
             else:
                 errors[class_.__name__] = 'Could create an instance of this static class'
-
-        # Check if we have errors. If we have, raise and False assertion so the check fails.
-        # Otherwise, raise an True assertion for a succesfull test
-        if len(errors) == 0:
-            assert True
-        else:
-            # Create an string with the errors
-            error_string = ', '.join([ 'Class "{class_}": "{error}"'.format(class_ = class_, error = error) for class_, error in errors.items() ])
-            assert False, error_string
+        
+        # Return the errors to the decorator
+        return errors
     
-    def test_abstract_classes(self):
+    @classes(classes = [ APIPage, Page ])
+    def test_abstract_classes(self, classes):
         """ Method to test static classes """
-
-        # Set the classes to test
-        classes = [
-            APIPage, Page
-        ]
         
         # Empty list of errourness classes
         errors = {}
@@ -135,26 +128,16 @@ class TestClassTypes:
                 pass
             else:
                 errors[class_.__name__] = 'Could create an instance of this abstract class'
-
-        # Check if we have errors. If we have, raise and False assertion so the check fails.
-        # Otherwise, raise an True assertion for a succesfull test
-        if len(errors) == 0:
-            assert True
-        else:
-            # Create an string with the errors
-            error_string = ', '.join([ 'Class "{class_}": "{error}"'.format(class_ = class_, error = error) for class_, error in errors.items() ])
-            assert False, error_string
+        
+        # Return the errors to the decorator
+        return errors
     
-    def test_exception_classes(self):
+    @classes(classes = [ MeException, MeAmbigiousPathException, MeRegexException, MeAbigiousURLNameException,
+                         MeConfigFileException, MeConfigException, MeEnvironmentException, MeAPIGroupNotRegisteredException,
+                         MeAPINoAPIGroupException, MeValueException, MeAPIUnsupportedFormatException, MeAPIEndPointInvalidException,
+                         MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException ])
+    def test_exception_classes(self, classes):
         """ Method to test if a class is a exception class """
-
-        # Set the classes to test
-        classes = [
-            MeException, MeAmbigiousPathException, MeRegexException, MeAbigiousURLNameException,
-            MeConfigFileException, MeConfigException, MeEnvironmentException, MeAPIGroupNotRegisteredException,
-            MeAPINoAPIGroupException, MeValueException, MeAPIUnsupportedFormatException, MeAPIEndPointInvalidException,
-            MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException
-        ]
 
         # Empty list of errourness classes
         errors = {}
@@ -168,12 +151,6 @@ class TestClassTypes:
             except Exception as err_message:
                 errors[class_.__name__] = err_message
         
-        # Check if we have errors. If we have, raise and False assertion so the check fails.
-        # Otherwise, raise an True assertion for a succesfull test
-        if len(errors) == 0:
-            assert True
-        else:
-            # Create an string with the errors
-            error_string = ', '.join([ 'Class "{class_}": "{error}"'.format(class_ = class_, error = error) for class_, error in errors.items() ])
-            assert False, error_string
+        # Return the errors to the decorator
+        return errors
 #---------------------------------------------------------------------------------------------------
