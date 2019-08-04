@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+""" Test class to test the following:
+    - Adding URLs to Me
+    - Adding API groups to PageAPI
+"""
 #---------------------------------------------------------------------------------------------------
 # Import the pytest module for the testing
 import pytest

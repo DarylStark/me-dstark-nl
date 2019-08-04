@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+""" Unit testing class to test the types of classes in the application. There are a few types of
+    classes:
+    - Classes can be normal
+    - Some classed need to be a singleton, meaning only one instance of the class can exist)
+    - Some classes need to be static, meaning no instances of it exists
+    - Some classes are abstract, meaning they can only be used as base class
+    - Some classes are exception classes, meaning they can be used as Exceptions
+    This Test Class tests if all the classes are from the correct type
+"""
 #---------------------------------------------------------------------------------------------------
 # Import the pytest module for the testing
 import pytest
