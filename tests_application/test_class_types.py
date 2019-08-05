@@ -14,14 +14,11 @@ import pytest
 #---------------------------------------------------------------------------------------------------
 # Set the correct path to the 
 import sys
-sys.path.append("src-new/")
+sys.path.append('src-new/')
 #---------------------------------------------------------------------------------------------------
 from me import *
 from me_database import *
 from template_loader import *
-#---------------------------------------------------------------------------------------------------
-# TODO:
-# Create a decorator for the test-methods so the boilerplate code can be reduced
 #---------------------------------------------------------------------------------------------------
 def classes(classes):
     """ Decorator for the test methods. Accepts the classes to be tested """
