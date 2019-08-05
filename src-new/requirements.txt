@@ -3,6 +3,7 @@ pytest
 
 # Requirements file for Me
 Flask
+jinja2
 
 # Requirements for the database engine
 sqlalchemy

@@ -22,7 +22,11 @@ class PageMain(Page):
             nothing else """
         
         # Get the template for the loginpage
-        loginpage = TemplateLoader.get_template('login')
+        # TODO: get the title from somewhere else. Maybe a language engine or something like that?
+        loginpage = TemplateLoader.get_template('login-production', title = 'Please login to continue')
+
+        # TODO: Remove this
+        TemplateLoader._template_cache = dict()
 
         # Return the loginpage
         return loginpage
