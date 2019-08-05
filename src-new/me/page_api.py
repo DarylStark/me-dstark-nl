@@ -148,7 +148,7 @@ class PageAPI(Page):
                     'runtime': None
                 },
                 'result': {
-                    'data': endpoint_result,
+                    'data': endpoint_result[0],
                     'data_len': len(endpoint_result[0]),
                     'max_data_len': endpoint_result[1],
                     'limit': kwargs['limit'],

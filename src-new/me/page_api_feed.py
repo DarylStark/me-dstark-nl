@@ -14,11 +14,11 @@ class PageAPIFeed(APIPage):
     """ Class that can be called to run the API for the feed """
 
     def __init__(self):
-        """ The initiator for this object sets the API calls and the methods that are associated
+        """ The initiator for this object sets the API endpoints and the methods that are associated
             with this call. The 'show_page' method in the base class will use that dict to decide
-            what to do when a API call gets in """
+            what to do when a API endpoint gets in """
         
-        self._api_calls = {
+        self._api_endpoints = {
             'get': self.get
         }
     
