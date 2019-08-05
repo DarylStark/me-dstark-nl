@@ -10,7 +10,8 @@
     "flask": {
       "host": "0.0.0.0",
       "port": 2610,
-      "debug": true
+      "debug": true,
+      "use_reloader": false
     }
   },
   "production": {
@@ -24,7 +25,8 @@
     "flask": {
       "host": "0.0.0.0",
       "port": 80,
-      "debug": false
+      "debug": false,
+      "use_reloader": false
     }
   }
 }
