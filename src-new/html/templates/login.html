@@ -5,7 +5,7 @@
     
     <!-- TODO: Different client Id for production -->
     <meta name='google-signin-client_id' content='167809871556-j2ghbhtoqaeka5bfpr96nmqrp1f3m897.apps.googleusercontent.com'>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="https://apis.google.com/js/platform.js"></script>
     
     <!-- TODO: Move this to a seperate file -->
     <style>
@@ -27,11 +27,16 @@
     <!-- TODO: Move this to a seperate file -->
     <script>
         function successLogin(data) {
-            if (data['retval']['loggedin']) {
+            result = data['result']['data'];
+            if (result[0] == 'authenticated') {
                 location.href = '/ui';
             } else {
                 console.log('Authentication error');
             }
+        }
+
+        function errorLogin() {
+            console.log('Google error');
         }
 
         function onSuccess(googleUser) {
@@ -41,7 +46,7 @@
             // Send the token to the verification API
             $.ajax({
                 type: 'POST',
-                url: '/api/aaa/verify',
+                url: '/api/aaa/verify?format=json_pretty',
                 data: { token: token },
                 success: successLogin,
                 error: errorLogin
@@ -51,6 +56,7 @@
         function onFailure(error) {
             console.log(error);
         }
+
         function renderButton() {
             gapi.signin2.render('my-signin2', {
                 'scope': 'profile email',
@@ -58,6 +64,7 @@
                 'height': 50,
                 'longtitle': true,
                 'theme': 'dark',
+                'onsuccess': onSuccess,
                 'onfailure': onFailure
             });
         }

@@ -63,3 +63,7 @@ class MeAPIInvalidReturnException(MeException):
     """ Exception for when a API endpoints returns the wrong format """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIInvalidMethodException(MeException):
+    """ Exception for when a API endpoints gets requested with the wrong HTTP method """
+    pass
+#---------------------------------------------------------------------------------------------------

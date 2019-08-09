@@ -37,11 +37,7 @@ class PageAPI(Page):
                     instance = type(self)._registered_api_groups[group]()
 
                     # Get the return value for it
-                    try:
-                        return instance.show_page(path, **kwargs)
-                    except:
-                        # TODO: do something when an error happends
-                        pass
+                    return instance.show_page(path, **kwargs)
                 else:
                     raise MeAPIGroupNotRegisteredException('API group "{group}" is not registered'.format(group = group))
             else:
@@ -103,8 +99,12 @@ class PageAPI(Page):
                 
                 # Check if the method is in the list. If it isn't, raise an error
                 if not request_method in allowed_methods:
-                    # TODO: Write custom error for this
-                    raise KeyError
+                    raise MeAPIInvalidMethodException(
+                        'Wrong HTTP method. Accepted methods are {methods}, got "{method}"'.format(
+                            methods = ', '.join([ '"{x}"'.format(x = x) for x in allowed_methods ]),
+                            method = request_method
+                        )
+                    )
 
                 # Get the given arguments
                 args = dict(flask.request.values)

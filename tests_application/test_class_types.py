@@ -132,7 +132,8 @@ class TestClassTypes:
     @classes(classes = [ MeException, MeAmbigiousPathException, MeRegexException, MeAbigiousURLNameException,
                          MeConfigFileException, MeConfigException, MeEnvironmentException, MeAPIGroupNotRegisteredException,
                          MeAPINoAPIGroupException, MeValueException, MeAPIUnsupportedFormatException, MeAPIEndPointInvalidException,
-                         MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException ])
+                         MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException,
+                         MeAPIInvalidMethodException ])
     def test_exception_classes(self, classes):
         """ Method to test if a class is a exception class """
 

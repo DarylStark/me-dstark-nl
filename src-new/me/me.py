@@ -46,8 +46,8 @@ class Me:
         """ When someone tries to create a instance of it, we give an error """
         raise Exception('It is impossible to create a instance of this class')
     
-    @flask_app.route('/', defaults={'path': ''})
-    @flask_app.route('/<path:path>')
+    @flask_app.route('/', defaults={'path': ''}, methods=['GET', 'POST'])
+    @flask_app.route('/<path:path>', methods=['GET', 'POST'])
     def show_page(path):
         """ Show the correct page based on registered regular expressions """
 
