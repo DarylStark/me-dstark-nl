@@ -22,8 +22,8 @@ class PageAPIAAA(APIPage):
             'verify': self.verify
         }
     
-    @PageAPI.api_endpoint
+    @PageAPI.api_endpoint(allowed_methods = [ 'post' ])
     def verify(self, *args, **kwargs):
         """ Method to verify the credentials of a logging in users """
-        return { 'value' : 'verify return' }
+        return ([ 'test', 'test2' ], 10)
 #---------------------------------------------------------------------------------------------------
