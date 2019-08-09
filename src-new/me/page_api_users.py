@@ -6,6 +6,7 @@
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
+from me import Me
 from me import APIPage
 from me import PageAPI
 from me_database import *
@@ -23,7 +24,7 @@ class PageAPIUsers(APIPage):
             'get': self.get
         }
     
-    @PageAPI.api_endpoint(allowed_methods = [ 'get' ])
+    @PageAPI.api_endpoint(allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def get(self, *args, **kwargs):
         """ API method to return users in the database """
 

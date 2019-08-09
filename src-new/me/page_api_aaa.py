@@ -6,6 +6,7 @@
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
+from me import Me
 from me import APIPage
 from me import PageAPI
 from me_database import *
@@ -30,7 +31,7 @@ class PageAPIAAA(APIPage):
             'logout': self.logout
         }
     
-    @PageAPI.api_endpoint(allowed_methods = [ 'post' ])
+    @PageAPI.api_endpoint(allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
     def login(self, *args, **kwargs):
         """ Method to login the credentials of a logging in users """
         
@@ -98,7 +99,7 @@ class PageAPIAAA(APIPage):
             # TODO: Custom error (AuthenticationFailed)
             raise ValueError
     
-    @PageAPI.api_endpoint(allowed_methods = [ 'get' ])
+    @PageAPI.api_endpoint(allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def logout(self, *args, **kwargs):
         """ Method to logoff a user from the system """
 

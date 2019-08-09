@@ -222,6 +222,49 @@ class Me:
 
         # Start Flask with the configuration that is red in
         cls.flask_app.run(**cls.get_configuration('flask'))
+
+    @staticmethod
+    def check_allowed(allowed = None):
+        """ The method that actually checks the logged in user """
+
+        # If the user didn't supply any allowed keywords, we assume he only wants interactively
+        # logged in users
+        if not type(allowed) == set:
+            allowed = { Me.INTERACTIVE_USERS }
+        
+        # We set the 'valid_user' to False. We can later set it to True if we found a good
+        # logged in user
+        valid_user = False
+
+        # If the user wants to allow logged of users, we always return True
+        if Me.LOGGED_OFF in allowed and valid_user == False:
+            return True
+        
+        # If the user wants to check if a interactive user is logged in, we check if the
+        # Flask session exists and if there is a session in the database for the key in
+        # this session
+        if Me.INTERACTIVE_USERS in allowed and valid_user == False:
+            try:
+                # Get the key from the Flask session
+                key = flask.session['key']
+
+                # Create a database session and look for the key in the database
+                session = Database.session()
+                sessions = session.query(UserSession).filter(
+                    UserSession.secret == key
+                )
+
+                # If we found no keys, we raise and error
+                if sessions.count() != 1:
+                    # TODO: Custom error
+                    raise ValueError
+            except (ValueError, KeyError):
+                pass
+            else:
+                return True
+        
+        # Return the value
+        return valid_user
     
     @staticmethod
     def ui_page(allowed = None):
@@ -232,46 +275,15 @@ class Me:
             """ The real decorator contains the method that is going to be returned """
 
             def check_allowed(self, allowed = allowed, page = None, *args, **kwargs):
-                """ The method that actually checks the logged in user """
+                """ Checks if the user allowed to run this page and runs this page if he is """
 
-                # If the user didn't supply any allowed keywords, we assume he only wants interactively
-                # logged in users
-                if not type(allowed) == set:
-                    allowed = { Me.INTERACTIVE_USERS }
-                
-                # We set the 'valid_user' to False. We can later set it to True if we found a good
-                # logged in user
-                valid_user = False
-                
-                # If the user wants to check if a interactive user is logged in, we check if the
-                # Flask session exists and if there is a session in the database for the key in
-                # this session
-                if Me.INTERACTIVE_USERS in allowed and valid_user == False:
-                    try:
-                        # Get the key from the Flask session
-                        key = flask.session['key']
-
-                        # Create a database session and look for the key in the database
-                        session = Database.session()
-                        sessions = session.query(UserSession).filter(
-                            UserSession.secret == key
-                        )
-
-                        # If we found no keys, we raise and error
-                        if sessions.count() != 1:
-                            # TODO: Custom error
-                            raise ValueError
-                    except (ValueError, KeyError):
-                        valid_user = False
-                    else:
-                        valid_user = True
-                
-                # Lastly, run the method if we found a valid user, or give an error if we didn't
-                if valid_user:
-                    return method(self, page = page, *args, **kwargs)
-                else:
+                # Check if the user allowed to run this method
+                if not Me.check_allowed(allowed = allowed):
                     # TODO: Custom Exception
                     raise ValueError('Permission denied')
+
+                # Run the method
+                return method(self, page = page, *args, **kwargs)
             
             # Return the method
             return check_allowed

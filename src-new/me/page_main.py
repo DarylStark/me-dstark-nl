@@ -25,9 +25,6 @@ class PageMain(Page):
         # TODO: get the title from somewhere else. Maybe a language engine or something like that?
         loginpage = TemplateLoader.get_template('login', title = 'Please login to continue')
 
-        # TODO: Remove this
-        TemplateLoader._template_cache = dict()
-
         # Return the loginpage
         return loginpage
 #---------------------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@ class PageAPIFeed(APIPage):
             'get': self.get
         }
     
-    @PageAPI.api_endpoint
+    @PageAPI.api_endpoint(allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def get(self, *args, **kwargs):
         return 'Getting some feed info?'
 #---------------------------------------------------------------------------------------------------

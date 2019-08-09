@@ -73,7 +73,7 @@ class PageAPI(Page):
         return decorator
     
     @staticmethod
-    def api_endpoint(allowed_methods = None):
+    def api_endpoint(allowed_methods = None, allowed_users = None):
         """ Decorator for API endpoints. Returns the API result at a consistent way. Each API
             endpoint using this decorator should return a tuple with the following values;
             - The first parameter is the data that is to be returned
@@ -84,8 +84,13 @@ class PageAPI(Page):
         def decorator(method):
             """ The decorator method is the real decorator """
 
-            def endpoint(self, allowed_methods = allowed_methods, *args, **kwargs):
+            def endpoint(self, allowed_methods = allowed_methods, allowed_users = allowed_users, *args, **kwargs):
                 """ Method that gets called for API endpoints with this decorator """
+
+                # Check if the user allowed to run this method
+                if not Me.check_allowed(allowed = allowed_users):
+                    # TODO: Custom Exception
+                    raise ValueError('Permission denied')
 
                 # Get the starting time of the call so we can calculate the runtime afterwards
                 start = time()
