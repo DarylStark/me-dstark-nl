@@ -7,6 +7,9 @@
 # Main class: Me
 from me.me import Me
 
+# JSON Encoder
+from me.me_json_encoder import MeJSONEncoder
+
 # Customer exceptions
 from me.exceptions import *
 

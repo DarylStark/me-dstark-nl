@@ -23,19 +23,19 @@ class PageAPIUsers(APIPage):
             'get': self.get
         }
     
-    @PageAPI.api_endpoint
+    @PageAPI.api_endpoint(allowed_methods = [ 'get' ])
     def get(self, *args, **kwargs):
         """ API method to return users in the database """
-        
-        # Get the users from the database
-        retval = list()
-        ses = Database.session()
-        for a in range(0, 1):
-            users = ses.query(User).order_by(User.name)
 
-            for user in users:
-                retval += [ {'name': user.name} ]
-        
-        ses.close()
-        return (retval, 26)
+        # Create a session with the database
+        all_users = list()
+        session = Database.session()
+
+        # Get all users from the database
+        users = session.query(User).order_by(User.name)
+        allusercount = users.count()
+
+        # TODO: Introduce pages and limits
+    
+        return (users.all(), allusercount)
 #---------------------------------------------------------------------------------------------------

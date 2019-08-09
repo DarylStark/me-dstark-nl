@@ -9,6 +9,7 @@
 from me import Me
 from me.exceptions import *
 from me import Page
+from me import MeJSONEncoder
 from time import time
 import flask
 import json
@@ -197,7 +198,7 @@ class PageAPI(Page):
                         }
                     
                     # Set the result for JSON
-                    result = json.dumps(return_dict, **json_variables)
+                    result = json.dumps(return_dict, **json_variables, cls = MeJSONEncoder)
                     result_mimetype = 'application/json'
                 else:
                     raise MeAPIUnsupportedFormatException('The format "{format}" is not supported'.format(format = kwargs['format']))
