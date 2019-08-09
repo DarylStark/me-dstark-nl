@@ -46,7 +46,7 @@
             // Send the token to the verification API
             $.ajax({
                 type: 'POST',
-                url: '/api/aaa/verify?format=json_pretty',
+                url: '/api/aaa/login',
                 data: { token: token },
                 success: successLogin,
                 error: errorLogin

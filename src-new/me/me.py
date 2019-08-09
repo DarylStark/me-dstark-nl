@@ -8,10 +8,9 @@
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
-from me_database import Database
+from me_database import *
 from me.exceptions import *
 from template_loader import TemplateLoader
-from flask import session
 import flask
 import re
 import json
@@ -43,6 +42,10 @@ class Me:
     configfile = 'me-configuration.json'
     config = None
     environment = None
+
+    # Constants for the 'allowed' list for the ui_page decorator
+    LOGGED_OFF = 1
+    INTERACTIVE_USERS = 2
 
     def __new__(cls):
         """ When someone tries to create a instance of it, we give an error """
@@ -219,4 +222,60 @@ class Me:
 
         # Start Flask with the configuration that is red in
         cls.flask_app.run(**cls.get_configuration('flask'))
+    
+    @staticmethod
+    def ui_page(allowed = None):
+        """ Decorator for method where it should be checked if a user is logged in. The 'allowed'
+            keyword defines what type of users are allowed to login """
+        
+        def decorator(method):
+            """ The real decorator contains the method that is going to be returned """
+
+            def check_allowed(self, allowed = allowed, page = None, *args, **kwargs):
+                """ The method that actually checks the logged in user """
+
+                # If the user didn't supply any allowed keywords, we assume he only wants interactively
+                # logged in users
+                if not type(allowed) == set:
+                    allowed = { Me.INTERACTIVE_USERS }
+                
+                # We set the 'valid_user' to False. We can later set it to True if we found a good
+                # logged in user
+                valid_user = False
+                
+                # If the user wants to check if a interactive user is logged in, we check if the
+                # Flask session exists and if there is a session in the database for the key in
+                # this session
+                if Me.INTERACTIVE_USERS in allowed and valid_user == False:
+                    try:
+                        # Get the key from the Flask session
+                        key = flask.session['key']
+
+                        # Create a database session and look for the key in the database
+                        session = Database.session()
+                        sessions = session.query(UserSession).filter(
+                            UserSession.secret == key
+                        )
+
+                        # If we found no keys, we raise and error
+                        if sessions.count() != 1:
+                            # TODO: Custom error
+                            raise ValueError
+                    except (ValueError, KeyError):
+                        valid_user = False
+                    else:
+                        valid_user = True
+                
+                # Lastly, run the method if we found a valid user, or give an error if we didn't
+                if valid_user:
+                    return method(self, page = page, *args, **kwargs)
+                else:
+                    # TODO: Custom Exception
+                    raise ValueError('Permission denied')
+            
+            # Return the method
+            return check_allowed
+        
+        # Return the decorator
+        return decorator
 #---------------------------------------------------------------------------------------------------

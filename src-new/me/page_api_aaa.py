@@ -26,12 +26,13 @@ class PageAPIAAA(APIPage):
             what to do when a API endpoint gets in """
         
         self._api_endpoints = {
-            'verify': self.verify
+            'login': self.login,
+            'logout': self.logout
         }
     
     @PageAPI.api_endpoint(allowed_methods = [ 'post' ])
-    def verify(self, *args, **kwargs):
-        """ Method to verify the credentials of a logging in users """
+    def login(self, *args, **kwargs):
+        """ Method to login the credentials of a logging in users """
         
         # Get the token from the request
         token = flask.request.form.get('token')
@@ -95,5 +96,33 @@ class PageAPIAAA(APIPage):
             return ( [ 'authenticated' ], 1)
         else:
             # TODO: Custom error (AuthenticationFailed)
+            raise ValueError
+    
+    @PageAPI.api_endpoint(allowed_methods = [ 'get' ])
+    def logout(self, *args, **kwargs):
+        """ Method to logoff a user from the system """
+
+        try:
+            # Get the session key from the flask session
+            key = flask.session['key']
+
+            # Clear the Flask session and remove the item from the database
+            flask.session.clear()
+
+            # Remove the session from the database
+            session = Database.session()
+            sessions = session.query(UserSession).filter(
+                UserSession.secret == key
+            )
+            if sessions.count() == 1:
+                session.delete(sessions.first())
+            
+            # Commit the removal
+            session.commit()
+            
+            # Return a tuple with the successcode
+            return ( [ 'logged off'], 1)
+        except KeyError:
+            # TODO: Custom error (NoLogoutKey)
             raise ValueError
 #---------------------------------------------------------------------------------------------------
