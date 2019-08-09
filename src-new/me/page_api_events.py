@@ -8,6 +8,7 @@
 # Imports
 from me import APIPage
 from me import PageAPI
+from me import Me
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('events')
 class PageAPIEvents(APIPage):
