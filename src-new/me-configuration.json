@@ -12,6 +12,9 @@
       "port": 2610,
       "debug": true,
       "use_reloader": false
+    },
+    "flask_sessions": {
+      "secret_key": "x1bx83x9cxdexa0xeb,xf8x85x15'x10'Ex98B{xd9gdBBwxd4"
     }
   },
   "production": {
@@ -27,6 +30,9 @@
       "port": 80,
       "debug": false,
       "use_reloader": false
+    },
+    "flask_sessions": {
+      "secret_key": "xf4xe4xa3xbaxa2exb0xfbxa2UtIx17xf6Gxa6ixd3x8axce05xc1xa9x1b"
     }
   }
 }

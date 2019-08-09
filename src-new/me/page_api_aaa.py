@@ -12,6 +12,8 @@ from me_database import *
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from sqlalchemy import or_
+import random
+import string
 import flask
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('aaa')
@@ -63,10 +65,31 @@ class PageAPIAAA(APIPage):
             if user.email != user_email:
                 user.email = user_email
             
+            # Create a session so we can keep the user online. We create a random string for this
+            # that we keep in our database and in a flask session for the user. When the user
+            # returns, we can check this string and find the correct session for it.
+            session_key = ''.join(random.choices(
+                string.ascii_uppercase + string.ascii_lowercase + string.digits,
+                k = 32)
+            )
+
+            # Create the UserSession
+            new_session = UserSession(
+                user = user.id,
+                secret = session_key,
+                ipv4_address = flask.request.remote_addr
+            )
+
+            # Add it to the database
+            session.add(new_session)
+            session.commit()
+
             # Update the database
             session.commit()
 
-            # TODO: Create a session so we can keep the user online
+            # Create the Flask session. First we destroy each session that exists
+            flask.session.clear()
+            flask.session['key'] = session_key
 
             # Return the value that we need to return when we successful authenticate
             return ( [ 'authenticated' ], 1)

@@ -2,7 +2,8 @@
 pytest
 
 # Requirements file for Me
-Flask
+flask
+flask-session
 jinja2
 
 # Requirements for the database engine

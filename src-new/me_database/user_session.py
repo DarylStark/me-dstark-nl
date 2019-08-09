@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """,
-    me_database - user.py
+    me_database - user_session.py
     Author: Daryl Stark
 
-    Table for users
+    Table for user sessions
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -11,27 +11,24 @@ import sqlalchemy
 from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstraint, ForeignKey
 from sqlalchemy.orm import relationship
 from me_database import Database
+import datetime
 #---------------------------------------------------------------------------------------------------
-class User(Database.base_class):
-    """ Table for users """
+class UserSession(Database.base_class):
+    """ Table for user sessions """
 
     # Mandatory argument for Database objects within SQLAlchemy
-    __tablename__ = 'users'
+    __tablename__ = 'user_sessions'
 
     # Set constrains for this table
     __table_args__ = (
-        UniqueConstraint('name'),
-        UniqueConstraint('email'),
-        UniqueConstraint('googleid')
+        UniqueConstraint('secret'),
     )
 
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
-    name =          Column(String(128), nullable = False)
-    email =         Column(String(128), nullable = False)
-    googleid =      Column(String(128), nullable = True)
-    image =         Column(String(128), nullable = True)
-
-    # One-to-many relationship mappings
-    sessions = relationship("UserSession")
+    start =         Column(DateTime, nullable = False, default = datetime.datetime.utcnow)
+    user =          Column(ForeignKey("users.id"), nullable = False)
+    ipv4_address =  Column(String(16), nullable = True)
+    ipv6_address =  Column(String(40), nullable = True)
+    secret =        Column(String(32), nullable = False)
 #---------------------------------------------------------------------------------------------------

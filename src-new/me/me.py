@@ -11,6 +11,7 @@
 from me_database import Database
 from me.exceptions import *
 from template_loader import TemplateLoader
+from flask import session
 import flask
 import re
 import json
@@ -22,6 +23,7 @@ class Me:
     # Class attributes for Flask;
     # - The 'flask_app' is a class attribute that will be used as the main object for Flask. All
     #   Flask requests will be using this.
+    # - The 'flask_session' will be the object for Flask sessions
     # - The 'registered_urls' will be a dictionary. The keys are going to be regular expressions
     #   that can match a specific URL to a specific class. Within this class, a method will be
     #   mapped to every specific URL and will check if there is a matching regex. If there is, the
@@ -207,6 +209,9 @@ class Me:
 
         # Configure the TemplateLoader
         TemplateLoader.template_directory = 'html/templates'
+
+        # Configure the session key for Flask
+        cls.flask_app.secret_key = cls.get_configuration(group = 'flask_sessions', setting = 'secret_key')
     
     @classmethod
     def start(cls):
