@@ -58,7 +58,8 @@ class TestClassTypes:
     @classes(classes = [ PageAPIAAA, PageAPIEvents, PageAPIFeed, PageAPIUsers,
                          PageAPI, PageMain, PageUI, EventChange,
                          EventSyncResult, Event, FeedItemEventChange, FeedItem,
-                         Filter, Stage, User, Venue ])
+                         Filter, Stage, User, Venue,
+                         UserSession ])
     def test_normal_classes(self, classes):
         """ Method to test all normal classes """
 
