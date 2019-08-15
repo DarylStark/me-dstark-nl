@@ -11,6 +11,7 @@
 from me_database import *
 from me.exceptions import *
 from template_loader import TemplateLoader
+from static_loader import StaticLoader
 import flask
 import re
 import json
@@ -212,6 +213,9 @@ class Me:
 
         # Configure the TemplateLoader
         TemplateLoader.template_directory = 'html/templates'
+
+        # Configure the StaticLoader
+        StaticLoader.static_directory = 'html/'
 
         # Configure the session key for Flask
         cls.flask_app.secret_key = cls.get_configuration(group = 'flask_sessions', setting = 'secret_key')

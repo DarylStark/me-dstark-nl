@@ -2,82 +2,13 @@
 <html lang='en'>
 <head>
     <title>{{ title }}</title>
-    
-    <!-- TODO: Different client Id for production -->
     <meta name='google-signin-client_id' content='167809871556-j2ghbhtoqaeka5bfpr96nmqrp1f3m897.apps.googleusercontent.com'>
+    <link rel="stylesheet" href="/ui/login-css/login.css">
     <script src="https://apis.google.com/js/platform.js"></script>
-    
-    <!-- TODO: Move this to a seperate file -->
-    <style>
-        body {
-            background: #000000;
-        }
-
-        #my-signin2 {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            margin-left: -120px;
-            margin-top: -25px;
-            text-align: center;
-        }
-    </style>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-    
-    <!-- TODO: Move this to a seperate file -->
-    <script>
-        function successLogin(data) {
-            result = data['result']['data'];
-            if (result[0] == 'authenticated') {
-                location.href = '/ui';
-            } else {
-                console.log('Authentication error');
-            }
-        }
-
-        function errorLogin() {
-            console.log('Google error');
-        }
-
-        function onSuccess(googleUser) {
-            // Get the user token for this user
-            token = googleUser.getAuthResponse().id_token;
-
-            // Send the token to the verification API
-            $.ajax({
-                type: 'POST',
-                url: '/api/aaa/login',
-                data: { token: token },
-                success: successLogin,
-                error: errorLogin
-            });
-        }
-
-        function onFailure(error) {
-            console.log(error);
-        }
-
-        function renderButton() {
-            gapi.signin2.render('my-signin2', {
-                'scope': 'profile email',
-                'width': 240,
-                'height': 50,
-                'longtitle': true,
-                'theme': 'dark',
-                'onsuccess': onSuccess,
-                'onfailure': onFailure
-            });
-        }
-
-        $(document).ready(function() {
-            renderButton();
-        });
-    </script>
+    <script src="/ui/login-js/login.js"></script>
 </head>
 
-<body>
+<body><div id='my-signin2'></div></body>
 
-    <div id='my-signin2'></div>
-
-</body>
 </html>

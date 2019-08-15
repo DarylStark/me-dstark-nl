@@ -1,0 +1,14 @@
+body {
+    background: #000000;
+    background-image: url(/ui/login-img/python-code.jpg);
+    background-size: center;
+}
+
+#my-signin2 {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -120px;
+    margin-top: -25px;
+    text-align: center;
+}
