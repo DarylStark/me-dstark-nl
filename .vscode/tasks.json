@@ -32,6 +32,21 @@
                 "panel": "dedicated"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Deploy new-src to Google App Engine (version new-src)",
+            "type": "shell",
+            "command": "scripts/deploy.sh",
+            "args": [
+                "new-src"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
         }
     ]
 }
