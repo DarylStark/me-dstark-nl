@@ -12,6 +12,7 @@ from me_database import *
 from me.exceptions import *
 from template_loader import TemplateLoader
 from static_loader import StaticLoader
+from log import Log
 import flask
 import re
 import json
@@ -196,6 +197,13 @@ class Me:
         if cls.config is None:
             cls.load_config()
         
+        # Configure the logger
+        Log.verbosity_level_console = cls.get_configuration('logging', 'verbosity_level_console')
+        Log.database_object = Database
+        Log.database_entry_object = LogEntry
+        Log.add_default_stream(Log.STREAM_DATABASE)
+        Log.log(severity = Log.INFO, module = 'Me', message = 'Application is starting up')
+        
         # Get the database configuration
         sql_settings = cls.get_configuration(group = 'database')
         
@@ -203,6 +211,7 @@ class Me:
         # normal way using a TCP socket. The other way is with a Unix socket. This last method is
         # used by Google App Engine. When a instance is available in the configuration, we have to
         # use the Unix socket.
+        Log.log(severity = Log.INFO, module = 'Me', message = 'Connecting to the database')
         if sql_settings['google_instance'] != '':
             connection_string = 'mysql+pymysql://{username}:{password}@/{database}?unix_socket=/cloudsql/{google_instance}'
         else:
@@ -210,6 +219,7 @@ class Me:
         
         # Create a database connection. This will also add any tables that need to be added.
         Database.connect(connection_string.format(**sql_settings))
+        Log.log(severity = Log.INFO, module = 'Me', message = 'Connected to the database')
 
         # Configure the TemplateLoader
         TemplateLoader.template_directory = 'html/templates'

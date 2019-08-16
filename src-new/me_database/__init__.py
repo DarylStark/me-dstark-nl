@@ -14,6 +14,7 @@ from me_database.event import Event
 from me_database.feed_item_event_change import FeedItemEventChange
 from me_database.feed_item import FeedItem
 from me_database.filter import Filter
+from me_database.log_entry import LogEntry
 from me_database.stage import Stage
 from me_database.user import User
 from me_database.user_session import UserSession
