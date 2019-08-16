@@ -37,7 +37,6 @@ class StaticLoader:
         # impossible to find a mimetype for the file and it will be impossible to find if we have to
         # do a binary load
         fileparts = filename.split('.')
-        print(fileparts)
         if len(fileparts) == 1:
             # TODO: Custom Exception
             raise ValueError('Extension for file "{}" couldn\'t be found'.format(file = name))
