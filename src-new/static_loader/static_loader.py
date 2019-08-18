@@ -40,7 +40,7 @@ class StaticLoader:
         fileparts = filename.split('.')
         if len(fileparts) == 1:
             # TODO: Custom Exception
-            raise ValueError('Extension for file "{}" couldn\'t be found'.format(file = name))
+            raise ValueError('Extension for file "{file}" couldn\'t be found'.format(file = name))
         
         # Get the extension
         extension = fileparts[-1].lower()
