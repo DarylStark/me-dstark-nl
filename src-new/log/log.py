@@ -56,6 +56,9 @@ class Log:
     # Database entry backlog. We fill this when the user wants to write to the database
     _database_backlog = list()
 
+    # How many items do have to be in the backlog before writing them out
+    database_backlog_maxitems = 1
+
     # Variable that holds the PID for the process. This is set the first time the 'log' method is
     # called and will be used for each log message. This makes sure the logging can be put together
     # for specific threads
@@ -139,27 +142,31 @@ class Log:
                 cls.process_backlog()
     
     @classmethod
-    def process_backlog(cls):
+    def process_backlog(cls, force = False):
         """ Method that actually processes the database backlog. Only processes the backlog when the
-            _engine method in the Database-object is not None, meaning the database is ready """
-        
-        if not cls.database_object is None:
-            if not cls.database_object._engine is None:
-                # Create a database session, add the entries and commit it
-                session = cls.database_object.session()
-                session.add_all(cls._database_backlog)
+            _engine method in the Database-object is not None, meaning the database is ready. We
+            don't sync the database when there are less then cls.database_backlog_maxitems in the
+            backlog. This way, we can spare database resources. We always write it out when the user
+            specifies 'force'. """
 
-                # We are going to write the entries in the backlog to the database. If we receive a
-                # UnboundExecutionError, the database wasn't ready yet to write data
-                try:
-                    # Commit it
-                    session.commit()
-                except sqlalchemy.exc.UnboundExecutionError:
-                    # Close the session. We will try again later
-                    session.close()
-                else:
-                    # Empty the backlog
-                    cls._database_backlog = list()
+        if len(cls._database_backlog) >= cls.database_backlog_maxitems or force:
+            if not cls.database_object is None:
+                if not cls.database_object._engine is None:
+                    # Create a database session, add the entries and commit it
+                    session = cls.database_object.session()
+                    session.add_all(cls._database_backlog)
+
+                    # We are going to write the entries in the backlog to the database. If we receive a
+                    # UnboundExecutionError, the database wasn't ready yet to write data
+                    try:
+                        # Commit it
+                        session.commit()
+                    except sqlalchemy.exc.UnboundExecutionError:
+                        # Close the session. We will try again later
+                        session.close()
+                    else:
+                        # Empty the backlog
+                        cls._database_backlog = list()
     
     @classmethod
     def add_default_stream(cls, stream):

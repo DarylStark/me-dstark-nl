@@ -203,6 +203,7 @@ class Me:
         Log.database_entry_object = LogEntry
         Log.add_default_stream(Log.STREAM_DATABASE)
         Log.log(severity = Log.INFO, module = 'Me', message = 'Application is starting up')
+        Log.database_backlog_maxitems = cls.get_configuration('logging', 'database_backlog_maxitems')
         
         # Get the database configuration
         sql_settings = cls.get_configuration(group = 'database')
