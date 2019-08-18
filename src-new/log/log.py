@@ -59,11 +59,6 @@ class Log:
     # How many items do have to be in the backlog before writing them out
     database_backlog_maxitems = 1
 
-    # Variable that holds the PID for the process. This is set the first time the 'log' method is
-    # called and will be used for each log message. This makes sure the logging can be put together
-    # for specific threads
-    _pid = None
-
     def __new__(cls, *args, **kwargs):
         """ The __new__ method is called before __init__ and is repsponsible for creating the new
             instance of the class. When a user tries to create a instance of this class, we raise an
@@ -77,9 +72,8 @@ class Log:
         # Get the current date and time for later
         now = datetime.datetime.now()
 
-        # Check if we have a PID in the local class. If we don't, set it
-        if cls._pid is None:
-            cls._pid = os.getpid()
+        # Get the PID for the current process
+        pid = os.getpid()
 
         # Find out what streams we need to write to
         if streams == None:
@@ -101,7 +95,7 @@ class Log:
                             severity = severity_names[severity],
                             message = str(message),
                             module = module,
-                            pid = cls._pid,
+                            pid = pid,
                             **kwargs
                         ),
                         end = '\n',
@@ -129,7 +123,7 @@ class Log:
                     datetime = now,
                     microsecond = microseconds,
                     severity = severity,
-                    pid = cls._pid,
+                    pid = pid,
                     module = module,
                     message = str(message),
                     **kwargs
