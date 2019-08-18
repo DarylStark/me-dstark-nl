@@ -13,6 +13,7 @@ from me_database import *
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from sqlalchemy import or_
+from log import Log
 import random
 import string
 import flask
@@ -45,6 +46,7 @@ class PageAPIAAA(APIPage):
         # Check if the token is signed correctly
         if idinfo['iss'] not in [ 'accounts.google.com', 'https://accounts.google.com' ]:
             # TODO: Custom error (AuthenticationFailed)
+            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}".'.format(email = idinfo['email']))
             raise ValueError
         
         # Get the account ID and the e-mailadress
@@ -94,9 +96,11 @@ class PageAPIAAA(APIPage):
             flask.session['key'] = session_key
 
             # Return the value that we need to return when we successful authenticate
+            Log.log(severity = Log.INFO, module = 'API AAA', message = 'Authorized user logged in: "{email}".'.format(email = idinfo['email']))
             return ( [ 'authenticated' ], 1)
         else:
             # TODO: Custom error (AuthenticationFailed)
+            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}".'.format(email = idinfo['email']))
             raise ValueError
     
     @PageAPI.api_endpoint(allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -117,6 +121,9 @@ class PageAPIAAA(APIPage):
             )
             if sessions.count() == 1:
                 session.delete(sessions.first())
+
+            # TODO: Add the mailaddress of the user to the log-message
+            Log.log(severity = Log.INFO, module = 'API AAA', message = 'User logged off')
             
             # Commit the removal
             session.commit()
@@ -125,5 +132,6 @@ class PageAPIAAA(APIPage):
             return ( [ 'logged off'], 1)
         except KeyError:
             # TODO: Custom error (NoLogoutKey)
+            Log.log(severity = Log.WARNING, module = 'API AAA', message = 'User without logout key is trying to logoff')
             raise ValueError
 #---------------------------------------------------------------------------------------------------

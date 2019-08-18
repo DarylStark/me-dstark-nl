@@ -7,6 +7,7 @@
 #---------------------------------------------------------------------------------------------------
 # Imports
 from static_loader.exceptions import *
+from log import Log
 #---------------------------------------------------------------------------------------------------
 class StaticLoader:
     """ Class to load a statis file and get it's contents. This is a static class, meaning that
@@ -78,17 +79,20 @@ class StaticLoader:
         else:
             # Set the loaded content in the cache
             cls._file_cache[name] = (cnt, extensions[extension]['mimetype'])
+        
+        Log.log(severity = Log.DEBUG, module = 'StaticLoader', message = 'Cache size is now {size}'.format(size = len(cls._file_cache)))
     
     @classmethod
     def get_file(cls, name, cache = True):
         """ Method to return a string with the contents of a file. The method will check if the
             file is already in cache and retrieves the template if it isn't. """
-
+        
         # Check if static directory has a / at the end
         if cls.static_directory[-1] != '/': cls.static_directory += '/'
         
         # Check if we need to load the file
         if not name in cls._file_cache.keys():
+            Log.log(severity = Log.DEBUG, module = 'StaticLoader', message = 'Loading file "{name}" into the StaticLoader cache'.format(name = name))
             cls.load_file(name)
         
         # Get the contents from the cache and the mimetype to use
@@ -97,6 +101,7 @@ class StaticLoader:
         # If we don't want to store this file in cache, remove it
         if not cache:
             del cls._file_cache[name]
+            Log.log(severity = Log.DEBUG, module = 'StaticLoader', message = 'Removed "{name}" from cache. Cache size is now {size}'.format(name = name, size = len(cls._file_cache)))
         
         # Return the contents of the file from cache and the mimetype
         return (contents, mimetype)

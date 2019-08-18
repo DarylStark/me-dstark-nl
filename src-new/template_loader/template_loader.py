@@ -8,6 +8,7 @@
 # Imports
 from template_loader.exceptions import *
 from jinja2 import Template
+from log import Log
 #---------------------------------------------------------------------------------------------------
 class TemplateLoader:
     """ Class to load a template file and get it's contents. This is a static class, meaning that
@@ -42,6 +43,8 @@ class TemplateLoader:
         else:
             # Set the loaded content in the cache
             cls._template_cache[name] = cnt
+        
+        Log.log(severity = Log.DEBUG, module = 'TemplateLoader', message = 'Cache size is now {size}'.format(size = len(cls._template_cache)))
     
     @classmethod
     def get_template(cls, name, **variables):
@@ -53,6 +56,7 @@ class TemplateLoader:
         
         # Check if we need to load the template
         if not name in cls._template_cache.keys():
+            Log.log(severity = Log.DEBUG, module = 'TemplateLoader', message = 'Loading file "{name}" into the TemplateLoader cache'.format(name = name))
             cls.load_template(name)
         
         # Return the contents of the template file from cache. We convert it to a Jinja2 Template
