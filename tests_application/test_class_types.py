@@ -19,6 +19,7 @@ sys.path.append('src-new/')
 from me import *
 from me_database import *
 from template_loader import *
+from log import *
 #---------------------------------------------------------------------------------------------------
 def classes(classes):
     """ Decorator for the test methods. Accepts the classes to be tested """
@@ -88,7 +89,7 @@ class TestClassTypes:
         # Return the errors to the decorator
         return errors
     
-    @classes(classes = [ Me, Database, TemplateLoader ])
+    @classes(classes = [ Me, Database, TemplateLoader, Log ])
     def test_static_classes(self, classes):
         """ Method to test static classes """
 

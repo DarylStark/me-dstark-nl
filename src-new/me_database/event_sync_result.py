@@ -28,4 +28,7 @@ class EventSyncResult(Database.base_class):
     errors =            Column(Integer, nullable = False)
     new_events =        Column(Integer, nullable = False)
     updated_events =    Column(Integer, nullable = False)
+
+    # One-to-many relationship mappings
+    log = relationship("LogEntry")
 #---------------------------------------------------------------------------------------------------
