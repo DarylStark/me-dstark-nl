@@ -19,6 +19,7 @@ sys.path.append('src-new/')
 from me import *
 from me_database import *
 from template_loader import *
+from static_loader import *
 from log import *
 #---------------------------------------------------------------------------------------------------
 def classes(classes):
@@ -135,7 +136,7 @@ class TestClassTypes:
                          MeConfigFileException, MeConfigException, MeEnvironmentException, MeAPIGroupNotRegisteredException,
                          MeAPINoAPIGroupException, MeValueException, MeAPIUnsupportedFormatException, MeAPIEndPointInvalidException,
                          MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException,
-                         MeAPIInvalidMethodException ])
+                         MeAPIInvalidMethodException, StaticLoaderException, StaticFileNotFoundException ])
     def test_exception_classes(self, classes):
         """ Method to test if a class is a exception class """
 
