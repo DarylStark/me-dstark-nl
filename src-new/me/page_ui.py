@@ -18,8 +18,6 @@ class PageUI(Page):
     """ Class for the UI page of the application. Will show the default UI template and adjust the
         variables in that. This class is also responsible for loading static files, like JavaScript
         files, images and CSS files. """
-    
-    # TODO: Add this to the unittests
 
     @Me.ui_page(allowed = { Me.LOGGED_OFF  })
     def show_page(self, path, **kwargs):
