@@ -19,8 +19,6 @@ severity_names = [
 class Log:
     """ Class to log information to whever it needs to go """
 
-    # TODO: Add to unittests
-
     # Constans for output streams
     STREAM_STDOUT = 1
     STREAM_STDERR = 2
