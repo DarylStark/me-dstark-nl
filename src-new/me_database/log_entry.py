@@ -24,7 +24,7 @@ class LogEntry(Database.base_class):
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
     datetime =      Column(DateTime)
-    microsecond =   Column(mysql.TINYINT)
+    microsecond =   Column(mysql.SMALLINT)
     severity =      Column(Integer)
     pid =           Column(Integer)
     module =        Column(String(128))

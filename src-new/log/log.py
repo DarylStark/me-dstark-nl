@@ -118,11 +118,12 @@ class Log:
                 # Create a object for the log entry
                 entry = cls.database_entry_object(
                     datetime = now,
-                    microsecond = now.microsecond / 1000,
+                    microsecond = round(now.microsecond / 1000),
                     severity = severity,
                     pid = cls._pid,
                     module = module,
-                    message = str(message)
+                    message = str(message),
+                    **kwargs
                 )
 
                 # Add the entry to the backlog
