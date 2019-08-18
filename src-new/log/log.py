@@ -59,6 +59,14 @@ class Log:
     # How many items do have to be in the backlog before writing them out
     database_backlog_maxitems = 1
 
+    # Extra fields for the logging. The fields configured here will have two properties; the name
+    # and the value. The value can be an integer or string to present a static value, or it can be a
+    # callable. In case of a callable, the result of the call will be used for the value. If it is a
+    # callable, everytime a new log entry is created, the method gets called again. This way, the
+    # user of the Log class can determine what gets filled in. It can be, for instance, a method
+    # that returns the IP address in a Flask request.
+    extra_fields = dict()
+
     def __new__(cls, *args, **kwargs):
         """ The __new__ method is called before __init__ and is repsponsible for creating the new
             instance of the class. When a user tries to create a instance of this class, we raise an
@@ -74,6 +82,19 @@ class Log:
 
         # Get the PID for the current process
         pid = os.getpid()
+
+        # If we have extra fields defined in the class, let's walk through them and add the elements
+        # to the 'kwargs' variable. This variable will be used later with the representation of the
+        # log items and when writing to the database.
+        for field, value in cls.extra_fields.items():
+            # Check if the value is a static value, or if it is callable. Set the 'newvalue'
+            # variable to the correct newvalue which we will use later.
+            newvalue = value
+            if hasattr(value, '__call__'):
+                newvalue = value()
+            
+            # Add it to 'kwargs'
+            kwargs.update({ field: newvalue })
 
         # Find out what streams we need to write to
         if streams == None:

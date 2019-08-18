@@ -204,6 +204,11 @@ class Me:
         Log.add_default_stream(Log.STREAM_DATABASE)
         Log.database_backlog_maxitems = cls.get_configuration('logging', 'database_backlog_maxitems')
 
+        # Add extra fields to the logger
+        Log.extra_fields = {
+            'ip_address': Me.get_ip_address
+        }
+
         Log.log(severity = Log.INFO, module = 'Me', message = 'Application is starting up in environment "{environment}"'.format(environment = cls.environment))
         
         # Get the database configuration
@@ -307,4 +312,17 @@ class Me:
         
         # Return the decorator
         return decorator
+    
+    @staticmethod
+    def get_ip_address():
+        """ Method that returns the IPv4 or IPv6 address for the current user. This method can be
+            used for, for instance, the Log-package to log the IP address of the requesting user """
+        
+        # We get and return the IP address. When the method is run out of request context, the Flask
+        # package raises an RuntimeError exception. We catch this and return None in these cases so
+        # the field in the database stays empty
+        try:
+            return flask.request.remote_addr
+        except RuntimeError:
+            return None
 #---------------------------------------------------------------------------------------------------

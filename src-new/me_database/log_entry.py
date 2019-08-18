@@ -29,6 +29,7 @@ class LogEntry(Database.base_class):
     pid =           Column(Integer, nullable = False)
     module =        Column(String(128), nullable = False)
     message =       Column(String(1024), nullable = False)
+    ip_address =    Column(String(40), nullable = True)
     
     # Application specific fields for the log
     sync_result =   Column(ForeignKey("event_sync_results.id"), nullable = True)
