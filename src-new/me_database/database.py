@@ -34,7 +34,7 @@ class Database():
             the command to create the tables in the database. """
         
         # Create the engine
-        cls._engine = create_engine(connection, echo = False, max_overflow = 25, pool_size = 75)
+        cls._engine = create_engine(connection, echo = False)
 
         # Create the configured tables
         cls.base_class.metadata.create_all(cls._engine)
