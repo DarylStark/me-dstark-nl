@@ -120,10 +120,10 @@ class PageAPIAAA(APIPage):
                 UserSession.secret == key
             )
             if sessions.count() == 1:
+                email = sessions.first().user_object.email
                 session.delete(sessions.first())
 
-            # TODO: Add the mailaddress of the user to the log-message
-            Log.log(severity = Log.INFO, module = 'API AAA', message = 'User logged off')
+            Log.log(severity = Log.INFO, module = 'API AAA', message = 'User "{email}" logged off'.format(email = email))
             
             # Commit the removal
             session.commit()

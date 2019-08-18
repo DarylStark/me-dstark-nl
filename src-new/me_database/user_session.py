@@ -31,4 +31,7 @@ class UserSession(Database.base_class):
     ipv4_address =  Column(String(16), nullable = True)
     ipv6_address =  Column(String(40), nullable = True)
     secret =        Column(String(32), nullable = False)
+
+    # Many-to-one relationship mappings
+    user_object = relationship("User")
 #---------------------------------------------------------------------------------------------------
