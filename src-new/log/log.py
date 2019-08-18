@@ -115,10 +115,16 @@ class Log:
             
             # Check if the objects are configured
             if not cls.database_object is None and not cls.database_entry_object is None:
+                # MySQL writes out the time rounded up using the microseconds. This results in weird
+                # times, so we remove the microseconds. We also store the microseconds though, so we
+                # have to save them prior to removing them
+                microseconds = round(now.microsecond / 1000)
+                now = now.replace(microsecond = 0)
+
                 # Create a object for the log entry
                 entry = cls.database_entry_object(
                     datetime = now,
-                    microsecond = round(now.microsecond / 1000),
+                    microsecond = microseconds,
                     severity = severity,
                     pid = cls._pid,
                     module = module,

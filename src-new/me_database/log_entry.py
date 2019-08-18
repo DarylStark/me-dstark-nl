@@ -22,11 +22,12 @@ class LogEntry(Database.base_class):
     # DateTime datatype. The calling function have to add this field.
 
     # Database columns for this table
-    id =            Column(Integer, primary_key = True)
-    datetime =      Column(DateTime)
-    microsecond =   Column(mysql.SMALLINT)
-    severity =      Column(Integer)
-    pid =           Column(Integer)
-    module =        Column(String(128))
-    message =       Column(String(1024))
+    id =            Column(Integer, primary_key = True, nullable = False)
+    datetime =      Column(DateTime, nullable = False)
+    microsecond =   Column(mysql.SMALLINT, nullable = False)
+    severity =      Column(Integer, nullable = False)
+    pid =           Column(Integer, nullable = False)
+    module =        Column(String(128), nullable = False)
+    message =       Column(String(1024), nullable = False)
+    test =          Column(Integer, nullable = True)
 #---------------------------------------------------------------------------------------------------
