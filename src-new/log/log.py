@@ -9,6 +9,7 @@
 import datetime
 import sys
 import sqlalchemy
+import os
 #---------------------------------------------------------------------------------------------------
 # The names for the emergency levels
 severity_names = [
@@ -41,7 +42,7 @@ class Log:
     }
 
     # The format_console class variable defines how to display messages on the console
-    format_console = '[ {date} | {time} ] [ {severity: <9} ] [ {module: <16} ] {message}'
+    format_console = '[ {date} | {time} ] [ {severity: <9} ] [ {pid: 5d} ] [ {module: <16} ] {message}'
 
     # Objects for database interconnection
     database_object = None
@@ -55,6 +56,11 @@ class Log:
     # Database entry backlog. We fill this when the user wants to write to the database
     _database_backlog = list()
 
+    # Variable that holds the PID for the process. This is set the first time the 'log' method is
+    # called and will be used for each log message. This makes sure the logging can be put together
+    # for specific threads
+    _pid = None
+
     def __new__(cls, *args, **kwargs):
         """ The __new__ method is called before __init__ and is repsponsible for creating the new
             instance of the class. When a user tries to create a instance of this class, we raise an
@@ -62,11 +68,15 @@ class Log:
         raise TypeError('It is not possible to create instances of CheckFactory')
     
     @classmethod
-    def log(cls, message, severity = INFO, streams = None, module = ''):
+    def log(cls, message, severity = INFO, streams = None, module = '', **kwargs):
         """ Method to log something """
 
         # Get the current date and time for later
         now = datetime.datetime.now()
+
+        # Check if we have a PID in the local class. If we don't, set it
+        if cls._pid is None:
+            cls._pid = os.getpid()
 
         # Find out what streams we need to write to
         if streams == None:
@@ -87,7 +97,9 @@ class Log:
                             time = now.strftime('%H:%M:%S.%f')[:-3],
                             severity = severity_names[severity],
                             message = str(message),
-                            module = module
+                            module = module,
+                            pid = cls._pid,
+                            **kwargs
                         ),
                         end = '\n',
                         file = outstream
@@ -106,7 +118,9 @@ class Log:
                 # Create a object for the log entry
                 entry = cls.database_entry_object(
                     datetime = now,
+                    microsecond = now.microsecond / 1000,
                     severity = severity,
+                    pid = cls._pid,
                     module = module,
                     message = str(message)
                 )
