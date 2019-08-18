@@ -290,16 +290,17 @@ class Me:
         def decorator(method):
             """ The real decorator contains the method that is going to be returned """
 
-            def check_allowed(self, allowed = allowed, page = None, *args, **kwargs):
+            def check_allowed(self, allowed = allowed, path = None, *args, **kwargs):
                 """ Checks if the user allowed to run this page and runs this page if he is """
 
                 # Check if the user allowed to run this method
                 if not Me.check_allowed(allowed = allowed):
                     # TODO: Custom Exception
+                    Log.log(severity = Log.NOTICE, module = 'Me (ui_page)', message = 'Unauthorized user is trying to open path "{path}".'.format(path = path))
                     raise ValueError('Permission denied')
 
                 # Run the method
-                return method(self, page = page, *args, **kwargs)
+                return method(self, path = path, *args, **kwargs)
             
             # Return the method
             return check_allowed

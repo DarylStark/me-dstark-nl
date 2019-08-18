@@ -11,6 +11,7 @@ from me.exceptions import *
 from me import Page
 from me import MeJSONEncoder
 from time import time
+from log import Log
 import flask
 import json
 import math
@@ -73,7 +74,7 @@ class PageAPI(Page):
         return decorator
     
     @staticmethod
-    def api_endpoint(allowed_methods = None, allowed_users = None):
+    def api_endpoint(endpoint_name, allowed_methods = None, allowed_users = None):
         """ Decorator for API endpoints. Returns the API result at a consistent way. Each API
             endpoint using this decorator should return a tuple with the following values;
             - The first parameter is the data that is to be returned
@@ -90,6 +91,7 @@ class PageAPI(Page):
                 # Check if the user allowed to run this method
                 if not Me.check_allowed(allowed = allowed_users):
                     # TODO: Custom Exception
+                    Log.log(severity = Log.NOTICE, module = 'API', message = 'Unauthorized user is trying to open API endpoint "{name}" in group "{group}".'.format(name = endpoint_name, group = self.group))
                     raise ValueError('Permission denied')
 
                 # Get the starting time of the call so we can calculate the runtime afterwards
@@ -105,6 +107,7 @@ class PageAPI(Page):
                 
                 # Check if the method is in the list. If it isn't, raise an error
                 if not request_method in allowed_methods:
+                    Log.log(severity = Log.NOTICE, module = 'API', message = 'User tried method "{method}" for endpoint "{name}" in group "{group}".'.format(method = request_method, name = endpoint_name, group = self.group))
                     raise MeAPIInvalidMethodException(
                         'Wrong HTTP method. Accepted methods are {methods}, got "{method}"'.format(
                             methods = ', '.join([ '"{x}"'.format(x = x) for x in allowed_methods ]),
@@ -137,6 +140,7 @@ class PageAPI(Page):
                     try:
                         kwargs[default_value[1]] = default_value[0](*default_value[1:])
                     except ValueError:
+                        Log.log(severity = Log.NOTICE, module = 'API', message = 'User gave wrong type for "{var}" in endpoint "{name}" in group "{group}".'.format(var = default_value[1], name = endpoint_name, group = self.group))
                         raise MeValueException(
                             'Variable "{key}" should be "{default_type}". Got "{value_type}" with the value "{value}".'.format(
                                 key = default_value[1],
@@ -150,7 +154,7 @@ class PageAPI(Page):
                 # put it in the resulting JSON later on.
                 try:
                     endpoint_result = method(self, *args, **kwargs)
-                except KeyboardInterrupt:
+                except:
                     # TODO:
                     # If the method raises an error, we should create a error-element to return to the
                     # user. This element should contain enough information about the error so the user

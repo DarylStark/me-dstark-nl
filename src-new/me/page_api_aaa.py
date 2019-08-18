@@ -32,7 +32,7 @@ class PageAPIAAA(APIPage):
             'logout': self.logout
         }
     
-    @PageAPI.api_endpoint(allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
+    @PageAPI.api_endpoint(endpoint_name = 'login', allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
     def login(self, *args, **kwargs):
         """ Method to login the credentials of a logging in users """
         
@@ -103,7 +103,7 @@ class PageAPIAAA(APIPage):
             Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}".'.format(email = idinfo['email']))
             raise ValueError
     
-    @PageAPI.api_endpoint(allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    @PageAPI.api_endpoint(endpoint_name = 'logout', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def logout(self, *args, **kwargs):
         """ Method to logoff a user from the system """
 

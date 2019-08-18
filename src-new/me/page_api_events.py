@@ -23,7 +23,7 @@ class PageAPIEvents(APIPage):
             'get': self.get
         }
     
-    @PageAPI.api_endpoint(allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    @PageAPI.api_endpoint(endpoint_name = 'get', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def get(self, *args, **kwargs):
         return 'Getting some event info?'
 #---------------------------------------------------------------------------------------------------
