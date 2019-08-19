@@ -9,6 +9,7 @@
 # Imports
 from me import Me
 from me import Page
+from me.exceptions import *
 from static_loader import StaticLoader
 import re
 import flask
@@ -43,8 +44,7 @@ class PageUI(Page):
                 return method(path = path, **kwargs)
         
         # If we didn't return any, give an error
-        # TODO: Custom exception
-        raise ValueError
+        raise MePageNotFoundException('Page "{path}" could not be found'.format(path = path))
     
     @Me.ui_page(allowed = { Me.INTERACTIVE_USERS  })
     def show_page_ui(self, path, **kwargs):
@@ -58,7 +58,7 @@ class PageUI(Page):
         # Find the file to open
         static_file = re.findall('ui/js/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
-            raise ValueError
+            raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
         contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
@@ -74,7 +74,7 @@ class PageUI(Page):
         # Find the file to open
         static_file = re.findall('ui/img/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
-            raise ValueError
+            raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
         contents, mimetype = StaticLoader.get_file('protected-img/' + static_file[0], cache = False)
@@ -89,7 +89,7 @@ class PageUI(Page):
         # Find the file to open
         static_file = re.findall('ui/css/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
-            raise ValueError
+            raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
         contents, mimetype = StaticLoader.get_file('protected-css/' + static_file[0])
@@ -104,7 +104,7 @@ class PageUI(Page):
         # Find the file to open
         static_file = re.findall('ui/login-js/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
-            raise ValueError
+            raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
         contents, mimetype = StaticLoader.get_file('unprotected-js/' + static_file[0])
@@ -120,7 +120,7 @@ class PageUI(Page):
         # Find the file to open
         static_file = re.findall('ui/login-img/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
-            raise ValueError
+            raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
         contents, mimetype = StaticLoader.get_file('unprotected-img/' + static_file[0], cache = False)
@@ -135,7 +135,7 @@ class PageUI(Page):
         # Find the file to open
         static_file = re.findall('ui/login-css/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
-            raise ValueError
+            raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
         contents, mimetype = StaticLoader.get_file('unprotected-css/' + static_file[0])

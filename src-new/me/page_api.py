@@ -90,9 +90,8 @@ class PageAPI(Page):
 
                 # Check if the user allowed to run this method
                 if not Me.check_allowed(allowed = allowed_users):
-                    # TODO: Custom Exception
                     Log.log(severity = Log.NOTICE, module = 'API', message = 'Unauthorized user is trying to open API endpoint "{name}" in group "{group}".'.format(name = endpoint_name, group = self.group))
-                    raise ValueError('Permission denied')
+                    raise MePermissionDeniedException('Permission denied')
 
                 # Get the starting time of the call so we can calculate the runtime afterwards
                 start = time()

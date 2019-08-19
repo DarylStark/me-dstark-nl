@@ -67,3 +67,27 @@ class MeAPIInvalidMethodException(MeException):
     """ Exception for when a API endpoints gets requested with the wrong HTTP method """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeNoUserSessionException(MeException):
+    """ Exception for when a user tries to open a protected page but a session doesn't exists """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MePermissionDeniedException(MeException):
+    """ Exception for when a user with not permission tries to open a protected page """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAuthenticationFailedException(MeException):
+    """ Exception for when a unauthenticated user tries to login """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeNoLogoutKeyException(MeException):
+    """ Exception for when a user tries to logout without a secret key """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MePageNotFoundException(MeException):
+    """ Exception for when a user tries to open a page that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeNoFileProvidedException(MeException):
+    """ Exception for when a user tries to open a static file directory """
+    pass
+#---------------------------------------------------------------------------------------------------

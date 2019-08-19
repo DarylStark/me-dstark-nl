@@ -136,7 +136,9 @@ class TestClassTypes:
                          MeConfigFileException, MeConfigException, MeEnvironmentException, MeAPIGroupNotRegisteredException,
                          MeAPINoAPIGroupException, MeValueException, MeAPIUnsupportedFormatException, MeAPIEndPointInvalidException,
                          MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException,
-                         MeAPIInvalidMethodException, StaticLoaderException, StaticFileNotFoundException ])
+                         MeAPIInvalidMethodException, StaticLoaderException, StaticFileNotFoundException, MeNoUserSessionException,
+                         MePermissionDeniedException, MeAuthenticationFailedException, MeNoLogoutKeyException, MePageNotFoundException,
+                         MePageNotFoundException, MeNoFileProvidedException ])
     def test_exception_classes(self, classes):
         """ Method to test if a class is a exception class """
 

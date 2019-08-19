@@ -14,3 +14,7 @@ class StaticFileNotFoundException(StaticLoaderException):
     """ Exception for when the user tries to open a static file that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class StaticFileUnrecognizedExtensionException(StaticLoaderException):
+    """ Exception for when the user tries to open a static file that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------

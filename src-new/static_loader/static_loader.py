@@ -39,8 +39,7 @@ class StaticLoader:
         # do a binary load
         fileparts = filename.split('.')
         if len(fileparts) == 1:
-            # TODO: Custom Exception
-            raise ValueError('Extension for file "{file}" couldn\'t be found'.format(file = name))
+            raise StaticFileUnrecognizedExtensionException('Extension for file "{file}" couldn\'t be found'.format(file = name))
         
         # Get the extension
         extension = fileparts[-1].lower()
@@ -57,8 +56,7 @@ class StaticLoader:
 
         # If we didn't register this extension, throw an error
         if not extension in extensions:
-            # TODO: Custom Exception
-            raise ValueError('Extension "{extension}" is not known'.format(extension = extension))
+            raise StaticFileUnrecognizedExtensionException('Extension "{extension}" is not known'.format(extension = extension))
         
         # Get the correct mode to open the file
         mode = 'r'

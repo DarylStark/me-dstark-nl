@@ -87,8 +87,8 @@ class Me:
                 urls = ', '.join( [ '"{name}" ("{regex}")'.format(name = name, regex = obj['regex_text'] ) for name, obj in matched_urls ] )
             ))
 
-        # No results; give a 404
-        flask.abort(404)
+        # No results; raise an error
+        raise MePageNotFoundException
     
     @classmethod
     def register_url(cls, regex, name):
@@ -277,9 +277,8 @@ class Me:
 
                 # If we found no keys, we raise and error
                 if sessions.count() != 1:
-                    # TODO: Custom error
-                    raise ValueError
-            except (ValueError, KeyError):
+                    raise MeNoUserSessionException
+            except (MeNoUserSessionException, KeyError):
                 pass
             else:
                 return True
@@ -300,9 +299,8 @@ class Me:
 
                 # Check if the user allowed to run this method
                 if not Me.check_allowed(allowed = allowed):
-                    # TODO: Custom Exception
                     Log.log(severity = Log.NOTICE, module = 'Me (ui_page)', message = 'Unauthorized user is trying to open path "{path}".'.format(path = path))
-                    raise ValueError('Permission denied')
+                    raise MePermissionDeniedException('Permission denied')
 
                 # Run the method
                 return method(self, path = path, *args, **kwargs)

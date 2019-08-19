@@ -45,9 +45,8 @@ class PageAPIAAA(APIPage):
 
         # Check if the token is signed correctly
         if idinfo['iss'] not in [ 'accounts.google.com', 'https://accounts.google.com' ]:
-            # TODO: Custom error (AuthenticationFailed)
-            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}".'.format(email = idinfo['email']))
-            raise ValueError
+            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}" (account not verified by Google)'.format(email = idinfo['email']))
+            raise MeAuthenticationFailedException('Account not verified by Google')
         
         # Get the account ID and the e-mailadress
         user_id = idinfo['sub']
@@ -99,9 +98,8 @@ class PageAPIAAA(APIPage):
             Log.log(severity = Log.INFO, module = 'API AAA', message = 'Authorized user logged in: "{email}".'.format(email = idinfo['email']))
             return ( [ 'authenticated' ], 1)
         else:
-            # TODO: Custom error (AuthenticationFailed)
-            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}".'.format(email = idinfo['email']))
-            raise ValueError
+            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}" (no user profile)'.format(email = idinfo['email']))
+            raise MeAuthenticationFailedException('No user profile')
     
     @PageAPI.api_endpoint(endpoint_name = 'logout', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def logout(self, *args, **kwargs):
@@ -131,7 +129,6 @@ class PageAPIAAA(APIPage):
             # Return a tuple with the successcode
             return ( [ 'logged off'], 1)
         except KeyError:
-            # TODO: Custom error (NoLogoutKey)
             Log.log(severity = Log.WARNING, module = 'API AAA', message = 'User without logout key is trying to logoff')
-            raise ValueError
+            raise MeNoLogoutKeyException
 #---------------------------------------------------------------------------------------------------
