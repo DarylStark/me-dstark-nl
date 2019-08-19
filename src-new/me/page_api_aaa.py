@@ -80,7 +80,7 @@ class PageAPIAAA(APIPage):
             new_session = UserSession(
                 user = user.id,
                 secret = session_key,
-                ipv4_address = flask.request.remote_addr
+                ip_address = flask.request.remote_addr
             )
 
             # Add it to the database

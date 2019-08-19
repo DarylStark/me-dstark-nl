@@ -28,8 +28,7 @@ class UserSession(Database.base_class):
     id =            Column(Integer, primary_key = True)
     start =         Column(DateTime, nullable = False, default = datetime.datetime.utcnow)
     user =          Column(ForeignKey("users.id"), nullable = False)
-    ipv4_address =  Column(String(16), nullable = True)
-    ipv6_address =  Column(String(40), nullable = True)
+    ip_address =    Column(String(16), nullable = True)
     secret =        Column(String(32), nullable = False)
 
     # Many-to-one relationship mappings
