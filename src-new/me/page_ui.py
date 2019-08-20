@@ -10,7 +10,7 @@
 from me import Me
 from me import Page
 from me.exceptions import *
-from static_loader import StaticLoader
+from static_loader import *
 import re
 import flask
 #---------------------------------------------------------------------------------------------------
@@ -61,7 +61,10 @@ class PageUI(Page):
             raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
-        contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
+        try:
+            contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
+        except StaticFileNotFoundException:
+            raise MePageNotFoundException
 
         # Return it
         return flask.Response(contents, mimetype = mimetype)
@@ -77,7 +80,10 @@ class PageUI(Page):
             raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
-        contents, mimetype = StaticLoader.get_file('protected-img/' + static_file[0], cache = False)
+        try:
+            contents, mimetype = StaticLoader.get_file('protected-img/' + static_file[0], cache = False)
+        except StaticFileNotFoundException:
+            raise MePageNotFoundException
 
         # Return it
         return flask.Response(contents, mimetype = mimetype)
@@ -92,7 +98,10 @@ class PageUI(Page):
             raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
-        contents, mimetype = StaticLoader.get_file('protected-css/' + static_file[0])
+        try:
+            contents, mimetype = StaticLoader.get_file('protected-css/' + static_file[0])
+        except StaticFileNotFoundException:
+            raise MePageNotFoundException
 
         # Return it
         return flask.Response(contents, mimetype = mimetype)
@@ -107,7 +116,10 @@ class PageUI(Page):
             raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
-        contents, mimetype = StaticLoader.get_file('unprotected-js/' + static_file[0])
+        try:
+            contents, mimetype = StaticLoader.get_file('unprotected-js/' + static_file[0])
+        except StaticFileNotFoundException:
+            raise MePageNotFoundException
 
         # Return it
         return flask.Response(contents, mimetype = mimetype)
@@ -123,7 +135,10 @@ class PageUI(Page):
             raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
-        contents, mimetype = StaticLoader.get_file('unprotected-img/' + static_file[0], cache = False)
+        try:
+            contents, mimetype = StaticLoader.get_file('unprotected-img/' + static_file[0], cache = False)
+        except StaticFileNotFoundException:
+            raise MePageNotFoundException
 
         # Return it
         return flask.Response(contents, mimetype = mimetype)
@@ -138,7 +153,10 @@ class PageUI(Page):
             raise MeNoFileProvidedException
 
         # Open the file from the StaticLoader
-        contents, mimetype = StaticLoader.get_file('unprotected-css/' + static_file[0])
+        try:
+            contents, mimetype = StaticLoader.get_file('unprotected-css/' + static_file[0])
+        except StaticFileNotFoundException:
+            raise MePageNotFoundException
 
         # Return it
         return flask.Response(contents, mimetype = mimetype)
