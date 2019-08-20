@@ -52,10 +52,6 @@ class ErrorPage:
             show_traceback = me.Me.get_configuration('errors', 'show_exceptions')
         )
 
-        # TODO: Remove this!!!!!
-        TemplateLoader._template_cache = dict()
-        StaticLoader._file_cache = dict()
-
         # Create a response object
         return Response(tpl, error_code)
 #---------------------------------------------------------------------------------------------------
