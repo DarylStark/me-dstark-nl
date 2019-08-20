@@ -68,31 +68,33 @@ class PageAPIAAA(APIPage):
             if user.email != user_email:
                 user.email = user_email
             
-            # Create a session so we can keep the user online. We create a random string for this
-            # that we keep in our database and in a flask session for the user. When the user
-            # returns, we can check this string and find the correct session for it.
-            session_key = ''.join(random.choices(
-                string.ascii_uppercase + string.ascii_lowercase + string.digits,
-                k = 32)
-            )
+            # Check if we have to create a new UserSession
+            if not Me.check_allowed():
+                Log.log(severity = Log.INFO, module = 'API AAA', message = 'We have to create a new UserSession for "{email}".'.format(email = idinfo['email']))
+                # Create a session so we can keep the user online. We create a random string for this
+                # that we keep in our database and in a flask session for the user. When the user
+                # returns, we can check this string and find the correct session for it.
+                session_key = ''.join(random.choices(
+                    string.ascii_uppercase + string.ascii_lowercase + string.digits,
+                    k = 32)
+                )
 
-            # Create the UserSession
-            new_session = UserSession(
-                user = user.id,
-                secret = session_key,
-                ip_address = flask.request.remote_addr
-            )
+                # Create the UserSession
+                new_session = UserSession(
+                    user = user.id,
+                    secret = session_key,
+                    ip_address = flask.request.remote_addr
+                )
 
-            # Add it to the database
-            session.add(new_session)
-            session.commit()
+                # Add it to the database
+                session.add(new_session)
+
+                # Create the Flask session. First we destroy each session that exists
+                flask.session.clear()
+                flask.session['key'] = session_key
 
             # Update the database
             session.commit()
-
-            # Create the Flask session. First we destroy each session that exists
-            flask.session.clear()
-            flask.session['key'] = session_key
 
             # Return the value that we need to return when we successful authenticate
             Log.log(severity = Log.INFO, module = 'API AAA', message = 'Authorized user logged in: "{email}".'.format(email = idinfo['email']))
