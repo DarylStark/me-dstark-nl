@@ -71,7 +71,7 @@ class StaticLoader:
 
             # If this is a text file, we have to join the lines
             if not extensions[extension]['binary']:
-                cnt = '\n'.join(cnt)    
+                cnt = ''.join(cnt)    
         except FileNotFoundError:
             raise StaticFileNotFoundException('Static file "{name}" is not found'.format(name = name))
         else:
