@@ -52,7 +52,7 @@ class Log:
     verbosity_level_console = INFO
 
     # Database entry backlog. We fill this when the user wants to write to the database
-    _database_backlog = list()
+    _database_backlog = set()
 
     # How many items do have to be in the backlog before writing them out
     database_backlog_maxitems = 1
@@ -149,7 +149,7 @@ class Log:
                 )
 
                 # Add the entry to the backlog
-                cls._database_backlog.append(entry)
+                cls._database_backlog.add(entry)
 
                 # Write out the backlog
                 cls.process_backlog()
@@ -165,9 +165,14 @@ class Log:
         if len(cls._database_backlog) >= cls.database_backlog_maxitems or force:
             if not cls.database_object is None:
                 if not cls.database_object._engine is None:
-                    # Create a database session, add the entries and commit it
+                    # Create a session
                     session = cls.database_object.session()
+                    
+                    # Add all items to the session
                     session.add_all(cls._database_backlog)
+
+                    # Remove everything from the backlog
+                    cls._database_backlog = set()
 
                     # We are going to write the entries in the backlog to the database. If we receive a
                     # UnboundExecutionError, the database wasn't ready yet to write data
@@ -175,12 +180,10 @@ class Log:
                         # Commit it
                         session.commit()
                     except sqlalchemy.exc.UnboundExecutionError:
-                        # Close the session. We will try again later
-                        session.close()
-                    else:
-                        # Empty the backlog
-                        cls._database_backlog = list()
-    
+                        # If we get an unbound error, we just skip this backlog processing. We will
+                        # get it next time
+                        session.rollback()
+
     @classmethod
     def add_default_stream(cls, stream):
         """ Method to add a default stream to the class """
