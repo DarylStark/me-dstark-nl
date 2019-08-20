@@ -1,0 +1,52 @@
+body {
+    background-color: #f5f5f5;
+    font-family: Roboto, regular;
+}
+
+/* Card with error text */
+
+.error-card-wide.mdl-card {
+    width: auto;
+    height: auto;
+    min-height: auto;
+    margin-bottom: 24px;
+}
+
+.error-card-wide > .mdl-card__title {
+    color: #fff;
+    background-color: #37474f;
+    align-items: flex-start;
+}
+
+.error-card-wide > .mdl-card__menu {
+    color: #fff;
+}
+
+.mdl-card__supporting-text {
+    width: auto;
+}
+
+.mdl-card__supporting-text p {
+    font-weight: bold;
+}
+
+.mdl-card__supporting-text pre {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 8px;
+    width: auto%;
+    display: block;
+    overflow: auto;
+    margin: 0px;
+}
+
+.mdl-card__supporting-text h3 {
+    font-weight: bold;
+    font-size: 14px;
+    margin: 0px;
+}
+
+.error-card-wide > .mdl-card__title > h4 {
+    margin-top: 0;
+    margin-bottom: 0;
+}

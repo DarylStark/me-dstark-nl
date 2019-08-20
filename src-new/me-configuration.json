@@ -19,6 +19,9 @@
     "logging": {
       "verbosity_level_console": 7,
       "database_backlog_maxitems": 1
+    },
+    "errors": {
+      "show_exceptions": true
     }
   },
   "production": {
@@ -41,6 +44,9 @@
     "logging": {
       "verbosity_level_console": -1,
       "database_backlog_maxitems": 1
+    },
+    "errors": {
+      "show_exceptions": false
     }
   }
 }

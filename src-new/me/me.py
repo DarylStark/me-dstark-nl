@@ -10,6 +10,7 @@
 # Imports
 from me_database import *
 from me.exceptions import *
+from me.error_page import ErrorPage
 from template_loader import TemplateLoader
 from static_loader import StaticLoader
 from log import Log
@@ -64,31 +65,38 @@ class Me:
         matched_urls = [ (key, obj) for key, obj in Me.registered_urls.items() if obj['regex'].match(path) ]
 
         # Check how many results we have. If it is exactly one, we can continue. If it is zero, we
-        # have to given the user a 404. If it is more then one, we have a ambigious name and we have
-        # to give the user a error.
-        if len(matched_urls) == 1:
-            # Perfect match! Let's initiate a instance of the class that belongs to this registered
-            # URL and start the 'show_page' method for that instance. We also have to give any
-            # arguments that were given by the user (those things after the ? in the URL), if any.
+        # have to give the user a 404. If it is more then one, we have a ambigious name and we have
+        # to give the user a error. We do this complete clause in a try/except block so we can catch
+        # errors from the pages and display a neat error page when it happends.
+        try:
+            if len(matched_urls) == 1:
+                # Perfect match! Let's initiate a instance of the class that belongs to this
+                # registered URL and start the 'show_page' method for that instance. We also have to
+                # give any arguments that were given by the user (those things after the ? in the
+                # URL), if any.
 
-            # Get the arguments that were given with the request
-            args = dict(flask.request.values)
+                # Get the arguments that were given with the request
+                args = dict(flask.request.values)
 
-            # Initiate a instance of the registered class
-            instance = matched_urls[0][1]['cls']()
+                # Initiate a instance of the registered class
+                instance = matched_urls[0][1]['cls']()
 
-            # Run the 'show_page' method and return the value of that method to Flask so it can show
-            # the page
-            return instance.show_page(path = path, **args)
-        elif len(matched_urls) > 1:
-            # Too many results; ambigious. Raise an error and tell the user which URLs are
-            # conflicting. We tell the regexes that match as well.
-            raise MeAmbigiousPathException('Ambigious path; matches regex of registered URLs: {urls}'.format(
-                urls = ', '.join( [ '"{name}" ("{regex}")'.format(name = name, regex = obj['regex_text'] ) for name, obj in matched_urls ] )
-            ))
+                # Run the 'show_page' method and return the value of that method to Flask so it can show
+                # the page
+                return instance.show_page(path = path, **args)
+            elif len(matched_urls) > 1:
+                # Too many results; ambigious. Raise an error and tell the user which URLs are
+                # conflicting. We tell the regexes that match as well.
+                raise MeAmbigiousPathException('Ambigious path; matches regex of registered URLs: {urls}'.format(
+                    urls = ', '.join( [ '"{name}" ("{regex}")'.format(name = name, regex = obj['regex_text'] ) for name, obj in matched_urls ] )
+                ))
 
-        # No results; raise an error
-        raise MePageNotFoundException
+            # No results; raise an error
+            raise MePageNotFoundException
+        except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException) as error:
+            return ErrorPage.show_error(403, error)
+        except (MeAPIGroupNotRegisteredException, MeAPINoAPIGroupException, MeAPIEndPointInvalidException, MeAPINoEndPointException, MePageNotFoundException) as error:
+            return ErrorPage.show_error(404, error)
     
     @classmethod
     def register_url(cls, regex, name):

@@ -32,9 +32,9 @@ class PageUI(Page):
             '^ui/js/.?': self.show_protected_js,
             '^ui/img/.?': self.show_protected_image,
             '^ui/css/.?': self.show_protected_css,
-            '^ui/login-js/.?': self.show_unprotected_js,
-            '^ui/login-img/.?': self.show_unprotected_image,
-            '^ui/login-css/.?': self.show_unprotected_css,
+            '^ui/unprotected-js/.?': self.show_unprotected_js,
+            '^ui/unprotected-img/.?': self.show_unprotected_image,
+            '^ui/unprotected-css/.?': self.show_unprotected_css,
             '^ui/?.?': self.show_page_ui
         }
         
@@ -102,7 +102,7 @@ class PageUI(Page):
         """ Method to show a unprotected JavaScript files """
         
         # Find the file to open
-        static_file = re.findall('ui/login-js/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/unprotected-js/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -118,7 +118,7 @@ class PageUI(Page):
             spare memory """
 
         # Find the file to open
-        static_file = re.findall('ui/login-img/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/unprotected-img/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -133,7 +133,7 @@ class PageUI(Page):
         """ Method to show a unprotected CSS files """
         
         # Find the file to open
-        static_file = re.findall('ui/login-css/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/unprotected-css/([a-zA-Z0-9-\.]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
