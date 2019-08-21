@@ -10,6 +10,7 @@ import datetime
 import sys
 import sqlalchemy
 import os
+import threading
 #---------------------------------------------------------------------------------------------------
 # The names for the emergency levels
 severity_names = [
@@ -53,6 +54,7 @@ class Log:
 
     # Database entry backlog. We fill this when the user wants to write to the database
     _database_backlog = set()
+    _backlog_lock = threading.Lock()
 
     # How many items do have to be in the backlog before writing them out
     database_backlog_maxitems = 1
@@ -165,14 +167,14 @@ class Log:
         if len(cls._database_backlog) >= cls.database_backlog_maxitems or force:
             if not cls.database_object is None:
                 if not cls.database_object._engine is None:
+                    # Set a lock, so a seperate thread cannot write untill this is done
+                    cls._backlog_lock.acquire()
+
                     # Create a session
                     session = cls.database_object.session()
                     
                     # Add all items to the session
                     session.add_all(cls._database_backlog)
-
-                    # Remove everything from the backlog
-                    cls._database_backlog = set()
 
                     # We are going to write the entries in the backlog to the database. If we receive a
                     # UnboundExecutionError, the database wasn't ready yet to write data
@@ -183,6 +185,12 @@ class Log:
                         # If we get an unbound error, we just skip this backlog processing. We will
                         # get it next time
                         session.rollback()
+                    
+                    # Remove everything from the backlog
+                    cls._database_backlog = set()
+
+                    # Release the lock so seperate threads can do anything they want
+                    cls._backlog_lock.release()
 
     @classmethod
     def add_default_stream(cls, stream):
