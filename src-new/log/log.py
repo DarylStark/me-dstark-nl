@@ -185,12 +185,12 @@ class Log:
                         # If we get an unbound error, we just skip this backlog processing. We will
                         # get it next time
                         session.rollback()
-                    
-                    # Remove everything from the backlog
-                    cls._database_backlog = set()
-
-                    # Release the lock so seperate threads can do anything they want
-                    cls._backlog_lock.release()
+                    else:                    
+                        # Remove everything from the backlog
+                        cls._database_backlog = set()
+                    finally:
+                        # Release the lock so seperate threads can do anything they want
+                        cls._backlog_lock.release()
 
     @classmethod
     def add_default_stream(cls, stream):
