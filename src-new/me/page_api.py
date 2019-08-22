@@ -153,7 +153,7 @@ class PageAPI(Page):
                 # put it in the resulting JSON later on.
                 try:
                     endpoint_result = method(self, *args, **kwargs)
-                except:
+                except KeyboardInterrupt:
                     # TODO:
                     # If the method raises an error, we should create a error-element to return to the
                     # user. This element should contain enough information about the error so the user

@@ -7,6 +7,13 @@
       "database": "me_new_dev",
       "google_instance": ""
     },
+    "sqlalchemy": {
+      "echo": true,
+      "pool_pre_ping": true,
+      "pool_recycle": 10,
+      "pool_size": 5,
+      "pool_overflow": 10
+    },
     "flask": {
       "host": "0.0.0.0",
       "port": 2610,
@@ -31,6 +38,13 @@
       "password": "qgP}=ZVgv??aczRgmb?9bB<-bp4K)r@@",
       "database": "me_new",
       "google_instance": "dstark-nl:europe-west1:sql-apps-dstark-nl"
+    },
+    "sqlalchemy": {
+      "echo": true,
+      "pool_pre_ping": true,
+      "pool_recycle": 10,
+      "pool_size": 5,
+      "pool_overflow": 10
     },
     "flask": {
       "host": "0.0.0.0",

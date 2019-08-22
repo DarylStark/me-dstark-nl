@@ -35,8 +35,9 @@ class PageAPIUsers(APIPage):
         # Get all users from the database
         users = session.query(User).order_by(User.name)
         allusercount = users.count()
+        session.close()
 
-        # TODO: Introduce pages and limits
+        # TODO: Introduce pages and limits and make sure data gets returned
     
-        return (users.all(), allusercount)
+        return ([], allusercount)
 #---------------------------------------------------------------------------------------------------

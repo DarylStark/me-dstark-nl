@@ -233,7 +233,10 @@ class Me:
             connection_string = 'mysql+pymysql://{username}:{password}@{server}/{database}'
         
         # Create a database connection. This will also add any tables that need to be added.
-        Database.connect(connection_string.format(**sql_settings))
+        Database.connect(
+            connection_string.format(**sql_settings),
+            **cls.get_configuration(group = 'sqlalchemy')
+        )
         Log.log(severity = Log.INFO, module = 'Me', message = 'Connected to the database')
 
         # Configure the TemplateLoader
@@ -283,8 +286,11 @@ class Me:
                     UserSession.secret == key
                 )
 
-                # If we found no keys, we raise and error
-                if sessions.count() != 1:
+                user_count = sessions.count()
+                session.close()
+
+                # If we found no users with this key, we raise and error
+                if user_count != 1:
                     raise MeNoUserSessionException
             except (MeNoUserSessionException, KeyError):
                 pass
