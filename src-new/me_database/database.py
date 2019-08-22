@@ -45,7 +45,14 @@ class Database():
         """
         
         # Create the engine
-        cls._engine = create_engine(connection, echo = False, pool_pre_ping = pool_pre_ping, pool_recycle = pool_recycle)
+        cls._engine = create_engine(
+            connection,
+            echo = False,
+            pool_pre_ping = pool_pre_ping,
+            pool_recycle = pool_recycle,
+            pool_size = pool_size,
+            max_overflow = pool_overflow
+        )
 
         # Create the configured tables
         cls.base_class.metadata.create_all(cls._engine)
