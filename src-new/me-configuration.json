@@ -11,8 +11,8 @@
       "echo": true,
       "pool_pre_ping": true,
       "pool_recycle": 10,
-      "pool_size": 5,
-      "pool_overflow": 10
+      "pool_size": 10,
+      "pool_overflow": 20
     },
     "flask": {
       "host": "0.0.0.0",
