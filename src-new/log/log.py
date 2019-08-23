@@ -168,30 +168,25 @@ class Log:
             if not cls.database_object is None:
                 if not cls.database_object._engine is None:
                     # Set a lock, so a seperate thread cannot write untill this is done
-                    # TODO: Use the 'Lock' as a context manager (Pythonic code FTW)
-                    cls._backlog_lock.acquire()
+                   with cls._backlog_lock:
+                        # Create a session
+                        session = cls.database_object.session()
+                        
+                        # Add all items to the session
+                        session.add_all(cls._database_backlog)
 
-                    # Create a session
-                    session = cls.database_object.session()
-                    
-                    # Add all items to the session
-                    session.add_all(cls._database_backlog)
-
-                    # We are going to write the entries in the backlog to the database. If we receive a
-                    # UnboundExecutionError, the database wasn't ready yet to write data
-                    try:
-                        # Commit it
-                        session.commit()
-                    except sqlalchemy.exc.UnboundExecutionError:
-                        # If we get an unbound error, we just skip this backlog processing. We will
-                        # get it next time
-                        session.rollback()
-                    else:                    
-                        # Remove everything from the backlog
-                        cls._database_backlog = set()
-                    finally:
-                        # Release the lock so seperate threads can do anything they want
-                        cls._backlog_lock.release()
+                        # We are going to write the entries in the backlog to the database. If we receive a
+                        # UnboundExecutionError, the database wasn't ready yet to write data
+                        try:
+                            # Commit it
+                            session.commit()
+                        except sqlalchemy.exc.UnboundExecutionError:
+                            # If we get an unbound error, we just skip this backlog processing. We will
+                            # get it next time
+                            session.rollback()
+                        else:                    
+                            # Remove everything from the backlog
+                            cls._database_backlog = set()
 
     @classmethod
     def add_default_stream(cls, stream):
