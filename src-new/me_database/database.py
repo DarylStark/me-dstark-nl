@@ -47,7 +47,7 @@ class Database():
         # Create the engine
         cls._engine = create_engine(
             connection,
-            echo = False,
+            echo = echo,
             pool_pre_ping = pool_pre_ping,
             pool_recycle = pool_recycle,
             pool_size = pool_size,
