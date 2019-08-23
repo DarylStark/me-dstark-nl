@@ -33,7 +33,8 @@ class PageAPIAAA(APIPage):
             'login': self.login,
             'logout': self.logout,
             'set_session_name': self.set_session_name,
-            'delete_session': self.delete_session
+            'delete_session': self.delete_session,
+            'get_sessions': self.get_sessions
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'login', allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
@@ -195,14 +196,33 @@ class PageAPIAAA(APIPage):
 
             # Check if we have a session. If we don't give an error
             if sessions.count() != 1:
-                # TODO: Custom exception
                 raise MeSessionNotForUserException('Session with id "{id}" is not found for the currently logged on user "{email}"'.format(
                     id = session_id,
                     email = user[1].email
                 ))
 
-            # Update the session
+            # Delete the session
             session.delete(sessions.first())
 
         return([ 'removed' ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'get_sessions', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_sessions(self, *args, **kwargs):
+        """ API endpoint to get all UserSessions for the currently logged on user """
+        
+        # Get the currently logged in user
+        user = Me.logged_in_user()
+
+        # Get all UsersSessions for this user
+        with DatabaseSession() as session:
+            # Get the session
+            sessions = session.query(UserSession).filter(
+                and_(
+                    UserSession.user == user[1].id
+                )
+            )
+        
+        # TODO: work with pages; although it is very unlikely a user has more then 25 sessions
+
+        return([ sessions.all() ], 1)
 #---------------------------------------------------------------------------------------------------
