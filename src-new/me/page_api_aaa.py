@@ -54,54 +54,51 @@ class PageAPIAAA(APIPage):
 
         # Find a useraccount for this Google_ID or this e-mailaddress. If it exists, update it with
         # the new information. If it doesn't, we do nothing.
-        session = Database.session()
-        users = session.query(User).filter(
-            or_(User.email == user_email, User.googleid == user_id)
-        )
+        with DatabaseSession(commit_on_end = True) as session:
+            users = session.query(User).filter(
+                or_(User.email == user_email, User.googleid == user_id)
+            )
 
-        if users.count() == 1:
-            # We have one user. That's what we needed! Logging in was succesful. Let's check if we
-            # have to update anything
-            user = users.first()
-            if user.googleid != user_id:
-                user.googleid = user_id
-            if user.email != user_email:
-                user.email = user_email
-            
-            # Check if we have to create a new UserSession
-            if not Me.check_allowed():
-                Log.log(severity = Log.INFO, module = 'API AAA', message = 'We have to create a new UserSession for "{email}".'.format(email = idinfo['email']))
-                # Create a session so we can keep the user online. We create a random string for this
-                # that we keep in our database and in a flask session for the user. When the user
-                # returns, we can check this string and find the correct session for it.
-                session_key = ''.join(random.choices(
-                    string.ascii_uppercase + string.ascii_lowercase + string.digits,
-                    k = 32)
-                )
+            if users.count() == 1:
+                # We have one user. That's what we needed! Logging in was succesful. Let's check if we
+                # have to update anything
+                user = users.first()
+                if user.googleid != user_id:
+                    user.googleid = user_id
+                if user.email != user_email:
+                    user.email = user_email
+                
+                # Check if we have to create a new UserSession
+                if not Me.check_allowed():
+                    Log.log(severity = Log.INFO, module = 'API AAA', message = 'We have to create a new UserSession for "{email}".'.format(email = idinfo['email']))
+                    # Create a session so we can keep the user online. We create a random string for this
+                    # that we keep in our database and in a flask session for the user. When the user
+                    # returns, we can check this string and find the correct session for it.
+                    session_key = ''.join(random.choices(
+                        string.ascii_uppercase + string.ascii_lowercase + string.digits,
+                        k = 32)
+                    )
 
-                # Create the UserSession
-                new_session = UserSession(
-                    user = user.id,
-                    secret = session_key,
-                    ip_address = flask.request.remote_addr
-                )
+                    # Create the UserSession
+                    new_session = UserSession(
+                        user = user.id,
+                        secret = session_key,
+                        ip_address = flask.request.remote_addr
+                    )
 
-                # Add it to the database
-                session.add(new_session)
+                    # Add it to the database
+                    session.add(new_session)
 
-                # Create the Flask session. First we destroy each session that exists
-                flask.session.clear()
-                flask.session['key'] = session_key
+                    # Create the Flask session. First we destroy each session that exists
+                    flask.session.clear()
+                    flask.session['key'] = session_key
 
-            # Update the database
-            session.commit()
-
-            # Return the value that we need to return when we successful authenticate
-            Log.log(severity = Log.INFO, module = 'API AAA', message = 'Authorized user logged in: "{email}".'.format(email = idinfo['email']))
-            return ( [ 'authenticated' ], 1)
-        else:
-            Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}" (no user profile)'.format(email = idinfo['email']))
-            raise MeAuthenticationFailedException('No user profile')
+                # Return the value that we need to return when we successful authenticate
+                Log.log(severity = Log.INFO, module = 'API AAA', message = 'Authorized user logged in: "{email}".'.format(email = idinfo['email']))
+                return ( [ 'authenticated' ], 1)
+            else:
+                Log.log(severity = Log.NOTICE, module = 'API AAA', message = 'Unauthorized user is trying to login: "{email}" (no user profile)'.format(email = idinfo['email']))
+                raise MeAuthenticationFailedException('No user profile')
     
     @PageAPI.api_endpoint(endpoint_name = 'logout', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def logout(self, *args, **kwargs):
@@ -115,18 +112,15 @@ class PageAPIAAA(APIPage):
             flask.session.clear()
 
             # Remove the session from the database
-            session = Database.session()
-            sessions = session.query(UserSession).filter(
-                UserSession.secret == key
-            )
-            if sessions.count() == 1:
-                email = sessions.first().user_object.email
-                session.delete(sessions.first())
+            with DatabaseSession(commit_on_end = True) as session:
+                sessions = session.query(UserSession).filter(
+                    UserSession.secret == key
+                )
+                if sessions.count() == 1:
+                    email = sessions.first().user_object.email
+                    session.delete(sessions.first())
 
-            Log.log(severity = Log.INFO, module = 'API AAA', message = 'User "{email}" logged off'.format(email = email))
-            
-            # Commit the removal
-            session.commit()
+                Log.log(severity = Log.INFO, module = 'API AAA', message = 'User "{email}" logged off'.format(email = email))
             
             # Return a tuple with the successcode
             return ( [ 'logged off'], 1)

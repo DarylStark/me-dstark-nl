@@ -281,13 +281,12 @@ class Me:
                 key = flask.session['key']
 
                 # Create a database session and look for the key in the database
-                session = Database.session()
-                sessions = session.query(UserSession).filter(
-                    UserSession.secret == key
-                )
+                with DatabaseSession() as session:
+                    sessions = session.query(UserSession).filter(
+                        UserSession.secret == key
+                    )
 
-                user_count = sessions.count()
-                session.close()
+                    user_count = sessions.count()
 
                 # If we found no users with this key, we raise and error
                 if user_count != 1:

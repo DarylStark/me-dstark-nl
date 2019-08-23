@@ -61,7 +61,7 @@ class TestClassTypes:
                          PageAPI, PageMain, PageUI, EventChange,
                          EventSyncResult, Event, FeedItemEventChange, FeedItem,
                          Filter, Stage, User, Venue,
-                         UserSession ])
+                         UserSession, DatabaseSession ])
     def test_normal_classes(self, classes):
         """ Method to test all normal classes """
 

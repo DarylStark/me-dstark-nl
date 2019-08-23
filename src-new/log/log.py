@@ -168,6 +168,7 @@ class Log:
             if not cls.database_object is None:
                 if not cls.database_object._engine is None:
                     # Set a lock, so a seperate thread cannot write untill this is done
+                    # TODO: Use the 'Lock' as a context manager (Pythonic code FTW)
                     cls._backlog_lock.acquire()
 
                     # Create a session

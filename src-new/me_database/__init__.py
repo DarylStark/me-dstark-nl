@@ -7,6 +7,9 @@
 # Main Database class
 from me_database.database import Database
 
+# Session manager
+from me_database.database_session import DatabaseSession
+
 # Table definitions
 from me_database.event_change import EventChange
 from me_database.event_sync_result import EventSyncResult
