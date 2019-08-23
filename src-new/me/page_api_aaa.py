@@ -9,6 +9,7 @@
 from me import Me
 from me import APIPage
 from me import PageAPI
+from me.exceptions import *
 from me_database import *
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -155,7 +156,7 @@ class PageAPIAAA(APIPage):
             # Check if we have a session. If we don't give an error
             if sessions.count() != 1:
                 # TODO: Custom exception
-                raise KeyError('Session with id "{id}" is not found for the currently logged on user "{email}"'.format(
+                raise MeSessionNotForUserException('Session with id "{id}" is not found for the currently logged on user "{email}"'.format(
                     id = session_id,
                     email = user[1].email
                 ))

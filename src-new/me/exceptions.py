@@ -91,3 +91,7 @@ class MeNoFileProvidedException(MeException):
     """ Exception for when a user tries to open a static file directory """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeSessionNotForUserException(MeException):
+    """ Exception for when a user tries to update a UserSession name that isn't his """
+    pass
+#---------------------------------------------------------------------------------------------------
