@@ -32,7 +32,8 @@ class PageAPIAAA(APIPage):
         self._api_endpoints = {
             'login': self.login,
             'logout': self.logout,
-            'set_session_name': self.set_session_name
+            'set_session_name': self.set_session_name,
+            'delete_session': self.delete_session
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'login', allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
@@ -166,4 +167,42 @@ class PageAPIAAA(APIPage):
             user_session.name = new_name
 
         return([ 'updated' ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'delete_session', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def delete_session(self, *args, **kwargs):
+        """ API endpoint to remove a UserSession """
+        
+        # Get the currently logged in user
+        user = Me.logged_in_user()
+
+        # Get the UserSession the user wants to change and the new name for the session
+        session_id = flask.request.form.get('session')
+
+        # We cannot remove the currently active session. We raise an error is the user tries this
+        if int(session_id) == user[0].id:
+            raise MeActiveSessionCannotBeRemoved("Cannot remove the currently active user session")
+
+        # Find the user session. We search for the session_id and the user_id so we make sure only
+        # the sessions are found that are actually owned by the user
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the session
+            sessions = session.query(UserSession).filter(
+                and_(
+                    UserSession.id == session_id,
+                    UserSession.user == user[1].id
+                )
+            )
+
+            # Check if we have a session. If we don't give an error
+            if sessions.count() != 1:
+                # TODO: Custom exception
+                raise MeSessionNotForUserException('Session with id "{id}" is not found for the currently logged on user "{email}"'.format(
+                    id = session_id,
+                    email = user[1].email
+                ))
+
+            # Update the session
+            session.delete(sessions.first())
+
+        return([ 'removed' ], 1)
 #---------------------------------------------------------------------------------------------------

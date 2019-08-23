@@ -93,7 +93,7 @@ class Me:
 
             # No results; raise an error
             raise MePageNotFoundException
-        except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException, MeSessionNotForUserException) as error:
+        except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException, MeSessionNotForUserException, MeActiveSessionCannotBeRemoved) as error:
             return ErrorPage.show_error(403, error)
         except (MeAPIGroupNotRegisteredException, MeAPINoAPIGroupException, MeAPIEndPointInvalidException, MeAPINoEndPointException, MePageNotFoundException) as error:
             return ErrorPage.show_error(404, error)
