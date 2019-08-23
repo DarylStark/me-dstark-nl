@@ -213,6 +213,9 @@ class PageAPIAAA(APIPage):
         # Get the currently logged in user
         user = Me.logged_in_user()
 
+        # Empty list for sessions
+        all_sessions = list()
+
         # Get all UsersSessions for this user
         with DatabaseSession() as session:
             # Get the session
@@ -221,8 +224,14 @@ class PageAPIAAA(APIPage):
                     UserSession.user == user[1].id
                 )
             )
+
+            # Get the usercount
+            all_sessions_count = sessions.count()
+
+            # Get all the user objects
+            all_sessions = sessions.all()
         
         # TODO: work with pages; although it is very unlikely a user has more then 25 sessions
 
-        return([ sessions.all() ], 1)
+        return(all_sessions, all_sessions_count)
 #---------------------------------------------------------------------------------------------------
