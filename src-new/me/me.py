@@ -277,27 +277,41 @@ class Me:
         # this session
         if Me.INTERACTIVE_USERS in allowed and valid_user == False:
             try:
-                # Get the key from the Flask session
-                key = flask.session['key']
-
-                # Create a database session and look for the key in the database
-                with DatabaseSession() as session:
-                    sessions = session.query(UserSession).filter(
-                        UserSession.secret == key
-                    )
-
-                    user_count = sessions.count()
-
-                # If we found no users with this key, we raise and error
-                if user_count != 1:
-                    raise MeNoUserSessionException
-            except (MeNoUserSessionException, KeyError):
+                user = Me.logged_in_user()
+            except (MeNoUserSessionException):
                 pass
             else:
                 return True
         
         # Return the value
         return valid_user
+    
+    @staticmethod
+    def logged_in_user():
+        """ Method that returns the UserSession and the User object for the currently logged in
+            user, or raises an error when no logged in user can be found """
+        # Get the key from the Flask session
+        try:
+            key = flask.session['key']
+
+            # Create a database session and look for the key in the database
+            with DatabaseSession() as session:
+                sessions = session.query(UserSession).filter(
+                    UserSession.secret == key
+                )
+
+                # Get the user count
+                user_count = sessions.count()
+
+                # If we found no users with this key, we raise and error
+                if user_count != 1:
+                    raise MeNoUserSessionException
+                
+                # If we did find a user, we return the user object
+                return (sessions.first(), sessions.first().user_object)
+        except KeyError:
+            raise MeNoUserSessionException
+            
     
     @staticmethod
     def ui_page(allowed = None):

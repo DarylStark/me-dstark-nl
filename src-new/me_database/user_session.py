@@ -30,6 +30,7 @@ class UserSession(Database.base_class):
     user =          Column(ForeignKey("users.id"), nullable = False)
     ip_address =    Column(String(16), nullable = True)
     secret =        Column(String(32), nullable = False)
+    name =          Column(String(128), nullable = True)
 
     # Many-to-one relationship mappings
     user_object = relationship("User")

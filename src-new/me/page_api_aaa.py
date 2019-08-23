@@ -13,6 +13,7 @@ from me_database import *
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from sqlalchemy import or_
+from sqlalchemy import and_
 from log import Log
 import random
 import string
@@ -29,7 +30,8 @@ class PageAPIAAA(APIPage):
         
         self._api_endpoints = {
             'login': self.login,
-            'logout': self.logout
+            'logout': self.logout,
+            'set_session_name': self.set_session_name
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'login', allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
@@ -127,4 +129,40 @@ class PageAPIAAA(APIPage):
         except KeyError:
             Log.log(severity = Log.WARNING, module = 'API AAA', message = 'User without logout key is trying to logoff')
             raise MeNoLogoutKeyException
+
+    @PageAPI.api_endpoint(endpoint_name = 'set_session_name', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def set_session_name(self, *args, **kwargs):
+        """ API endpoint to change the name of a UserSession """
+        
+        # Get the currently logged in user
+        user = Me.logged_in_user()
+
+        # Get the UserSession the user wants to change and the new name for the session
+        session_id = flask.request.form.get('session')
+        new_name = flask.request.form.get('new_name')
+
+        # Find the user session. We search for the session_id and the user_id so we make sure only
+        # the sessions are found that are actually owned by the user
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the session
+            sessions = session.query(UserSession).filter(
+                and_(
+                    UserSession.id == session_id,
+                    UserSession.user == user[1].id
+                )
+            )
+
+            # Check if we have a session. If we don't give an error
+            if sessions.count() != 1:
+                # TODO: Custom exception
+                raise KeyError('Session with id "{id}" is not found for the currently logged on user "{email}"'.format(
+                    id = session_id,
+                    email = user[1].email
+                ))
+
+            # Update the session
+            user_session = sessions.first()
+            user_session.name = new_name
+
+        return([ 'updated' ], 1)
 #---------------------------------------------------------------------------------------------------

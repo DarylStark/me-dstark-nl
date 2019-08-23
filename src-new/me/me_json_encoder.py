@@ -8,6 +8,7 @@
 # Imports
 from me_database import Database
 from json import JSONEncoder
+import datetime
 #---------------------------------------------------------------------------------------------------
 class MeJSONEncoder(JSONEncoder):
     """ JSON encoder for my own created classes """
@@ -15,7 +16,7 @@ class MeJSONEncoder(JSONEncoder):
     def default(self, obj):
         """ Gets the object and encodes it in a way JSON can work with """
 
-        # Check if we can serialize this
+        # Serializer for database objects
         if isinstance(obj, Database.base_class):
             # If we receive a SQL Table class, we have to first get the columns;
             columns = [ column.name for column in type(obj).__table__.columns ]
@@ -25,8 +26,11 @@ class MeJSONEncoder(JSONEncoder):
 
             # And we return that dict
             return column_dict
+        # Serializer for datetime objects
+        elif isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
         else:
             raise TypeError(
-                "Unserializable object {} of type {}".format(obj, type(obj))
+                'Unserializable object "{}" of type "{}"'.format(obj, type(obj))
             )
 #---------------------------------------------------------------------------------------------------
