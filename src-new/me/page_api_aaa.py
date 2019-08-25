@@ -213,16 +213,14 @@ class PageAPIAAA(APIPage):
         # Get the currently logged in user
         user = Me.logged_in_user()
 
-        # Empty list for sessions
+        # Empty list for sessions2
         all_sessions = list()
 
         # Get all UsersSessions for this user
         with DatabaseSession() as session:
             # Get the session
             sessions = session.query(UserSession).filter(
-                and_(
-                    UserSession.user == user[1].id
-                )
+                UserSession.user == user[1].id
             )
 
             # Get the usercount
