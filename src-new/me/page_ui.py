@@ -11,8 +11,11 @@ from me import Me
 from me import Page
 from me.exceptions import *
 from static_loader import *
+from template_loader import TemplateLoader
+from log import Log
 import re
 import flask
+import json
 #---------------------------------------------------------------------------------------------------
 @Me.register_url(name = 'ui', regex = '^ui/?.?')
 class PageUI(Page):
@@ -49,7 +52,37 @@ class PageUI(Page):
     @Me.ui_page(allowed = { Me.INTERACTIVE_USERS  })
     def show_page_ui(self, path, **kwargs):
         """ Method to show a the main page of the website """
-        return 'Main page'
+
+        # Check if the UI configuration is already loaded and if it isn't, load it from the JSON
+        # file
+        if Me.config_ui is None:
+            try:
+                # Load the configfile into memeory
+                Log.log(severity = Log.DEBUG, module = 'PageUI', message = 'Loading UI configuration into memory')
+                with open(Me.configfile_ui, 'r') as ui_cfg:
+                    Me.config_ui = json.load(ui_cfg)
+            except FileNotFoundError:
+                # File was not found; raise an error
+                Log.log(severity = Log.ERROR, module = 'PageUI', message = 'Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
+                raise MeUIConfigFileException('Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
+            except json.decoder.JSONDecodeError:
+                # File was not found but not valid JSON; raise an error
+                Log.log(severity = Log.ERROR, module = 'PageUI', message = 'Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
+                raise MeUIConfigFileException('File "{file}" is not valid JSON'.format(file = Me.configfile_ui))
+        
+        # Load the 'ui.html' template and replace the needed variables
+        template = TemplateLoader.get_template(
+            'ui',
+            **Me.config_ui['template_variables']['ui']
+        )
+
+        # TODO: Remove this debugging
+        TemplateLoader._template_cache = dict()
+        StaticLoader._file_cache = dict()
+        Me.config_ui = None
+
+        # Return the generated template
+        return template   
     
     @Me.ui_page(allowed = { Me.INTERACTIVE_USERS  })
     def show_protected_js(self, path, **kwargs):
@@ -65,7 +98,7 @@ class PageUI(Page):
             contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
         except StaticFileNotFoundException:
             raise MePageNotFoundException
-
+        
         # Return it
         return flask.Response(contents, mimetype = mimetype)
     

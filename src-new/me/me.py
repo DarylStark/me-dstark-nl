@@ -41,10 +41,14 @@ class Me:
     # - The 'config' will be the dict that contains the actual config.
     # - The 'environment' tells the class what environment we are in. The environment has to match a
     #   JSON key configuration file
+    # - The 'configfile_ui' specifies the configuration file that will be used for the UI
+    # - The 'config_ui' will be the dict that contains the actual UI config
 
     configfile = 'me-configuration.json'
     config = None
     environment = None
+    configfile_ui = 'ui-configuration.json'
+    config_ui = None
 
     # Constants for the 'allowed' list for the ui_page decorator
     LOGGED_OFF = 1
@@ -93,7 +97,7 @@ class Me:
 
             # No results; raise an error
             raise MePageNotFoundException
-        except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException, MeSessionNotForUserException, MeActiveSessionCannotBeRemoved) as error:
+        except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException, MeSessionNotForUserException, MeActiveSessionCannotBeRemovedException) as error:
             return ErrorPage.show_error(403, error)
         except (MeAPIGroupNotRegisteredException, MeAPINoAPIGroupException, MeAPIEndPointInvalidException, MeAPINoEndPointException, MePageNotFoundException) as error:
             return ErrorPage.show_error(404, error)

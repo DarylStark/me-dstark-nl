@@ -181,7 +181,7 @@ class PageAPIAAA(APIPage):
 
         # We cannot remove the currently active session. We raise an error is the user tries this
         if int(session_id) == user[0].id:
-            raise MeActiveSessionCannotBeRemoved("Cannot remove the currently active user session")
+            raise MeActiveSessionCannotBeRemovedException("Cannot remove the currently active user session")
 
         # Find the user session. We search for the session_id and the user_id so we make sure only
         # the sessions are found that are actually owned by the user

@@ -1,0 +1,59 @@
+{
+    "template_variables": {
+        "ui": {
+            "pagetitle": "Me - By Daryl Stark",
+            "menus": {
+                "user": [
+                    {
+                        "id": "user_settings",
+                        "name": "Settings"
+                    },
+                    {
+                        "id": "user_logoff",
+                        "name": "Logoff"
+                    }
+                ],
+                "main": [
+                    { "id": "main_feed", 
+                        "name": "Feed", 
+                        "icon": "view_stream", 
+                        "type": "item"
+                    },
+                    { "id": "main_planning", 
+                        "name": "Planning", 
+                        "icon": "event", 
+                        "type": "item"
+                    },
+                    {
+                        "name": "Events",
+                        "type": "header",
+                        "id": "main_events",
+                        "subitems": [
+                            { "id": "main_events_concerts", "name": "Concerts", "icon": "music_video" },
+                            { "id": "main_events_events", "name": "Events", "icon": "music_video" },
+                            { "id": "main_events_festivals", "name": "Festivals", "icon": "music_video" }
+                        ]
+                    },
+                    {
+                        "name": "Study", 
+                        "type": "header", 
+                        "id": "main_study", 
+                        "subitems": [
+                            { "id": "main_study_courses", "name": "Courses", "icon": "music_video" },
+                            { "id": "main_study_certifications", "name": "Certifications", "icon": "music_video" }
+                        ]
+                    },
+                    {
+                        "name": "Study (2)", 
+                        "type": "header", 
+                        "id": "main_study2", 
+                        "subitems": [
+                            { "id": "main_study2_courses", "name": "Courses", "icon": "music_video" },
+                            { "id": "main_study2_certifications", "name": "Certifications", "icon": "music_video" }
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+}

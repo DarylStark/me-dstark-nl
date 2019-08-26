@@ -95,7 +95,11 @@ class MeSessionNotForUserException(MeException):
     """ Exception for when a user tries to update a UserSession name that isn't his """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeActiveSessionCannotBeRemoved(MeException):
+class MeActiveSessionCannotBeRemovedException(MeException):
     """ Exception for when a user tries to remove the currently active session """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeUIConfigFileException(MeException):
+    """ Exception for when the UI configuration file cannot be found or openend """
     pass
 #---------------------------------------------------------------------------------------------------
