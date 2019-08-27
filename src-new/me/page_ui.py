@@ -89,7 +89,7 @@ class PageUI(Page):
         """ Method to show a protected JavaScript file """
 
         # Find the file to open
-        static_file = re.findall('ui/js/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/js/([a-zA-Z0-9-\._]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -108,7 +108,7 @@ class PageUI(Page):
             spare memory """
 
         # Find the file to open
-        static_file = re.findall('ui/img/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/img/([a-zA-Z0-9-\._]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -126,7 +126,7 @@ class PageUI(Page):
         """ Method to show a protected CSS files """
         
         # Find the file to open
-        static_file = re.findall('ui/css/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/css/([a-zA-Z0-9-\._]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -144,7 +144,7 @@ class PageUI(Page):
         """ Method to show a unprotected JavaScript files """
         
         # Find the file to open
-        static_file = re.findall('ui/unprotected-js/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/unprotected-js/([a-zA-Z0-9-\._]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -163,7 +163,7 @@ class PageUI(Page):
             spare memory """
 
         # Find the file to open
-        static_file = re.findall('ui/unprotected-img/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/unprotected-img/([a-zA-Z0-9-\._]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
@@ -181,7 +181,7 @@ class PageUI(Page):
         """ Method to show a unprotected CSS files """
         
         # Find the file to open
-        static_file = re.findall('ui/unprotected-css/([a-zA-Z0-9-\.]+)', path)
+        static_file = re.findall('ui/unprotected-css/([a-zA-Z0-9-\._]+)', path)
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
