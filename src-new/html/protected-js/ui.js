@@ -9,15 +9,15 @@ class UI {
     static page_classes = {
         'main_feed': {
             'class': PageFeed,
-            'url': /^\/ui\/feed\/?$/
+            'url': /^\/ui\/feed([\/].*|)$/
         },
         'main_planning': {
             'class': PagePlanning,
-            'url': /^\/ui\/planning\/?$/
+            'url': /^\/ui\/planning([\/].*|)$/
         },
         'main_events_concerts': {
             'class': PageConcerts,
-            'url': /^\/ui\/concerts\/?$/
+            'url': /^\/ui\/events\/concerts([\/].*|)$/
         }
     };
 
