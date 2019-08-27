@@ -29,14 +29,16 @@
                 <div class='mdl-layout__header-row'>
                     <span class='mdl-layout__title' id='main_title'>{{ pagetitle }}</span>
                     <div class='mdl-layout-spacer'></div>
-                    <button id='user_menu' class='mdl-button mdl-js-button mdl-button--icon'>
+                    <button id='user_menu_button' class='mdl-button mdl-js-button mdl-button--icon'>
                         <i class='material-icons'>account_circle</i>
                     </button>
-                    <ul class='mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right' for='user_menu'>
-                        {% for item in menus.user %}
-                            <li class='mdl-menu__item' id='{{ item.id }}'>{{ item.name }}</li>
-                        {% endfor %}
-                    </ul>
+                    <nav id='user_menu'>
+                        <ul class='mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right' for='user_menu_button'>
+                            {% for item in menus.user %}
+                                <li class='mdl-menu__item' id='{{ item.id }}'>{{ item.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
                 </div>
             </header>
               

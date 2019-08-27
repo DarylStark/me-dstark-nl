@@ -18,6 +18,14 @@ class UI {
         'main_events_concerts': {
             'class': PageConcerts,
             'url': /^\/ui\/events\/concerts([\/].*|)$/
+        },
+        'user_settings': {
+            'class': PageSettings,
+            'url': /^\/ui\/settings\/?$/
+        },
+        'user_logoff': {
+            'class': PageLogoff,
+            'url': /^\/ui\/logoff\/?$/
         }
     };
 
@@ -43,6 +51,15 @@ class UI {
 
         // Set listeners to the 'main menu' menuitems themselfs
         $('#main_menu').find('a').click(function() {
+            // Retrieve the id for the requested page
+            var menu_item_id = $(this).attr('id');
+            
+            // Start the correct page
+            UI.start_page_from_id(menu_item_id);
+        });
+
+        // Set listeners to the 'user menu' menuitems
+        $('#user_menu').find('li').click(function() {
             // Retrieve the id for the requested page
             var menu_item_id = $(this).attr('id');
             

@@ -14,6 +14,8 @@
                 { "name": "/ui/js/page_feed.js", "defer": false },
                 { "name": "/ui/js/page_planning.js", "defer": false },
                 { "name": "/ui/js/page_concerts.js", "defer": false },
+                { "name": "/ui/js/page_settings.js", "defer": false },
+                { "name": "/ui/js/page_logoff.js", "defer": false },
                 { "name": "/ui/js/ui.js", "defer": false },
                 { "name": "/ui/js/main.js", "defer": false }
             ],
@@ -44,27 +46,7 @@
                         "type": "header",
                         "id": "main_events",
                         "subitems": [
-                            { "id": "main_events_concerts", "name": "Concerts", "icon": "music_video" },
-                            { "id": "main_events_events", "name": "Events", "icon": "music_video" },
-                            { "id": "main_events_festivals", "name": "Festivals", "icon": "music_video" }
-                        ]
-                    },
-                    {
-                        "name": "Study", 
-                        "type": "header", 
-                        "id": "main_study", 
-                        "subitems": [
-                            { "id": "main_study_courses", "name": "Courses", "icon": "music_video" },
-                            { "id": "main_study_certifications", "name": "Certifications", "icon": "music_video" }
-                        ]
-                    },
-                    {
-                        "name": "Study (2)", 
-                        "type": "header", 
-                        "id": "main_study2", 
-                        "subitems": [
-                            { "id": "main_study2_courses", "name": "Courses", "icon": "music_video" },
-                            { "id": "main_study2_certifications", "name": "Certifications", "icon": "music_video" }
+                            { "id": "main_events_concerts", "name": "Concerts", "icon": "music_video" }
                         ]
                     }
                 ]
