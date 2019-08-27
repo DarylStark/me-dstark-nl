@@ -44,17 +44,7 @@
             <div class='me-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50'>
                 <header class='me-drawer-header'>
                     <div class='me-avatar'>
-                        <span>{{ username }}</span>
-                        <div class='mdl-layout-spacer'></div>
-                        <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
-                            <i class="material-icons" role="presentation">arrow_drop_down</i>
-                        </button>
-                        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
-                            <!-- TODO: make this work -->
-                            <li class='mdl-menu__item' id='1'>Link 1</li>
-                            <li class='mdl-menu__item' id='2'>Link 2</li>
-                            <li class='mdl-menu__item' id='3'>Link 3</li>
-                        </ul>
+                        <span>{{ user.name }}</span>
                     </div>
                 </header>
                 <nav class='me-navigation mdl-navigation mdl-color--blue-grey-800' id='main_menu'>
@@ -73,11 +63,11 @@
                                     </button>
                                 </span>
                                 <nav id='submenu-{{ item.id }}'>
-                                {% for subitem in item.subitems %}
-                                    <a class='mdl-navigation__link me-navigation__link' id='{{ subitem.id }}'>
-                                        <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>{{ subitem.icon }}</i>{{ subitem.name }}
-                                    </a>
-                                {% endfor %}
+                                    {% for subitem in item.subitems %}
+                                        <a class='mdl-navigation__link me-navigation__link' id='{{ subitem.id }}'>
+                                            <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>{{ subitem.icon }}</i>{{ subitem.name }}
+                                        </a>
+                                    {% endfor %}
                                 </nav>
                             </nav>
                         {% endif %}

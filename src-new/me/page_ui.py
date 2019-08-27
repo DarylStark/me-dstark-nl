@@ -73,6 +73,7 @@ class PageUI(Page):
         # Load the 'ui.html' template and replace the needed variables
         template = TemplateLoader.get_template(
             'ui',
+            user = Me.logged_in_user()[1],
             **Me.config_ui['template_variables']['ui']
         )
 
