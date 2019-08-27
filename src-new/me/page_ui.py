@@ -17,7 +17,7 @@ import re
 import flask
 import json
 #---------------------------------------------------------------------------------------------------
-@Me.register_url(name = 'ui', regex = '^ui/?.?')
+@Me.register_url(name = 'ui', regex = '^ui(\/.*|)$')
 class PageUI(Page):
     """ Class for the UI page of the application. Will show the default UI template and adjust the
         variables in that. This class is also responsible for loading static files, like JavaScript
