@@ -8,13 +8,16 @@ class UI {
     // The classes to start when the user starts a specific page
     static page_classes = {
         'main_feed': {
-            'class': PageFeed
+            'class': PageFeed,
+            'url': /^\/ui\/feed\/?$/
         },
         'main_planning': {
-            'class': PagePlanning
+            'class': PagePlanning,
+            'url': /^\/ui\/planning\/?$/
         },
         'main_events_concerts': {
-            'class': PageConcerts
+            'class': PageConcerts,
+            'url': /^\/ui\/concerts\/?$/
         }
     };
 
@@ -46,6 +49,9 @@ class UI {
             // Start the correct page
             UI.start_page_from_id(menu_item_id);
         });
+
+        // Initialization of the page is done, start the correct page based on the URL
+        UI.start_page_from_url();
     }
 
     static start_page_from_id(page_id) {
@@ -63,6 +69,26 @@ class UI {
 
         // Start the 'start' method of the class so the page can be displayed
         page.start();
+    }
+
+    static start_page_from_url() {
+        // Method to start a specific page from the page_classes dictionary based on the URL that is
+        // given. Will search in the page_classes for a matching URL using regex and start that
+        // specific page.
+
+        // Get the given pathname
+        var pathname = window.location.pathname;
+
+        // Loop through the 'page_classes' dict and find a regex that matches
+        $.each(UI.page_classes, function(page_id, object) {
+            // Get the regex for the page
+            var regex = object['url'];
+
+            // Check if the regex matches the pathname
+            if (regex.test(pathname)) {
+                console.log('Match for: ' + page_id);
+            }
+        });
     }
 }
 /**************************************************************************************************/
