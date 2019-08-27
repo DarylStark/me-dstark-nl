@@ -40,23 +40,29 @@ class UI {
 
         // Set listeners to the 'main menu' menuitems themselfs
         $('#main_menu').find('a').click(function() {
-            // Retrieve the class for the requested page
+            // Retrieve the id for the requested page
             var menu_item_id = $(this).attr('id');
-            var page_class = UI.page_classes[menu_item_id]['class'];
-
-            // Create an instance of the class
-            var page = new page_class();
-
-            // Start the 'start' method of the class so the page can be displayed
-            page.start();
+            
+            // Start the correct page
+            UI.start_page_from_id(menu_item_id);
         });
     }
+
+    static start_page_from_id(page_id) {
+        // Method to start a specific page from the page_classes dictionary. The 'page_id' will be
+        // the key from the dict. In the menus, this will be the 'id' value for the link that is
+        // clicked.
+
+        // Find the class for the requested page
+        var page_class = UI.page_classes[page_id]['class'];
+
+        // TODO: if the class is not found, give an error
+
+        // Create an instance of the class
+        var page = new page_class();
+
+        // Start the 'start' method of the class so the page can be displayed
+        page.start();
+    }
 }
-/***************************************************************************************************
- * Main of the script
-***************************************************************************************************/
-$(document).ready(function() {
-    // Initiate the UI
-    UI.init();
-});
 /**************************************************************************************************/

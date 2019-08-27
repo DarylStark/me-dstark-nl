@@ -14,7 +14,8 @@
                 { "name": "/ui/js/page_feed.js", "defer": false },
                 { "name": "/ui/js/page_planning.js", "defer": false },
                 { "name": "/ui/js/page_concerts.js", "defer": false },
-                { "name": "/ui/js/ui.js", "defer": false }
+                { "name": "/ui/js/ui.js", "defer": false },
+                { "name": "/ui/js/main.js", "defer": false }
             ],
             "menus": {
                 "user": [
