@@ -4,6 +4,8 @@
         <meta charset='utf-8'>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
         <title>{{ pagetitle }}</title>
+        <!-- Metadata for Google Login -->
+        <meta name='google-signin-client_id' content='{{ google_signin_client_id }}'>
         <!-- CSS files -->
         {% for file in css_files -%}
             <link rel="stylesheet" href="{{ file }}">

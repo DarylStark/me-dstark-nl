@@ -128,7 +128,7 @@ class PageAPIAAA(APIPage):
                 Log.log(severity = Log.INFO, module = 'API AAA', message = 'User "{email}" logged off'.format(email = email))
             
             # Return a tuple with the successcode
-            return ( [ 'logged off'], 1)
+            return ( [ 'logged out'], 1)
         except KeyError:
             Log.log(severity = Log.WARNING, module = 'API AAA', message = 'User without logout key is trying to logoff')
             raise MeNoLogoutKeyException

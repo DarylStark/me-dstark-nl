@@ -23,9 +23,9 @@ class UI {
             'class': PageSettings,
             'url': /^\/ui\/settings\/?$/
         },
-        'user_logoff': {
-            'class': PageLogoff,
-            'url': /^\/ui\/logoff\/?$/
+        'user_logout': {
+            'class': PageLogout,
+            'url': /^\/ui\/logout\/?$/
         }
     };
 
