@@ -10,27 +10,32 @@ class UI {
         'main_feed': {
             'class': PageFeed,
             'url': /^\/ui\/feed([\/].*|)$/,
-            'default_url': '/ui/feed/'
+            'default_url': '/ui/feed/',
+            'highlight_item': true
         },
         'main_planning': {
             'class': PagePlanning,
             'url': /^\/ui\/planning([\/].*|)$/,
-            'default_url': '/ui/planning/'
+            'default_url': '/ui/planning/',
+            'highlight_item': true
         },
         'main_events_concerts': {
             'class': PageConcerts,
             'url': /^\/ui\/events\/concerts([\/].*|)$/,
-            'default_url': '/ui/events/concerts/'
+            'default_url': '/ui/events/concerts/',
+            'highlight_item': true
         },
         'user_settings': {
             'class': PageSettings,
             'url': /^\/ui\/settings\/?$/,
-            'default_url': '/ui/settings/'
+            'default_url': '/ui/settings/',
+            'highlight_item': false
         },
         'user_logout': {
             'class': PageLogout,
             'url': /^\/ui\/logout\/?$/,
-            'default_url': '/ui/logout/'
+            'default_url': '/ui/logout/',
+            'highlight_item': false
         }
     };
     static default_page_id = 'main_feed';
@@ -99,6 +104,14 @@ class UI {
             // feed page and clicks on the 'feed' menu, don't change the history. Maybe don't even
             // change the page itself.
             history.pushState(page['default_url'], '', page['default_url']);
+        }
+
+        // Remove all highlighst
+        $('.me-navigation__link_active').removeClass('me-navigation__link_active');
+
+        // Check if we need to highlight the menuitem
+        if (page['highlight_item']) {
+            $('#' + page_id).addClass('me-navigation__link_active');
         }
 
         // Start the 'start' method of the class so the page can be displayed
