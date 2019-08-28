@@ -9,23 +9,28 @@ class UI {
     static page_classes = {
         'main_feed': {
             'class': PageFeed,
-            'url': /^\/ui\/feed([\/].*|)$/
+            'url': /^\/ui\/feed([\/].*|)$/,
+            'default_url': '/ui/feed/'
         },
         'main_planning': {
             'class': PagePlanning,
-            'url': /^\/ui\/planning([\/].*|)$/
+            'url': /^\/ui\/planning([\/].*|)$/,
+            'default_url': '/ui/planning/'
         },
         'main_events_concerts': {
             'class': PageConcerts,
-            'url': /^\/ui\/events\/concerts([\/].*|)$/
+            'url': /^\/ui\/events\/concerts([\/].*|)$/,
+            'default_url': '/ui/events/concerts/'
         },
         'user_settings': {
             'class': PageSettings,
-            'url': /^\/ui\/settings\/?$/
+            'url': /^\/ui\/settings\/?$/,
+            'default_url': '/ui/settings/'
         },
         'user_logout': {
             'class': PageLogout,
-            'url': /^\/ui\/logout\/?$/
+            'url': /^\/ui\/logout\/?$/,
+            'default_url': '/ui/logout/'
         }
     };
 
@@ -71,21 +76,29 @@ class UI {
         UI.start_page_from_url();
     }
 
-    static start_page_from_id(page_id) {
+    static start_page_from_id(page_id, update_history = true) {
         // Method to start a specific page from the page_classes dictionary. The 'page_id' will be
         // the key from the dict. In the menus, this will be the 'id' value for the link that is
         // clicked.
 
+        // Get the requested page
+        var page = UI.page_classes[page_id];
+
         // Find the class for the requested page
-        var page_class = UI.page_classes[page_id]['class'];
+        var page_class = page['class'];
 
         // TODO: if the class is not found, give an error
 
         // Create an instance of the class
-        var page = new page_class();
+        var page_object = new page_class();
+
+        // Update the browser history stack (if needed)
+        if (update_history) {
+            history.pushState(page['default_url'], '', page['default_url']);
+        }
 
         // Start the 'start' method of the class so the page can be displayed
-        page.start();
+        page_object.start();
     }
 
     static start_page_from_url() {
@@ -103,7 +116,8 @@ class UI {
 
             // Check if the regex matches the pathname
             if (regex.test(pathname)) {
-                console.log('Match for: ' + page_id);
+                // It matches! Start the correct page
+                UI.start_page_from_id(page_id, false);
             }
         });
     }
