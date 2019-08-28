@@ -16,6 +16,7 @@
                 { "name": "/ui/js/page_feed.js", "defer": false },
                 { "name": "/ui/js/page_planning.js", "defer": false },
                 { "name": "/ui/js/page_concerts.js", "defer": false },
+                { "name": "/ui/js/page_systeminfo.js", "defer": false },
                 { "name": "/ui/js/page_settings.js", "defer": false },
                 { "name": "/ui/js/page_logout.js", "defer": false },
                 { "name": "/ui/js/ui.js", "defer": false },
@@ -23,6 +24,10 @@
             ],
             "menus": {
                 "user": [
+                    {
+                        "id": "user_systeminfo",
+                        "name": "System information"
+                    },
                     {
                         "id": "user_settings",
                         "name": "Settings"

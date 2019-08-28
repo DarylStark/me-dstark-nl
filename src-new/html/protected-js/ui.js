@@ -25,6 +25,12 @@ class UI {
             'default_url': '/ui/events/concerts/',
             'highlight_item': true
         },
+        'user_systeminfo': {
+            'class': PageSystemInfo,
+            'url': /^\/ui\/systeminfo\/?$/,
+            'default_url': '/ui/systeminfo/',
+            'highlight_item': false
+        },
         'user_settings': {
             'class': PageSettings,
             'url': /^\/ui\/settings\/?$/,
