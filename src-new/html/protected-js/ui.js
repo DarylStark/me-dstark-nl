@@ -33,6 +33,7 @@ class UI {
             'default_url': '/ui/logout/'
         }
     };
+    static default_page_id = 'main_feed';
 
     static init() {
         // Initiator of the User Interface. Sets all listeners where they should be
@@ -94,6 +95,9 @@ class UI {
 
         // Update the browser history stack (if needed)
         if (update_history) {
+            // TODO: Make sure the history gets only updated if it changes. So if the user is on the
+            // feed page and clicks on the 'feed' menu, don't change the history. Maybe don't even
+            // change the page itself.
             history.pushState(page['default_url'], '', page['default_url']);
         }
 
@@ -109,6 +113,10 @@ class UI {
         // Get the given pathname
         var pathname = window.location.pathname;
 
+        // Set 'found' to false. If it is still false after looking for a regex, we can redirect the
+        // user to the default homepage
+        var found = false;
+
         // Loop through the 'page_classes' dict and find a regex that matches
         $.each(UI.page_classes, function(page_id, object) {
             // Get the regex for the page
@@ -118,8 +126,14 @@ class UI {
             if (regex.test(pathname)) {
                 // It matches! Start the correct page
                 UI.start_page_from_id(page_id, false);
+                found = true;
             }
         });
+
+        // If we didn't found anything, redirect the user to the default page
+        if (!found) {
+            UI.start_page_from_id(UI.default_page_id, true);
+        }
     }
 }
 /**************************************************************************************************/
