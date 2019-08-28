@@ -39,6 +39,7 @@ class UI {
         }
     };
     static default_page_id = 'main_feed';
+    static current_page_id = null;
 
     static init() {
         // Initiator of the User Interface. Sets all listeners where they should be
@@ -86,36 +87,44 @@ class UI {
         // Method to start a specific page from the page_classes dictionary. The 'page_id' will be
         // the key from the dict. In the menus, this will be the 'id' value for the link that is
         // clicked.
+        //
+        // If the page the user wants to open is the same as the page that already is open, we skip
+        // this method. This way, we can make sure not reloads happen that shouldn't happen
 
-        // Get the requested page
-        var page = UI.page_classes[page_id];
+        if (UI.current_page_id != page_id) {
+            // Get the requested page
+            var page = UI.page_classes[page_id];
 
-        // Find the class for the requested page
-        var page_class = page['class'];
+            // Find the class for the requested page
+            var page_class = page['class'];
 
-        // TODO: if the class is not found, give an error
+            // TODO: if the class is not found, give an error
 
-        // Create an instance of the class
-        var page_object = new page_class();
+            // Create an instance of the class
+            var page_object = new page_class();
 
-        // Update the browser history stack (if needed)
-        if (update_history) {
-            // TODO: Make sure the history gets only updated if it changes. So if the user is on the
-            // feed page and clicks on the 'feed' menu, don't change the history. Maybe don't even
-            // change the page itself.
-            history.pushState(page['default_url'], '', page['default_url']);
+            // Update the browser history stack (if needed)
+            if (update_history) {
+                // TODO: Make sure the history gets only updated if it changes. So if the user is on the
+                // feed page and clicks on the 'feed' menu, don't change the history. Maybe don't even
+                // change the page itself.
+                history.pushState(page['default_url'], '', page['default_url']);
+            }
+
+            // Remove all highlighst
+            $('.me-navigation__link_active').removeClass('me-navigation__link_active');
+
+            // Check if we need to highlight the menuitem
+            if (page['highlight_item']) {
+                $('#' + page_id).addClass('me-navigation__link_active');
+            }
+
+            // Set the current page id
+            UI.current_page_id = page_id;
+
+            // Start the 'start' method of the class so the page can be displayed
+            page_object.start();
         }
-
-        // Remove all highlighst
-        $('.me-navigation__link_active').removeClass('me-navigation__link_active');
-
-        // Check if we need to highlight the menuitem
-        if (page['highlight_item']) {
-            $('#' + page_id).addClass('me-navigation__link_active');
-        }
-
-        // Start the 'start' method of the class so the page can be displayed
-        page_object.start();
     }
 
     static start_page_from_url() {
