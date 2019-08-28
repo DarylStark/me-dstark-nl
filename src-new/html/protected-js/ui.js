@@ -105,9 +105,6 @@ class UI {
 
             // Update the browser history stack (if needed)
             if (update_history) {
-                // TODO: Make sure the history gets only updated if it changes. So if the user is on the
-                // feed page and clicks on the 'feed' menu, don't change the history. Maybe don't even
-                // change the page itself.
                 history.pushState(page['default_url'], '', page['default_url']);
             }
 
