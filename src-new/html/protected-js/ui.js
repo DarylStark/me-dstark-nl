@@ -79,6 +79,12 @@ class UI {
             UI.start_page_from_id(menu_item_id);
         });
 
+        // Handler for when the user enters a page via the back button
+        $(window).on('popstate', function(event){
+            // We start the page as we would normally do; via the URL
+            UI.start_page_from_url();
+        });
+
         // Initialization of the page is done, start the correct page based on the URL
         UI.start_page_from_url();
     }
