@@ -6,11 +6,10 @@ class PageLogout {
         // Log the user off from Google (only for this website)
         gapi.auth2.getAuthInstance().signOut().then(function() {
             // Start a request to the API endpoint to log off
-            $.ajax('/api/aaa/logout', {
-                cache: false,
-                dataType: 'json',
-                method: 'GET',
-                success: function(data, status, xhr) {
+            UI.api_call(
+                'GET',
+                'aaa', 'logout',
+                function(data, status, xhr) {
                     // The API request was successfull. Get the data returned from the API
                     var data = data['result']['data'];
 
@@ -20,12 +19,12 @@ class PageLogout {
                         location.href = '/';
                     }
                 },
-                error: function()
-                {
+                function() {
+                    // Something went wrong while requesting the data
                     // TODO: Enhance this
                     console.log('Failed');
                 }
-            });
+            );
         });
     }
 }

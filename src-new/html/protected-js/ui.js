@@ -166,5 +166,57 @@ class UI {
             UI.start_page_from_id(UI.default_page_id, true);
         }
     }
+
+    static api_call(method, group, endpoint, cb_success, cb_error, variables = null, data = null) {
+        // Method to retrieve data from the API. The 'group' and 'endpoint' arguments specify which
+        // data to retrieve. The 'variables' argument can be a dict containing the arguments to pass
+        // to the API (like page, limit, etc.). The 'data' argument will be data passed to a request
+        // if it is a POST request. The type of request (POST, GET, etc.) can be given with the
+        // 'method' argument.
+
+        // Construct the URL for the API call
+        var url = '/api/' + group + '/' + endpoint;
+
+        // Add the variables (if set)
+        if (variables) {
+            // Empty array with the key/value pairs
+            var url_vars = new Array();
+
+            // Add the key/value pairs
+            for (var variable in variables) {
+                url_vars.push(variable + '=' + variables[variable]);
+            }
+
+            // Add the new variables to the URL
+            url += '?' + url_vars.join('&');
+        }
+
+        // Create a object for the jQuery options for the 'ajax' call
+        var jquery_ajax_options = {
+            cache: false,
+            dataType: 'json',
+            method: method,
+            success: function(data, status, xhr) {
+                // API Call was a success! Start the given success callback
+                if (cb_success) {
+                    cb_success(data, status, xhr);
+                }
+            },
+            error: function(data, status, xhr) {
+                // API Call was a *not* success! Start the given error callback
+                if (cb_error) {
+                    cb_error(data, status, xhr);
+                }
+            }
+        }
+
+        // If we have data, add it
+        if (data) {
+            jquery_ajax_options['data'] = data
+        }
+
+        // Do the API call
+        $.ajax(url, jquery_ajax_options);
+    }
 }
 /**************************************************************************************************/

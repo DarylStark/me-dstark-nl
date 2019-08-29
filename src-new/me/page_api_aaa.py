@@ -45,6 +45,7 @@ class PageAPIAAA(APIPage):
         token = flask.request.form.get('token')
 
         # Get the idinfo for this session
+        # TODO: Get the client_id from the settings
         client_id = '167809871556-j2ghbhtoqaeka5bfpr96nmqrp1f3m897.apps.googleusercontent.com'
         idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
 
