@@ -17,6 +17,7 @@ class Templates {
 
         // Create a object with the templates
         $.each(templates, function(index, element) {
+            // Add the template and turn it into a JQuery object
             return_templates[element] = Templates.template_cache[element];
         });
 
@@ -24,7 +25,7 @@ class Templates {
         cb(return_templates);
     }
 
-    static get_template(templates, cb_succes) {
+    static get_templates(templates, cb_succes, cb_error) {
         // Method that get templates from the API and saves it into the cache. Multiple templates
         // can be given to retrieve more then one template. The 'templates' argument should be an
         // Array
@@ -54,9 +55,8 @@ class Templates {
                     Templates.get_templates_callback(cb_succes, templates);
                 },
                 function() {
-                    // Something went wrong while requesting the data
-                    // TODO: Enhance this
-                    console.log('Failed');
+                    // Something went wrong while requesting the template data
+                    cb_error();
                 },
                 { templates: needed_templates }
             );
