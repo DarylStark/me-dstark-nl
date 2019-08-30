@@ -45,5 +45,5 @@ class PageAPITemplates(APIPage):
             except TemplateNotFoundException:
                 raise MeAPITemplatesTemplateNotFoundException('Template "{template}" not found'.format(template = template))
         
-        return ([ return_templates ], len(return_templates.keys()))
+        return ([ return_templates ], 1)
 #---------------------------------------------------------------------------------------------------

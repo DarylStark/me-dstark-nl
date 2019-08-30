@@ -19,6 +19,7 @@
                 { "name": "/ui/js/page_systeminfo.js", "defer": false },
                 { "name": "/ui/js/page_settings.js", "defer": false },
                 { "name": "/ui/js/page_logout.js", "defer": false },
+                { "name": "/ui/js/templates.js", "defer": false },
                 { "name": "/ui/js/ui.js", "defer": false },
                 { "name": "/ui/js/main.js", "defer": false }
             ],
