@@ -103,3 +103,13 @@ class MeUIConfigFileException(MeException):
     """ Exception for when the UI configuration file cannot be found or openend """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPITemplatesNoTemplatesGivenException(MeException):
+    """ Exception for when the the user starts a template request without giving templates to
+        retrieve """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPITemplatesTemplateNotFoundException(MeException):
+    """ Exception for when the the user starts a template request for a template that doesn't
+        exsist """
+    pass
+#---------------------------------------------------------------------------------------------------

@@ -47,7 +47,7 @@ class TemplateLoader:
         Log.log(severity = Log.DEBUG, module = 'TemplateLoader', message = 'Cache size is now {size}'.format(size = len(cls._template_cache)))
     
     @classmethod
-    def get_template(cls, name, **variables):
+    def get_template(cls, name, use_jinja = True, **variables):
         """ Method to return a string with the contents of a template. The method will check if the
             template is already in cache and retrieves the template if it isn't. """
         
@@ -60,6 +60,12 @@ class TemplateLoader:
             cls.load_template(name)
         
         # Return the contents of the template file from cache. We convert it to a Jinja2 Template
-        # so we can use all Jinja2 options
-        return Template(cls._template_cache[name]).render(**variables)
+        # so we can use all Jinja2 options. We only convert it if the user wants us to
+        if use_jinja:
+            return_template = Template(cls._template_cache[name]).render(**variables)
+        else:
+            return_template = cls._template_cache[name]
+        
+        # Return the actual template
+        return return_template
 #---------------------------------------------------------------------------------------------------
