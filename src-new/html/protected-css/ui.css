@@ -120,3 +120,38 @@ html, body
 {
     transform: rotate(270deg);
 }
+
+/* Cards */
+
+.me-card-wide.mdl-card {
+    width: auto;
+    height: auto;
+    min-height: auto;
+}
+
+.me-card-table .mdl-card__supporting-text {
+    display: flex;
+    width: auto;
+    border-bottom: 1px solid #cccccc;
+}
+
+.me-card-wide > .mdl-card__title {
+    color: #fff;
+    height: 176px;
+    background-color: #263238;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: 50% 50%;
+}
+
+.me-card__title-small {
+    height: 48px !important;
+}
+
+.me-card-table .table_field {
+    font-weight: bold;
+}
+
+.me-card-table .table_value {
+    font-style: italic;
+}

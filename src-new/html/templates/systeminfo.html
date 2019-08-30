@@ -1,2 +1,86 @@
-<p id='var-process-pid'></p>
-<p id='id2'></p>
+<div class='mdl-grid'>
+    
+    <div class='mdl-cell mdl-cell--6-col'>
+        <div class='me-card-wide me-card-table mdl-card mdl-shadow--4dp'>
+            <div class='mdl-card__title me-card__title-small'>Database connections</div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Pool size</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-database-pool-size'></span> connections</span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Overflowed connections</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-database-overflow'></span> connections</span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Checked in connections</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-database-checkedin'></span> connections</span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Checked out connections</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-database-checkedout'></span> connections</span>
+            </div>
+        </div>
+    </div>
+
+    <div class='mdl-cell mdl-cell--6-col'>
+        <div class='me-card-wide me-card-table mdl-card mdl-shadow--4dp'>
+            <div class='mdl-card__title me-card__title-small'>Process</div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Process ID</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value' id='var-process-pid'></span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Username</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'id='var-process-username'></span></span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>CPU percentage</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-process-cpu'></span>%</span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Used memory</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value' id='var-process-memory'></span>
+            </div>
+        </div>
+    </div>
+
+    <div class='mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet'>
+        <div class='me-card-wide me-card-table mdl-card mdl-shadow--4dp'>
+            <div class='mdl-card__title me-card__title-small'>Application</div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Current environment</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value' id='var-application-environment'></span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Files cached in StaticLoader</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-application-staticloader'></span> files</span>
+            </div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Files cached in TemplateLoader</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-application-templateloader'></span> files</span>
+            </div>
+        </div>
+    </div>
+
+    <div class='mdl-cell mdl-cell--6-col'>
+        <div class='me-card-wide me-card-table mdl-card mdl-shadow--4dp'>
+            <div class='mdl-card__title me-card-table me-card__title-small'>Client side</div>
+            <div class="mdl-card__supporting-text">
+                <span class='table_field'>Cached template files</span>
+                <div class='mdl-layout-spacer'></div>
+                <span class='table_value'><span id='var-client-templateloader'></span> files</span>
+            </div>
+        </div>
+    </div>
+</div>

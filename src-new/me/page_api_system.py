@@ -52,7 +52,7 @@ class PageAPISystem(APIPage):
         application = {
             'environment': Me.environment,
             'staticloader_files': len(StaticLoader._file_cache),
-            'templateloader_file_count': len(TemplateLoader._template_cache)
+            'templateloader_files': len(TemplateLoader._template_cache)
         }
 
         # Get information about the database
