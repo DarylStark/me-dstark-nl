@@ -220,5 +220,17 @@ class UI {
         // Do the API call
         $.ajax(url, jquery_ajax_options);
     }
+
+    static replace_content(new_content_obj) {
+        // Method to remove the current content container and replace it with a new one
+
+        // Remove the old one
+        $('#content').remove();
+
+        // Upgrade the elements in the new content container
+
+        // Add the new one
+        $('#scroller').append(new_content_obj);
+    }
 }
 /**************************************************************************************************/

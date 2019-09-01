@@ -91,11 +91,7 @@ class PageSystemInfo {
 
                 // Display the template (only if requestes)
                 if (add_to_content) {
-                    // TODO: Upgrade the template (via a method) for MDL
-
-                    // TODO: Make a method for this that also removes the old content. Maybe with a
-                    // nice effect
-                    $('#scroller').append(html_object);
+                    UI.replace_content(html_object);
                 }
             },
             function() {
@@ -118,9 +114,10 @@ class PageSystemInfo {
             // TODO: Make a method for this
             templates['systeminfo'] = $('<div id=\'content\'>' + templates['systeminfo'] + '</div>');
 
+            // TODO: Add the reload action-button
+
             // Start the method to retrieve the data
             t.reload_data(templates['systeminfo'], true);
-
         },
         function() {
             // Something went wrong while requesting the template data
