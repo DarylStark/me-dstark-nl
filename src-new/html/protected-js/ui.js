@@ -47,6 +47,7 @@ class UI {
     static default_page_id = 'main_feed';
     static current_page_id = null;
     static current_page = null;
+    static action_buttons = new Array();
 
     static init() {
         // Initiator of the User Interface. Sets all listeners where they should be
@@ -91,6 +92,8 @@ class UI {
             // We start the page as we would normally do; via the URL
             UI.start_page_from_url();
         });
+
+        // TODO: Preload templates; the template for the ui_action_button, for example
 
         // Initialization of the page is done, start the correct page based on the URL
         UI.start_page_from_url();
@@ -231,6 +234,44 @@ class UI {
 
         // Add the new one
         $('#scroller').append(new_content_obj);
+    }
+
+    static add_action_button(button) {
+        // Method to add a action button to the actionbutton stack. The buttons get address as soon
+        // as the 'set_action_buttons' method is called.
+
+        // Add the button
+        UI.action_buttons.push(button);
+    }
+
+    static set_action_buttons() {
+        // Method to remove all action buttons and set the new ones. At the end of this method, the
+        // stack gets emptied
+
+        // Get the template for a action button
+        Templates.get_templates(['ui_action_button'], function(templates) {
+            // Remove the current buttons
+            $('#action_buttons').empty();
+
+            // Add the new buttons
+            $.each(UI.action_buttons, function(index, button) {
+                // Create a HTML icons
+                var html_button = $(templates['ui_action_button']);
+                html_button.find('#icon').html(button['icon']);
+
+                // Add the click method
+                html_button.click(button['click']);
+
+                // Upgrade the element for MDL
+                componentHandler.upgradeElement(html_button[0]);
+
+                // Add the icon to the correct place
+                $('#action_buttons').append(html_button);
+            });
+
+            // Empty the stack
+            UI.action_buttons = new Array();
+        });
     }
 }
 /**************************************************************************************************/

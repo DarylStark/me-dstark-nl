@@ -91,6 +91,7 @@ class PageSystemInfo {
 
                 // Display the template (only if requestes)
                 if (add_to_content) {
+                    UI.set_action_buttons();
                     UI.replace_content(html_object);
                 }
             },
@@ -114,7 +115,12 @@ class PageSystemInfo {
             // TODO: Make a method for this
             templates['systeminfo'] = $('<div id=\'content\'>' + templates['systeminfo'] + '</div>');
 
-            // TODO: Add the reload action-button
+            // Add the reload action-button
+            var actionbutton = {
+                'icon': 'refresh',
+                'click': function() { t.reload_data($('#content'), false) }
+            }
+            UI.add_action_button(actionbutton);
 
             // Start the method to retrieve the data
             t.reload_data(templates['systeminfo'], true);
