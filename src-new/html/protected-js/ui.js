@@ -46,6 +46,7 @@ class UI {
     };
     static default_page_id = 'main_feed';
     static current_page_id = null;
+    static current_page = null;
 
     static init() {
         // Initiator of the User Interface. Sets all listeners where they should be
@@ -128,8 +129,9 @@ class UI {
                 $('#' + page_id).addClass('me-navigation__link_active');
             }
 
-            // Set the current page id
+            // Set the current page id and set the object to a local var for re-use
             UI.current_page_id = page_id;
+            UI.current_page = page_object;
 
             // Start the 'start' method of the class so the page can be displayed
             page_object.start();
