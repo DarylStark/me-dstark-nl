@@ -342,5 +342,29 @@ class UI {
 
         return $(html);
     }
+
+    static notification(error, action_text = undefined, action_handler = undefined)
+    {
+        // We do a longer timeout when there is an action
+        var timeout = 2000;
+        if (action_text) { timeout = 6000; }
+
+        // Define the snackbar
+        var toast = document.querySelector('.mdl-js-snackbar');
+        var data = {
+            message: error,
+            timeout: timeout
+        };
+
+        // If a action is set, add the action
+        if (action_text)
+        {
+            data['actionHandler'] = action_handler;
+            data['actionText'] = action_text;
+        }
+
+        // Show it again
+        toast.MaterialSnackbar.showSnackbar(data);
+    }
 }
 /**************************************************************************************************/

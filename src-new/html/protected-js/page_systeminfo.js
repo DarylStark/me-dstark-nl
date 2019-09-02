@@ -100,8 +100,8 @@ class PageSystemInfo {
             },
             function() {
                 // Something went wrong while requesting the data
-                // TODO: Enhance this
-                console.log('Failed');
+                UI.notification('Couldn\'t retrieve data', 'Refresh', function() { t.start(); } );
+                UI.stop_loading();
             }
         );
     }
@@ -141,8 +141,8 @@ class PageSystemInfo {
         },
         function() {
             // Something went wrong while requesting the template data
-            // TODO: Enhance this
-            console.log('Failed');
+            UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
+            UI.stop_loading();
         });
     }
 }
