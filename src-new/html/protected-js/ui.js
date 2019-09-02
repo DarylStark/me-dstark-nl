@@ -311,5 +311,15 @@ class UI {
         // Hide the loading element
         $('#loading').hide();
     }
+
+    static set_title(title) {
+        // Method to set the title for the page
+
+        // Set the title in the document
+        $('#main_title').html(title);
+
+        // Set the window title
+        document.title = 'Me - ' + title;
+    }
 }
 /**************************************************************************************************/

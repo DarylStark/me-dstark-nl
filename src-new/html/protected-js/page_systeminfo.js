@@ -95,6 +95,7 @@ class PageSystemInfo {
 
                 // Display the template (only if requestes)
                 if (add_to_content) {
+                    UI.set_title('System information');
                     UI.set_loading_text('Setting content');
                     UI.set_action_buttons();
                     UI.replace_content(html_object);
