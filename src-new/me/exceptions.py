@@ -113,3 +113,7 @@ class MeAPITemplatesTemplateNotFoundException(MeException):
         exsist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeEMailAddressInvalidException(MeException):
+    """ Exception for when the user tries to enter a invalid e-mail address """
+    pass
+#---------------------------------------------------------------------------------------------------

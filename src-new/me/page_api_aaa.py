@@ -19,6 +19,7 @@ from log import Log
 import random
 import string
 import flask
+import re
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('aaa')
 class PageAPIAAA(APIPage):
@@ -34,7 +35,9 @@ class PageAPIAAA(APIPage):
             'logout': self.logout,
             'set_session_name': self.set_session_name,
             'delete_session': self.delete_session,
-            'get_sessions': self.get_sessions
+            'get_sessions': self.get_sessions,
+            'get_user': self.get_user,
+            'set_user': self.set_user
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'login', allowed_methods = [ 'post' ], allowed_users = { Me.LOGGED_OFF })
@@ -233,4 +236,51 @@ class PageAPIAAA(APIPage):
         # TODO: work with pages; although it is very unlikely a user has more then 25 sessions
 
         return(all_sessions, all_sessions_count)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'get_user', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_user(self, *args, **kwargs):
+        """ API endpoint to get the user details """
+        
+        # Get the currently logged in user
+        user = Me.logged_in_user()
+
+        # Return the user account
+        return([ user[1] ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'set_user', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def set_user(self, *args, **kwargs):
+        """ API endpoint to set the user details """
+        
+        # Get the currently logged in user
+        user = Me.logged_in_user()
+
+        # Get the new details for the user
+        name = flask.request.form.get('name')
+        email = flask.request.form.get('email')
+
+        # Check if the emailaddress is valid
+        if email:
+            if not re.match('^[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\.[a-zA-Z]{2,4}$', email):
+                raise MeEMailAddressInvalidException('The mailaddress "{email}" is not valid'.format(
+                    email = email
+                ))
+
+        # Create a session to save the new information
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the user object
+            user = session.query(User).filter(
+                User.id == user[1].id
+            )
+
+            # Get the user object
+            user = user.first()
+
+            # Change the information (if needed)
+            if name:
+                user.name = name
+            if email:
+                user.email = email
+
+        # Return the user account
+        return([ 'done' ], 1)
 #---------------------------------------------------------------------------------------------------

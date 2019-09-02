@@ -185,6 +185,11 @@ html, body
     border-bottom: 1px solid #cccccc;
 }
 
+.me-card-form .mdl-card__supporting-text {
+    display: flex;
+    width: auto;
+}
+
 .me-card-wide > .mdl-card__title {
     color: #fff;
     height: 176px;
@@ -204,4 +209,29 @@ html, body
 
 .me-card-table .table_value {
     font-style: italic;
+}
+
+.me-card-form .table_field {
+    font-weight: bold;
+}
+
+/* Inputs */
+
+.mdl-textfield {
+    padding: 0px;
+}
+
+.mdl-textfield__label {
+    top: 4px;
+    font-size: 14px;
+    font-family: 'Roboto', 'Helvetica', sans-serif;
+}
+
+.mdl-textfield__label:after {
+    bottom: 0;
+}
+
+div.mdl-textfield input {
+    font-size: 14px;
+    font-family: 'Roboto', 'Helvetica', sans-serif;
 }
