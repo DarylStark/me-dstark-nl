@@ -26,6 +26,41 @@ html, body
     margin-top: 10px;
 }
 
+.me-loading {
+    position: fixed;
+    right: 110px;
+    bottom: 30px;
+    width: 250px;
+    height: 70px;
+    background-color: #37474f;
+    z-index: 999;
+    margin: 0px;
+    display: none;
+}
+
+.me-loading div#padding {
+    padding: 14px;
+}
+
+.me-loading div#text {
+    padding-left: 15px;
+    padding-top: 0px;
+    color: #ffffff;
+    display: inline-block;
+    position: relative;
+    top: -3px;
+}
+
+.me-loading div#text h1 {
+    font-weight: bold;
+    font-size: 15px;
+    margin: 0px;
+}
+
+#scroller {
+    overflow-y: scroll;
+}
+
 /* Drawer */
 
 .me-navigation {

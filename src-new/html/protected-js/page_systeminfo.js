@@ -53,6 +53,8 @@ class PageSystemInfo {
     reload_data(html_object, add_to_content = false) {
         // The method that actually reads the data
 
+        UI.start_loading('Retrieving data');
+
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
         // Get the system information from /api/system/get_info
@@ -60,6 +62,8 @@ class PageSystemInfo {
             'GET',
             'system', 'get_info',
             function(data, status, xhr) {
+                UI.set_loading_text('Parsing data');
+
                 // The API request was successfull. Get the data returned from the API
                 var data = data['result']['data'][0];
 
@@ -91,9 +95,12 @@ class PageSystemInfo {
 
                 // Display the template (only if requestes)
                 if (add_to_content) {
+                    UI.set_loading_text('Setting content');
                     UI.set_action_buttons();
                     UI.replace_content(html_object);
                 }
+
+                UI.stop_loading();
             },
             function() {
                 // Something went wrong while requesting the data
@@ -106,6 +113,9 @@ class PageSystemInfo {
     start() {
         // Method that gets started when the user requests the page
 
+        // Set the page to loading
+        UI.start_loading('Retrieving templates');
+
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
@@ -114,6 +124,9 @@ class PageSystemInfo {
             // Add the 'content' div to the 'systeminfo' template and convert it to a Jquery object
             // TODO: Make a method for this
             templates['systeminfo'] = $('<div id=\'content\'>' + templates['systeminfo'] + '</div>');
+
+            // Set the correct loading text
+            UI.set_loading_text('Setting action buttons');
 
             // Add the reload action-button
             var actionbutton = {

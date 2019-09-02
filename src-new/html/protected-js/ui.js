@@ -48,6 +48,7 @@ class UI {
     static current_page_id = null;
     static current_page = null;
     static action_buttons = new Array();
+    static loading_text = '';
 
     static init() {
         // Initiator of the User Interface. Sets all listeners where they should be
@@ -287,6 +288,28 @@ class UI {
         htmlelement.find('*').each(function(index, element) {
             componentHandler.upgradeElement(element);
         });
+    }
+
+    static start_loading(text) {
+        // Start the loading sequence
+
+        // Set the loading-text
+        UI.set_loading_text(text);
+
+        // Display the loading element
+        $('#loading').show();
+    }
+
+    static set_loading_text(text) {
+        // Set the loading-text
+        $('#loading-text').html(text);
+    }
+
+    static stop_loading() {
+        // Stops the loading sequence
+
+        // Hide the loading element
+        $('#loading').hide();
     }
 }
 /**************************************************************************************************/
