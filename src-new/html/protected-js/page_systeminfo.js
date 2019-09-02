@@ -50,7 +50,7 @@ class PageSystemInfo {
         object.find('#' + tag_id).html(value);
     }
 
-    reload_data(html_object, add_to_content = false) {
+    reload_data(html_object, callback) {
         // The method that actually reads the data
 
         UI.start_loading('Retrieving data');
@@ -93,15 +93,10 @@ class PageSystemInfo {
                     );
                 });
 
-                // Display the template (only if requestes)
-                if (add_to_content) {
-                    UI.set_title('System information');
-                    UI.set_loading_text('Setting content');
-                    UI.set_action_buttons();
-                    UI.replace_content(html_object);
+                // Done! Start the callback
+                if (callback) {
+                    callback();
                 }
-
-                UI.stop_loading();
             },
             function() {
                 // Something went wrong while requesting the data
@@ -131,12 +126,18 @@ class PageSystemInfo {
             // Add the reload action-button
             var actionbutton = {
                 'icon': 'refresh',
-                'click': function() { t.reload_data($('#content'), false) }
+                'click': function() { t.reload_data($('#content'), function() { UI.stop_loading(); }) }
             }
             UI.add_action_button(actionbutton);
 
             // Start the method to retrieve the data
-            t.reload_data(templates['systeminfo'], true);
+            t.reload_data(templates['systeminfo'], function() {
+                UI.set_title('System information');
+                UI.set_loading_text('Setting content');
+                UI.set_action_buttons();
+                UI.replace_content(templates['systeminfo']);
+                UI.stop_loading();
+            });
         },
         function() {
             // Something went wrong while requesting the template data
