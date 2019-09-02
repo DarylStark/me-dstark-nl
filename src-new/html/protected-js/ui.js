@@ -366,5 +366,23 @@ class UI {
         // Show it again
         toast.MaterialSnackbar.showSnackbar(data);
     }
+
+    static format_datetime(datetime) {
+        var monthNames = [
+            "Jan", "Feb", "Mar",
+            "Apr", "May", "Jun", "Jul",
+            "Aug", "Sep", "Oct",
+            "Nov", "Dec"
+          ];
+        
+          var day = datetime.getDate();
+          var monthIndex = datetime.getMonth();
+          var year = datetime.getFullYear();
+
+          var hours = datetime.getHours().toString().padStart(2, '0');
+          var minutes = datetime.getMinutes().toString().padStart(2, '0');
+        
+          return monthNames[monthIndex] + ' ' + day + ', ' + year + ' at ' + hours + ':' + minutes;
+    }
 }
 /**************************************************************************************************/
