@@ -231,6 +231,7 @@ class UI {
         $('#content').remove();
 
         // Upgrade the elements in the new content container
+        UI.upgrade_elements(new_content_obj);
 
         // Add the new one
         $('#scroller').append(new_content_obj);
@@ -263,7 +264,7 @@ class UI {
                 html_button.click(button['click']);
 
                 // Upgrade the element for MDL
-                componentHandler.upgradeElement(html_button[0]);
+                UI.upgrade_elements(html_button);
 
                 // Add the icon to the correct place
                 $('#action_buttons').append(html_button);
@@ -271,6 +272,20 @@ class UI {
 
             // Empty the stack
             UI.action_buttons = new Array();
+        });
+    }
+
+    static upgrade_elements(htmlelement) {
+        // Method to upgrade elements and it's child elements for MDL
+
+        // Upgrade all parent elements
+        htmlelement.each(function(index, element) {
+            componentHandler.upgradeElement(element);
+        });
+
+        // Upgrade all child elements
+        htmlelement.find('*').each(function(index, element) {
+            componentHandler.upgradeElement(element);
         });
     }
 }
