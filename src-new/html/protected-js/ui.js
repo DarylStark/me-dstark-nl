@@ -331,5 +331,16 @@ class UI {
         // Set the window title
         document.title = 'Me - ' + title;
     }
+
+    static to_jquery(html, content = false) {
+        // Method to convert a HTML-string to a jQuery object. If 'content' is given, we add a div
+        // with the id 'content'
+
+        if (content) {
+            html = '<div id="content">' + html + '</div>';
+        }
+
+        return $(html);
+    }
 }
 /**************************************************************************************************/

@@ -123,8 +123,7 @@ class PageSystemInfo {
         // Open the template for the page
         Templates.get_templates(['systeminfo'], function(templates) {
             // Add the 'content' div to the 'systeminfo' template and convert it to a Jquery object
-            // TODO: Make a method for this
-            templates['systeminfo'] = $('<div id=\'content\'>' + templates['systeminfo'] + '</div>');
+            templates['systeminfo'] = UI.to_jquery(templates['systeminfo'], true);
 
             // Set the correct loading text
             UI.set_loading_text('Setting action buttons');
