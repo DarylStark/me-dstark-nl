@@ -14,7 +14,6 @@ class PageSettings {
 
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
-        console.log(this);
 
         // Get the new data
         var name = $('#profile_name').val();
@@ -81,7 +80,6 @@ class PageSettings {
                             UI.set_loading_text('Parsing data');
 
                             sessions = sessions['result']['data'];
-                            console.log(sessions);
 
                             // Get the data
                             var user = data['result']['data'][0];
