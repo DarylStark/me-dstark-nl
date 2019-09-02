@@ -28,13 +28,13 @@ html, body
 
 .me-loading {
     position: fixed;
-    right: 110px;
+    left: 50%;
+    margin-left: -125px;
     bottom: 30px;
     width: 250px;
     height: 70px;
     background-color: #37474f;
     z-index: 999;
-    margin: 0px;
     display: none;
 }
 
