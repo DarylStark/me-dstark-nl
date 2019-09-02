@@ -48,10 +48,12 @@ class UI {
     static current_page_id = null;
     static current_page = null;
     static action_buttons = new Array();
-    static loading_text = '';
+    static loading = false;
 
     static init() {
         // Initiator of the User Interface. Sets all listeners where they should be
+
+        UI.start_loading('');
 
         // Set a listener to the 'main menu' headers to hide the submenus
         $('#main_menu').children('nav').each(function(element, value) {
@@ -72,20 +74,24 @@ class UI {
 
         // Set listeners to the 'main menu' menuitems themselfs
         $('#main_menu').find('a').click(function() {
-            // Retrieve the id for the requested page
-            var menu_item_id = $(this).attr('id');
-            
-            // Start the correct page
-            UI.start_page_from_id(menu_item_id);
+            if (!UI.loading) {
+                // Retrieve the id for the requested page
+                var menu_item_id = $(this).attr('id');
+                
+                // Start the correct page
+                UI.start_page_from_id(menu_item_id);
+            }
         });
 
         // Set listeners to the 'user menu' menuitems
         $('#user_menu').find('li').click(function() {
-            // Retrieve the id for the requested page
-            var menu_item_id = $(this).attr('id');
-            
-            // Start the correct page
-            UI.start_page_from_id(menu_item_id);
+            if (!UI.loading) {
+                // Retrieve the id for the requested page
+                var menu_item_id = $(this).attr('id');
+                
+                // Start the correct page
+                UI.start_page_from_id(menu_item_id);
+            }
         });
 
         // Handler for when the user enters a page via the back button
@@ -293,6 +299,8 @@ class UI {
     static start_loading(text) {
         // Start the loading sequence
 
+        UI.loading = true;
+
         // Set the loading-text
         UI.set_loading_text(text);
 
@@ -310,6 +318,8 @@ class UI {
 
         // Hide the loading element
         $('#loading').hide();
+
+        UI.loading = false;
     }
 
     static set_title(title) {
