@@ -9,6 +9,7 @@
 from me import Me
 from me import APIPage
 from me import PageAPI
+from me import MeJSONEncoder
 from me.exceptions import *
 from me_database import *
 from google.oauth2 import id_token
@@ -235,8 +236,18 @@ class PageAPIAAA(APIPage):
             # Get the usercount
             all_sessions_count = sessions.count()
 
-            # Get all the user objects
-            all_sessions = sessions.all()
+            # Get all the usersession objects
+            for session in sessions.all():
+                # Convert the object to a dict and add it to the return list
+                newobj = MeJSONEncoder.convert_to_sa_dict(session)
+
+                # Add the attribute for 'current_session' if this is the current session
+                newobj['current_session'] = False
+                if newobj['id'] == user[0].id:
+                    newobj['current_session'] = True
+
+                # Add the object to the return list
+                all_sessions.append(newobj)
         
         # TODO: work with pages; although it is very unlikely a user has more then 25 sessions
 

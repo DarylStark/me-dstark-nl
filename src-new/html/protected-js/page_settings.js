@@ -62,7 +62,7 @@ class PageSettings {
         var t = this;
 
         // Open the template for the page
-        Templates.get_templates(['settings', 'settings_session'], function(templates) {
+        Templates.get_templates(['settings', 'settings_session', 'settings_active_session'], function(templates) {
             UI.start_loading('Retrieving user data');
 
             // Get the user info
@@ -109,8 +109,14 @@ class PageSettings {
 
                             // Add the user sessions
                             $.each(sessions, function(index, element) {
-                                // Replace the '{id}' in the template string
+                                // Get the correct template; if it is the active session, we need a
+                                // different template
                                 var template = templates['settings_session'];
+                                if (element['current_session']) {
+                                    template = templates['settings_active_session'];
+                                }
+
+                                // Replace the '{id}' in the template string
                                 template = template.replace(new RegExp('{id}', 'g'), element['id']);
 
                                 // Create a new jQuery object for the session-entry
@@ -187,8 +193,42 @@ class PageSettings {
                                             null,
                                             data
                                         );
-                                        
-                                        
+                                    }
+                                });
+
+                                // Add a handler to the button to remove the session
+                                entry.find('button').click(function(clicked_element) {
+                                    // Check if the button has the confirm class
+                                    var confirmed = $(this).hasClass('mdl-button--accent');
+                                    
+                                    if (!confirmed) {
+                                        // Create a object for the data
+                                        var data = {
+                                            'session': element['id']
+                                        };
+
+                                        // Send the new values to the server
+                                        UI.start_loading('Removing session');
+                                        UI.api_call(
+                                            'POST',
+                                            'aaa', 'delete_session',
+                                            function() {
+                                                // Slide the entries up
+                                                $('#rename-' + element['id'] + ', #entry-' + element['id']).slideUp(100, function() {
+                                                    // Remove the entry
+                                                    UI.stop_loading();
+                                                });
+                                            },
+                                            function() {
+                                                UI.notification('Couldn\'t remove session', 'Refresh', function() { t.start(); } );
+                                                UI.stop_loading();
+                                            },
+                                            null,
+                                            data
+                                        );
+                                    } else {
+                                        $(this).removeClass('mdl-button--accent');
+                                        $(this).html('Confirm?');
                                     }
                                 });
 

@@ -242,3 +242,9 @@ div.mdl-textfield input {
 .me-pointer {
     cursor: pointer;
 }
+
+/* Buttons */
+
+button.me-button-confirm {
+    background-color: red;
+}
