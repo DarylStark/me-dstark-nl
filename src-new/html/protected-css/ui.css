@@ -236,3 +236,9 @@ div.mdl-textfield input {
     font-size: 14px;
     font-family: 'Roboto', 'Helvetica', sans-serif;
 }
+
+/* Classes for pointers */
+
+.me-pointer {
+    cursor: pointer;
+}
