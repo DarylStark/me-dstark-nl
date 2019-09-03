@@ -123,6 +123,9 @@ class PageSettings {
                                 var session_date = new Date(element['start'] + ' UTC');
                                 entry.find('#date').html(UI.format_datetime(session_date));
 
+                                // Set the IP address
+                                entry.find('#address').html(element['ip_address']);
+
                                 // Append the entry to the correct container
                                 templates['settings'].find('#sessions').append(entry);
                             });
