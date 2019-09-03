@@ -1,6 +1,6 @@
 <div class="mdl-card__supporting-text">
     <span>
-        <b id='name'></b><br />
+        <b id='name-{id}'></b><br />
         <span>Started at <i id='date'></i> from <i id='address'></i></span>
     </span>
     <div class='mdl-layout-spacer'></div>
@@ -9,4 +9,12 @@
             Remove
         </button>
     </span>
+</div>
+<div class="mdl-card__supporting-text me-card-form" id='rename-{id}' style='display: none;'>
+    <span class='table_field'>New name</span>
+    <div class='mdl-layout-spacer'></div>
+    <div class="mdl-textfield mdl-js-textfield">
+        <input class="mdl-textfield__input" type="text" id="new_name">
+        <label class="mdl-textfield__label" for="profile_email">New session name</label>
+    </div>
 </div>

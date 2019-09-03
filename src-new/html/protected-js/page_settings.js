@@ -109,14 +109,18 @@ class PageSettings {
 
                             // Add the user sessions
                             $.each(sessions, function(index, element) {
+                                // Replace the '{id}' in the template string
+                                var template = templates['settings_session'];
+                                template = template.replace(new RegExp('{id}', 'g'), element['id']);
+
                                 // Create a new jQuery object for the session-entry
-                                var entry = UI.to_jquery(templates['settings_session'], false);
+                                var entry = UI.to_jquery(template, false);
 
                                 // Set the name
                                 if (element['name']) {
-                                    entry.find('#name').html(element['name']);
+                                    entry.find('#name-' + element['id']).html(element['name']);
                                 } else {
-                                    entry.find('#name').html('Unnamed session');
+                                    entry.find('#name-' + element['id']).html('Unnamed session');
                                 }
 
                                 // Set the date
@@ -125,6 +129,68 @@ class PageSettings {
 
                                 // Set the IP address
                                 entry.find('#address').html(element['ip_address']);
+
+                                // Set the sessionname to the input
+                                entry.find('input').val(element['name']);
+
+                                // Add a handler to the title so we can rename it by clicking it
+                                entry.find('#name-' + element['id']).click(function() {
+                                    var display = $('#rename-' + element['id']).css('display');
+                                    if (display == 'none') {
+                                        // Slide down the input field
+                                        $('#rename-' + element['id']).slideDown(100);
+
+                                        // Set focus to the focus to the textfield
+                                        $('#rename-' + element['id']).find('input').focus();
+                                    } else {
+                                        // Slide it up again
+                                        $('#rename-' + element['id']).slideUp(100);
+                                    }
+                                });
+
+                                // Add a handler to the input; when the user presses ENTER, we save
+                                // the new name
+                                entry.find('#new_name').on('keyup', function (e) {
+                                    if (e.keyCode === 13) {
+                                        // Get the new name
+                                        var new_name = $('#rename-' + element['id']).find('input').val().trim();
+                                        $('#rename-' + element['id']).find('input').val(new_name);
+
+                                        // Create a object for the data
+                                        var data = {
+                                            'new_name': new_name,
+                                            'session': element['id']
+                                        };
+
+                                        // Send the new values to the server
+                                        UI.start_loading('Saving data');
+                                        UI.api_call(
+                                            'POST',
+                                            'aaa', 'set_session_name',
+                                            function() {
+                                                // Set the name to the object
+                                                if (new_name != '') {
+                                                    $('#name-' + element['id']).html(new_name);
+                                                } else {
+                                                    $('#name-' + element['id']).html('Unnamed session');
+                                                }
+
+                                                // Slide the input back up
+                                                $('#rename-' + element['id']).slideUp(100);
+
+                                                UI.stop_loading();
+                                            },
+                                            function() {
+                                                UI.notification('Couldn\'t save data', 'Refresh', function() { t.start(); } );
+                                                UI.stop_loading();
+                                            },
+                                            null,
+                                            data
+                                        );
+                                        
+                                        
+                                    }
+                                });
 
                                 // Append the entry to the correct container
                                 templates['settings'].find('#sessions').append(entry);

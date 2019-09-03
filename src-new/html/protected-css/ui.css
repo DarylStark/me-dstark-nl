@@ -213,6 +213,7 @@ html, body
 
 .me-card-form .table_field {
     font-weight: bold;
+    margin-top: 3px;
 }
 
 /* Inputs */

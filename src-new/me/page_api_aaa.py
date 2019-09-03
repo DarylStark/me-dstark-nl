@@ -146,7 +146,12 @@ class PageAPIAAA(APIPage):
 
         # Get the UserSession the user wants to change and the new name for the session
         session_id = flask.request.form.get('session')
-        new_name = flask.request.form.get('new_name')
+        new_name = flask.request.form.get('new_name').strip()
+
+        # If we don't give a new name, we set the name to None so it will end up as NULL in the
+        # database
+        if new_name == '':
+            new_name = None
 
         # Find the user session. We search for the session_id and the user_id so we make sure only
         # the sessions are found that are actually owned by the user
