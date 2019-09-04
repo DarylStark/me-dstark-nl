@@ -121,3 +121,7 @@ class MeAPINotesParentTagNotValidException(MeException):
     """ Exception for when a user specifies a parent tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPINotesNoTagException(MeException):
+    """ Exception for when a user tries to request a non-existing tag """
+    pass
+#---------------------------------------------------------------------------------------------------

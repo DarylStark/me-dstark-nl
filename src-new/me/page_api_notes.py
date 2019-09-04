@@ -22,7 +22,8 @@ class PageAPINotes(APIPage):
             what to do when a API endpoint gets in """
         
         self._api_endpoints = {
-            'get_tags': self.get_tags
+            'get_tags': self.get_tags,
+            'get_tag': self.get_tag
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -47,14 +48,36 @@ class PageAPINotes(APIPage):
         # Get the tags
         all_tags = list()
         with DatabaseSession() as session:
-            # Get all users from the database
+            # Get all tag from the database
             tags = session.query(NoteTag).filter(NoteTag.parent == parent).order_by(NoteTag.name)
             
-            # Get the usercount
+            # Get the tagcount
             alltags = tags.count()
 
-            # Get all the user objects
+            # Get all the tag objects
             all_tags = tags.all()
         
         return (all_tags, alltags)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'get_tag', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_tag(self, *args, **kwargs):
+        """ The 'get_tag' API endpoint returns detailed information for a specific tag """
+        
+        # Get the tag
+        with DatabaseSession() as session:
+            # Get all users from the database
+            try:
+                tag = session.query(NoteTag).filter(NoteTag.id == kwargs['tag'])
+            except KeyError:
+                # If the user didn't specify a tag, give an error
+                raise MeAPINotesNoTagException('No tag given')
+            else:
+                # If we found too much tags, give an errors
+                if tag.count() != 1:
+                    raise MeAPINotesNoTagException('Tag {tag} couldn\'t be found'.format(tag = kwargs['tag']))
+                
+                # Found the tag
+                tag = tag.first()
+        
+        return ([ tag ], 1)
 #---------------------------------------------------------------------------------------------------

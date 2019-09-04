@@ -185,6 +185,10 @@ html, body
     border-bottom: 1px solid #cccccc;
 }
 
+.me-card-table .mdl-card__supporting-text:last-child {
+    border-bottom: 0px;
+}
+
 .me-card-form .mdl-card__supporting-text {
     display: flex;
     width: auto;
@@ -214,6 +218,40 @@ html, body
 .me-card-form .table_field {
     font-weight: bold;
     margin-top: 3px;
+}
+
+.mdl-card__supporting-text.me-text {
+    display: block;
+}
+
+.mdl-card__supporting-text.me-text p:last-child {
+    margin-bottom: 0px;
+}
+
+.me-card-filelist .mdl-card__supporting-text {
+    display: flex;
+    width: auto;
+    border-bottom: 1px solid #cccccc;
+    cursor: pointer;
+}
+
+.me-card-filelist .mdl-card__supporting-text:last-child {
+    border-bottom: 0px;
+}
+
+.me-card-filelist .mdl-card__supporting-text:hover {
+    background: #eeeeee;
+}
+
+.me-card-filelist .material-icons
+{
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.56);
+    margin-right: 16px;
+}
+
+.me-card-filelist span {
+    padding-top: 4px;
 }
 
 /* Inputs */
