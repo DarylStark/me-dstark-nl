@@ -238,21 +238,6 @@ class UI {
     }
 
     static replace_content(new_content_obj) {
-        // Method to fade out the old content and insert a new one
-
-        if ($('#content').length) {
-            // Old content div exists. Fade it out
-            $('#content').fadeOut(100, function() {
-                // Fade out the old one, insert the new one
-                UI.update_content(new_content_obj);
-            });
-        } else {
-            // Old content div does not exist. Just insert the new one
-            UI.update_content(new_content_obj);
-        }      
-    }
-
-    static update_content(new_content_obj) {
         // Method to remove the current content container and replace it with a new one
 
         // Remove the old one
@@ -261,14 +246,8 @@ class UI {
         // Upgrade the elements in the new content container
         UI.upgrade_elements(new_content_obj);
 
-        // Set the object to hidden so we can fade it in
-        new_content_obj.hide()
-
         // Add the new one
         $('#scroller').append(new_content_obj);
-
-        // Fade it int
-        new_content_obj.fadeIn(100);
     }
 
     static add_action_button(button) {

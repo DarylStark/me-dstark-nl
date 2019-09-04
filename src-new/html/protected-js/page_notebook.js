@@ -254,16 +254,16 @@ class PageNotebook {
                 'action': 'edit'
             }
         }
+
+        // Set the values for the class to empty so we can overwrite them
+        t.tag = null;
+        t.note = null;
         
         // Loop through the objects to find the correct action
         $.each(regexes, function(key, object) {
             if (object['regex'].test(url)) {
                 // Found the correct regex. Let's get the groups
                 var groups = Array.from(url.matchAll(object['regex']))[0]
-
-                // Set the values for the class to empty so we can overwrite them
-                t.tag = null;
-                t.note = null;
                 
                 if (object['tag']) {
                     t.tag = groups[object['tag']];
@@ -277,7 +277,7 @@ class PageNotebook {
 
         // Open the template for the page
         Templates.get_templates(['notebook', 'notebook_folder'], function(templates) {
-            UI.start_loading('Retrieving folders');
+            UI.start_loading('Retrieving tags');
 
             // Add the 'content' div to the 'notebook' template and convert it to a Jquery object
             templates['notebook'] = UI.to_jquery(templates['notebook'], true);
@@ -286,7 +286,7 @@ class PageNotebook {
             templates['notebook'].find('#note').hide();
 
             // Load the requested folder and display the page
-            t.load_folder(t.tag, function(data) {
+            t.load_folder(t.tag, function() {
                 UI.set_loading_text('Setting content');
                 UI.set_action_buttons();
                 UI.replace_content(templates['notebook']);
