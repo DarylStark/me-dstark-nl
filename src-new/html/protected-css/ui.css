@@ -254,6 +254,10 @@ html, body
     padding-top: 4px;
 }
 
+.me-card-filelist .mdl-card__menu {
+    top: 8px;
+}
+
 /* Inputs */
 
 .mdl-textfield {

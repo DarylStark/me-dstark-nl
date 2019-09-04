@@ -2,15 +2,37 @@
  * Class for the page 'notebook'
 ***************************************************************************************************/
 class PageNotebook {
+    toggle_add_tag() {
+        // Method to toggle the 'add_tag' input
+
+        var display = $('#tag-input').css('display');
+
+        if (display == 'none') {
+            // Tag input is not visible; show it
+            $('#tag-input').slideDown(100);
+            $('#new_name').focus();
+        } else {
+            // Tag input is visible; hide it again
+            $('#tag-input').slideUp(100);
+        }
+    }
+
+    add_tag() {
+        // Method to add a new tag
+
+        var tag_name = $('#new_name').val()
+        console.log('Adding tag: ' + tag_name)
+    }
+
     display_browser() {
         // Method to set the items for the browser and empty the browser list again
 
         // Remove all current items
-        $('#browser').find('.mdl-card__supporting-text').remove();
+        $('#entries').find('.mdl-card__supporting-text').remove();
 
         // Add the items
         $.each(this.browser_list, function(index, item) {
-            $('#browser').append(item);
+            $('#entries').append(item);
         });
 
         // Empty the array
@@ -106,7 +128,7 @@ class PageNotebook {
                 if (parent_name) {
                     back.find('#title').html(parent_name);
                 } else {
-                    back.find('#title').html('(Root)');
+                    back.find('#title').html('Root');
                 }
 
                 // Set a click handler
@@ -288,6 +310,17 @@ class PageNotebook {
 
             // Add the 'content' div to the 'notebook' template and convert it to a Jquery object
             templates['notebook'] = UI.to_jquery(templates['notebook'], true);
+
+            // Add the handler to the button for adding tags and hide the input
+            templates['notebook'].find('#add_tag').click(t.toggle_add_tag);
+            templates['notebook'].find('#tag-input').hide();
+
+            // Add a handler to the input field for new tags when pressing the ENTER key
+            templates['notebook'].find('#new_name').on('keyup', function (e) {
+                if (e.keyCode === 13) {
+                    t.add_tag();
+                }
+            });
 
             // Hide the 'note'
             templates['notebook'].find('#note').hide();

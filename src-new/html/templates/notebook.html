@@ -1,19 +1,28 @@
 <div class='mdl-grid'>
     <div class='mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet'>
         <div class='me-card-wide mdl-card mdl-shadow--4dp me-card-filelist' id='browser'>
-            <div class='mdl-card__title me-card__title-small' id='browser_title'>Browser</div>
+            <div class='mdl-card__title me-card__title-small' id='browser_title'>
+                Browser
+            </div>
+            <div class='mdl-card__menu'>
+                <button class='mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect' id='add_tag'>
+                    <i class='material-icons'>library_add</i>
+                </button>
+            </div>
+            <div class="mdl-card__supporting-text me-card-form" id='tag-input'>
+                <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>create_new_folder</i>
+                <div class="mdl-textfield mdl-js-textfield">
+                    <input class="mdl-textfield__input" type="text" id="new_name">
+                    <label class="mdl-textfield__label" for="profile_email">New tag name</label>
+                </div>
+            </div>
+            <div id='entries'></div>
         </div>
     </div>
     <div class='mdl-cell mdl-cell--8-col'>
         <div class='me-card-wide me-card-form mdl-card mdl-shadow--4dp' id='note'>
             <div class='mdl-card__title me-card__title-small' id='note-title'></div>
-            <div class='mdl-card__supporting-text me-text' id='note-text'>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ultricies pulvinar lorem, id iaculis ex malesuada non. Morbi sapien purus, auctor ut tempus nec, hendrerit at mi. Nunc eleifend iaculis velit sit amet pulvinar. Pellentesque tristique odio eget ligula porta, at accumsan quam facilisis. Etiam fringilla, lectus id sollicitudin dictum, risus dolor pellentesque lacus, quis blandit urna sem sit amet mauris. Mauris consectetur lorem at lobortis condimentum. Suspendisse ut faucibus nisl, vitae volutpat sapien. Donec nec pellentesque ligula. Donec vehicula maximus erat. Nullam rutrum nunc justo, et facilisis ex viverra et. Mauris condimentum mauris eros, et ornare arcu pharetra eget. Proin ultrices fringilla laoreet.</p>
-                <p>Nullam maximus at risus sed sollicitudin. Duis mattis libero vel sodales lobortis. Pellentesque vel mi cursus dui sollicitudin facilisis. Nullam rutrum nunc eget lectus faucibus posuere. Praesent nibh lectus, ornare eget arcu vel, gravida scelerisque lacus. Maecenas ultricies viverra sem. In eget nisi enim. Sed vitae urna et lectus consectetur cursus quis eget mi. Pellentesque elementum mollis dui. Vestibulum malesuada, erat id pulvinar iaculis, eros nunc tincidunt sapien, aliquam facilisis nisi justo a sapien. Vestibulum sed porta dui. Suspendisse et nisi a orci aliquet ornare ut nec libero. Aliquam feugiat orci est, vitae pulvinar augue posuere vel. Aliquam erat volutpat. Integer quam ligula, malesuada sit amet odio at, faucibus auctor nunc.</p>
-                <p>Donec euismod ante et magna dignissim scelerisque. Sed iaculis a elit non luctus. Phasellus commodo arcu augue, at euismod velit sagittis a. Vestibulum aliquam purus sit amet nisi cursus gravida. Nam aliquam, justo non ultricies pellentesque, ex elit tempus justo, nec blandit ipsum justo feugiat mauris. Nam lectus nisi, consectetur nec nunc ac, gravida vulputate nisi. Donec commodo turpis neque, ut tincidunt ante pellentesque ac. Cras mattis tempus urna, non viverra leo aliquet ac. Vestibulum semper eget nulla eu eleifend.</p>
-                <p>Sed quis est vel nisl gravida commodo. Donec pellentesque, elit eu viverra fringilla, velit justo ultrices arcu, vel rutrum nulla lectus quis libero. Praesent non maximus ipsum. Morbi maximus accumsan est quis faucibus. Nunc eu quam quis enim blandit lobortis vitae condimentum ante. Donec ac libero blandit, vulputate turpis ut, semper erat. Nunc sit amet sagittis sem. Aenean eget dolor placerat ex rutrum pretium in quis dolor. Suspendisse cursus, erat quis tempor maximus, elit orci laoreet purus, vitae euismod massa ipsum vel dolor. Suspendisse ac iaculis ante. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In viverra, nisi ac condimentum vehicula, orci ligula varius sem, eu facilisis mi risus vitae dui. Duis tempus dui ante, et fringilla libero rhoncus eget. Nunc molestie semper pharetra. Aliquam pellentesque interdum quam ornare eleifend.</p>
-                <p>Sed et facilisis dolor, et luctus mauris. Ut quis sapien tellus. Praesent sed elementum ex, in condimentum purus. Sed semper odio non nulla faucibus, sit amet condimentum nibh sollicitudin. Praesent purus felis, aliquam eleifend libero nec, efficitur pretium erat. Nam eu suscipit nibh, in accumsan dui. Donec gravida efficitur tortor eu condimentum. Curabitur hendrerit aliquam felis a tincidunt. Nam nec ex sit amet mi laoreet tincidunt eget eget magna. Nam vehicula felis turpis, eget pulvinar libero vehicula a.</p>
-            </div>
+            <div class='mdl-card__supporting-text me-text' id='note-text'></div>
         </div>
         <div class='me-card-wide me-card-form mdl-card mdl-shadow--4dp' id='note-notification'>
             <div class='mdl-card__title me-card__title-small' id='note-title'>Open a note</div>
