@@ -52,23 +52,6 @@ class PageUI(Page):
     @Me.ui_page(allowed = { Me.INTERACTIVE_USERS  })
     def show_page_ui(self, path, **kwargs):
         """ Method to show a the main page of the website """
-
-        # Check if the UI configuration is already loaded and if it isn't, load it from the JSON
-        # file
-        if Me.config_ui is None:
-            try:
-                # Load the configfile into memeory
-                Log.log(severity = Log.DEBUG, module = 'PageUI', message = 'Loading UI configuration into memory')
-                with open(Me.configfile_ui, 'r') as ui_cfg:
-                    Me.config_ui = json.load(ui_cfg)
-            except FileNotFoundError:
-                # File was not found; raise an error
-                Log.log(severity = Log.ERROR, module = 'PageUI', message = 'Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
-                raise MeUIConfigFileException('Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
-            except json.decoder.JSONDecodeError:
-                # File was not found but not valid JSON; raise an error
-                Log.log(severity = Log.ERROR, module = 'PageUI', message = 'Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
-                raise MeUIConfigFileException('File "{file}" is not valid JSON'.format(file = Me.configfile_ui))
         
         # Load the 'ui.html' template and replace the needed variables
         template = TemplateLoader.get_template(
@@ -80,7 +63,6 @@ class PageUI(Page):
         # TODO: Remove this debugging
         TemplateLoader._template_cache = dict()
         StaticLoader._file_cache = dict()
-        Me.config_ui = None
 
         # Return the generated template
         return template   
@@ -94,14 +76,39 @@ class PageUI(Page):
         if len(static_file) != 1:
             raise MeNoFileProvidedException
 
-        # Open the file from the StaticLoader
-        try:
-            contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
-        except StaticFileNotFoundException:
-            raise MePageNotFoundException
-        
-        # Return it
-        return flask.Response(contents, mimetype = mimetype)
+        # If the given file starts with 'combined', we give a combination of multiple files. This is
+        # done so the client can request more then one file at the same time without overloading the
+        # SQLalchemy pool
+        group = re.findall('^combined\-([a-z0-9]+)\.js$', static_file[0])
+        if len(group) != 1:
+            # Open the file from the StaticLoader
+            try:
+                contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
+            except StaticFileNotFoundException:
+                raise MePageNotFoundException
+            
+            # Return it
+            return flask.Response(contents, mimetype = mimetype)
+        else:
+            # The user requested a combination. Within the settings, we can find what combination we
+            # have to create
+            mimetype = Me.config_ui['js-combinations'][group[0]]['mime-type']
+            files = Me.config_ui['js-combinations'][group[0]]['files']
+            
+            # Loop through the files, get the contents and combine them so we can return a combined
+            # version of the files
+            files_content = list()
+            for file in files:
+                # Open the file from the StaticLoader
+                try:
+                    contents, mimetype = StaticLoader.get_file(file)
+                    files_content.append(contents)
+                except KeyboardInterrupt:
+                    # TODO: Custom Exception
+                    raise MePageNotFoundException
+                
+            # Return the combined file
+            return flask.Response('\n'.join(files_content), mimetype = mimetype)
     
     @Me.ui_page(allowed = { Me.INTERACTIVE_USERS  })
     def show_protected_image(self, path, **kwargs):

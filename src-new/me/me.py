@@ -251,6 +251,21 @@ class Me:
 
         # Configure the session key for Flask
         cls.flask_app.secret_key = cls.get_configuration(group = 'flask_sessions', setting = 'secret_key')
+
+        # Load the configuration file for UI
+        try:
+            # Load the configfile into memeory
+            Log.log(severity = Log.DEBUG, module = 'PageUI', message = 'Loading UI configuration into memory')
+            with open(Me.configfile_ui, 'r') as ui_cfg:
+                Me.config_ui = json.load(ui_cfg)
+        except FileNotFoundError:
+            # File was not found; raise an error
+            Log.log(severity = Log.ERROR, module = 'PageUI', message = 'Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
+            raise MeUIConfigFileException('Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
+        except json.decoder.JSONDecodeError:
+            # File was not found but not valid JSON; raise an error
+            Log.log(severity = Log.ERROR, module = 'PageUI', message = 'Couldn\'t open ui-configuration file: "{file}"'.format(file = Me.configfile_ui))
+            raise MeUIConfigFileException('File "{file}" is not valid JSON'.format(file = Me.configfile_ui))
     
     @classmethod
     def start(cls):
