@@ -149,7 +149,6 @@ class PageNotebook {
             var newurl = null;
             if (tag) {
                 newurl = '/ui/notebook/list/' + t.tag;
-                console.log(newurl);
             } else {
                 newurl = '/ui/notebook/'
             }
