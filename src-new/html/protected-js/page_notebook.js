@@ -48,7 +48,7 @@ class PageNotebook {
                     var tag_info = data['result']['data'][0];
 
                     // Load the folders for this folder
-                    t.load_folder_folders(folder, tag_info['parent'], function() {
+                    t.load_folder_folders(folder, tag_info['parent'], tag_info['parent_name'], function() {
                         // Execute the success-callback
                         cb_success();
 
@@ -68,7 +68,7 @@ class PageNotebook {
                 { 'tag': folder }
             );
         } else {
-            this.load_folder_folders(folder, null, function() {
+            this.load_folder_folders(folder, null, null, function() {
                 // Execute the success-callback
                 cb_success();
 
@@ -84,7 +84,7 @@ class PageNotebook {
         }
     }
 
-    load_folder_folders(folder, parent, cb_success, cb_error) {
+    load_folder_folders(folder, parent, parent_name, cb_success, cb_error) {
         // Method to load folders from the database and display them
 
         UI.start_loading('Retrieving tags');
@@ -101,6 +101,13 @@ class PageNotebook {
             if (folder) {
                 // Convert the 'notebook_back' to a jQuery object
                 var back = UI.to_jquery(templates['notebook_back'], false);
+
+                // Set then name of the parent
+                if (parent_name) {
+                    back.find('#title').html(parent_name);
+                } else {
+                    back.find('#title').html('(Root)');
+                }
 
                 // Set a click handler
                 back.click(function() {

@@ -8,6 +8,7 @@
 # Imports
 from me import APIPage
 from me import PageAPI
+from me import MeJSONEncoder
 from me import Me
 from me.exceptions import *
 from me_database import NoteTag, DatabaseSession
@@ -76,8 +77,22 @@ class PageAPINotes(APIPage):
                 if tag.count() != 1:
                     raise MeAPINotesNoTagException('Tag {tag} couldn\'t be found'.format(tag = kwargs['tag']))
                 
-                # Found the tag
+                # Found the tag. Let's see what the parent is
                 tag = tag.first()
+                parent = tag.parent
+
+                # Create a dict from the tag
+                tag = MeJSONEncoder.convert_to_sa_dict(tag)
+                tag['parent_name'] = None
+
+                # Find the parent (if there is one)
+                if parent:
+                    parent_tag = session.query(NoteTag).filter(NoteTag.id == parent)
+
+                    if parent_tag.count() == 1:
+                        # Add the parent name to the tag
+                        parent_tag = parent_tag.first()
+                        tag['parent_name'] = parent_tag.name
         
         return ([ tag ], 1)
 #---------------------------------------------------------------------------------------------------
