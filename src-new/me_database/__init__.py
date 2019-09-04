@@ -19,6 +19,8 @@ from me_database.feed_item import FeedItem
 from me_database.filter import Filter
 from me_database.log_entry import LogEntry
 from me_database.note_tag import NoteTag
+from me_database.note import Note
+from me_database.notes_tags import NotesTags
 from me_database.stage import Stage
 from me_database.user import User
 from me_database.user_session import UserSession
