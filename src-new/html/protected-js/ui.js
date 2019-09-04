@@ -19,6 +19,12 @@ class UI {
             'default_url': '/ui/planning/',
             'highlight_item': true
         },
+        'main_notebook': {
+            'class': PageNotebook,
+            'url': /^\/ui\/notebook([\/].*|)$/,
+            'default_url': '/ui/notebook/',
+            'highlight_item': true
+        },
         'main_events_concerts': {
             'class': PageConcerts,
             'url': /^\/ui\/events\/concerts([\/].*|)$/,

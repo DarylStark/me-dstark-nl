@@ -10,6 +10,7 @@
                 "protected-js/page_systeminfo.js",
                 "protected-js/page_settings.js",
                 "protected-js/page_logout.js",
+                "protected-js/page_notebook.js",
                 "protected-js/main.js",
                 "protected-js/ui.js"
             ]
@@ -55,6 +56,11 @@
                     { "id": "main_planning", 
                         "name": "Planning", 
                         "icon": "event", 
+                        "type": "item"
+                    },
+                    { "id": "main_notebook", 
+                        "name": "Notebook", 
+                        "icon": "notes", 
                         "type": "item"
                     },
                     {
