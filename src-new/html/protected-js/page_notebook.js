@@ -145,6 +145,19 @@ class PageNotebook {
 
         // Load the folder
         this.load_folder(this.tag, function(data) {
+            // Change the URL, if needed
+            var newurl = null;
+            if (tag) {
+                newurl = '/ui/notebook/list/' + t.tag;
+                console.log(newurl);
+            } else {
+                newurl = '/ui/notebook/'
+            }
+            if (newurl) {
+                history.pushState(newurl, '', newurl);
+            }
+
+            // Stop loading
             UI.stop_loading();
         },
         function() {
