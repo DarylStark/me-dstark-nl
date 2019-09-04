@@ -15,6 +15,14 @@ class PageSettings {
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
+        // Get the values
+        var new_name = $('#profile_name').val();
+        var new_email = $('#profile_email').val();
+
+        // Set the dirty values (if needed)
+        if (new_name != t.old_name) { t.dirty_name = true; } else { t.dirty_name = false; }
+        if (new_email != t.old_email) { t.dirty_email = true; } else { t.dirty_email = false; }
+
         // Get the new data
         var name = $('#profile_name').val();
         var email = $('#profile_email').val();
@@ -94,18 +102,7 @@ class PageSettings {
                             t.old_email = user['email'];
                             
                             // Add handlers to the 'inputs' so the data gets saved when it loses focus
-                            templates['settings'].find('input').focusout(function() {
-                                // Get the values
-                                var new_name = $('#profile_name').val();
-                                var new_email = $('#profile_email').val();
-
-                                // Set the dirty values (if needed)
-                                if (new_name != t.old_name) { t.dirty_name = true; } else { t.dirty_name = false; }
-                                if (new_email != t.old_email) { t.dirty_email = true; } else { t.dirty_email = false; }
-
-                                // Save the data
-                                t.save_data();
-                            });
+                            templates['settings'].find('input').focusout(t.save_data);
 
                             // Add the user sessions
                             $.each(sessions, function(index, element) {
