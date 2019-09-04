@@ -119,6 +119,9 @@ class PageSettings {
                                 // Create a new jQuery object for the session-entry
                                 var entry = UI.to_jquery(template, false);
 
+                                // Hide the 'new-session' block
+                                entry.find('#rename-' + element['id']).hide();
+
                                 // Set the name
                                 if (element['name']) {
                                     entry.find('#name-' + element['id']).html(element['name']);
