@@ -99,7 +99,7 @@ class Me:
             raise MePageNotFoundException
         except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException, MeSessionNotForUserException, MeActiveSessionCannotBeRemovedException) as error:
             return ErrorPage.show_error(403, error)
-        except (MeAPIGroupNotRegisteredException, MeAPINoAPIGroupException, MeAPIEndPointInvalidException, MeAPINoEndPointException, MePageNotFoundException, MeAPITemplatesTemplateNotFoundException) as error:
+        except (MeAPIGroupNotRegisteredException, MeAPINoAPIGroupException, MeAPIEndPointInvalidException, MeAPINoEndPointException, MePageNotFoundException, MeAPITemplatesTemplateNotFoundException, MeAPINotesParentTagNotValidException) as error:
             return ErrorPage.show_error(404, error)
     
     @classmethod

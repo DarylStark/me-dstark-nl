@@ -85,7 +85,7 @@ class PageUI(Page):
             try:
                 contents, mimetype = StaticLoader.get_file('protected-js/' + static_file[0])
             except StaticFileNotFoundException:
-                raise MePageNotFoundException
+                raise MePageNotFoundException('File "{name}" could not be found'.format(name = static_file[0]))
             
             # Return it
             return flask.Response(contents, mimetype = mimetype)
@@ -103,9 +103,8 @@ class PageUI(Page):
                 try:
                     contents, mimetype = StaticLoader.get_file(file)
                     files_content.append(contents)
-                except KeyboardInterrupt:
-                    # TODO: Custom Exception
-                    raise MePageNotFoundException
+                except StaticFileNotFoundException:
+                    raise MePageNotFoundException('File "{name}" could not be found'.format(name = file))
                 
             # Return the combined file
             return flask.Response('\n'.join(files_content), mimetype = mimetype)

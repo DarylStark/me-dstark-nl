@@ -139,7 +139,8 @@ class TestClassTypes:
                          MeAPIInvalidMethodException, StaticLoaderException, StaticFileNotFoundException, MeNoUserSessionException,
                          MePermissionDeniedException, MeAuthenticationFailedException, MeNoLogoutKeyException, MePageNotFoundException,
                          MePageNotFoundException, MeNoFileProvidedException, MeSessionNotForUserException, MeActiveSessionCannotBeRemovedException,
-                         MeUIConfigFileException, MeAPITemplatesNoTemplatesGivenException, MeAPITemplatesTemplateNotFoundException, MeEMailAddressInvalidException ])
+                         MeUIConfigFileException, MeAPITemplatesNoTemplatesGivenException, MeAPITemplatesTemplateNotFoundException, MeEMailAddressInvalidException,
+                         MeAPINotesParentTagNotValidException ])
     def test_exception_classes(self, classes):
         """ Method to test if a class is a exception class """
 

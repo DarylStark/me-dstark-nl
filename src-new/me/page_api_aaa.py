@@ -167,7 +167,6 @@ class PageAPIAAA(APIPage):
 
             # Check if we have a session. If we don't give an error
             if sessions.count() != 1:
-                # TODO: Custom exception
                 raise MeSessionNotForUserException('Session with id "{id}" is not found for the currently logged on user "{email}"'.format(
                     id = session_id,
                     email = user[1].email

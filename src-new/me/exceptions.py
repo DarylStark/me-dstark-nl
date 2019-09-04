@@ -117,3 +117,7 @@ class MeEMailAddressInvalidException(MeException):
     """ Exception for when the user tries to enter a invalid e-mail address """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPINotesParentTagNotValidException(MeException):
+    """ Exception for when a user specifies a parent tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
