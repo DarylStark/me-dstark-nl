@@ -8,28 +8,35 @@ class PageNotebook {
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
-        // Remove the tag (if needed)
-        if (this.tag) {
-            UI.start_loading('Removing tag');
+        // Set a 'confirm' button to the action button
+        $('#ab-remove-tag').find('i').html('thumb_up');
 
-            UI.api_call(
-                'POST',
-                'notes', 'delete_tag',
-                function() {
-                    // Navigate back to the parent
-                    t.navigate_to_tag(t.parent_tag);
-                },
-                function() {
-                    // Something went wrong while requesting the data
-                    UI.notification('Couldn\'t remove tag', 'Refresh', function() { t.start(); } );
-                    UI.stop_loading();
-                },
-                null,
-                {
-                    'tag': t.tag
-                }
-            );
-        }
+        UI.upgrade_elements($('#ab-remove-tag'));
+
+        $('#ab-remove-tag').click(function() {
+            // Remove the tag (if needed)
+            if (t.tag) {
+                UI.start_loading('Removing tag');
+
+                UI.api_call(
+                    'POST',
+                    'notes', 'delete_tag',
+                    function() {
+                        // Navigate back to the parent
+                        t.navigate_to_tag(t.parent_tag);
+                    },
+                    function() {
+                        // Something went wrong while requesting the data
+                        UI.notification('Couldn\'t remove tag', 'Refresh', function() { t.start(); } );
+                        UI.stop_loading();
+                    },
+                    null,
+                    {
+                        'tag': t.tag
+                    }
+                );
+            }
+        });
     }
 
     toggle_add_tag() {
@@ -318,7 +325,8 @@ class PageNotebook {
             {
                 'icon': 'delete_sweep',
                 'click': function() { t.remove_tag(); },
-                'show': show_remove_delete_note
+                'show': show_remove_delete_note,
+                'id': 'ab-remove-tag'
             }
         ]
 
