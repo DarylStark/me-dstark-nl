@@ -11,7 +11,7 @@ from me import PageAPI
 from me import MeJSONEncoder
 from me import Me
 from me.exceptions import *
-from me_database import NoteTag, DatabaseSession
+from me_database import NoteTag, NotesTags, DatabaseSession
 from sqlalchemy import and_
 import flask
 #---------------------------------------------------------------------------------------------------
@@ -27,7 +27,8 @@ class PageAPINotes(APIPage):
         self._api_endpoints = {
             'get_tags': self.get_tags,
             'get_tag': self.get_tag,
-            'add_tag': self.add_tag
+            'add_tag': self.add_tag,
+            'delete_tag': self.delete_tag
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -124,7 +125,7 @@ class PageAPINotes(APIPage):
 
             # If the tag already exists, we give an error
             if tags.count() > 0:
-                # TODO: Custom Error
+                # TODO: Custom Exception
                 raise ValueError('A tag with the name "{name}" already exists within parent tag {tag}'.format(name = tag_name, tag = parent_tag))
             
             # Create a new NoteTag object with the new details
@@ -137,4 +138,33 @@ class PageAPINotes(APIPage):
             session.add(new_entry)
         
         return ([ 'added' ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'delete_tag', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def delete_tag(self, *args, **kwargs):
+        """ API endpoint to remove a NoteTag """
+
+        # Get the UserSession the user wants to change and the new name for the session
+        tag_id = flask.request.form.get('tag')
+
+        # Find the user tag
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the session
+            tags = session.query(NoteTag).filter(
+                NoteTag.id == tag_id
+            )
+
+            # Check if we have a tag. If we don't give an error
+            if tags.count() != 1:
+                # TODO: Custom Exception
+                raise ValueError('Tag with id {id} is not found'.format(id = tag_id))
+            
+            # Remove all tags from all notes
+            notes_tags = session.query(NotesTags).filter(
+                NotesTags.tag == tag_id
+            ).delete()
+
+            # Delete the session
+            session.delete(tags.first())
+
+        return([ 'removed' ], 1)
 #---------------------------------------------------------------------------------------------------

@@ -2,6 +2,38 @@
  * Class for the page 'notebook'
 ***************************************************************************************************/
 class PageNotebook {
+    remove_tag() {
+        // Method to remove a tag
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        console.log(t);
+
+        // Remove the tag (if needed)
+        if (this.tag) {
+            UI.start_loading('Removing tag');
+
+            UI.api_call(
+                'POST',
+                'notes', 'delete_tag',
+                function() {
+                    // Navigate back to the parent
+                    t.navigate_to_tag(t.parent_tag);
+                },
+                function() {
+                    // Something went wrong while requesting the data
+                    UI.notification('Couldn\'t remove tag', 'Refresh', function() { t.start(); } );
+                    UI.stop_loading();
+                },
+                null,
+                {
+                    'tag': t.tag
+                }
+            );
+        }
+    }
+
     toggle_add_tag() {
         // Method to toggle the 'add_tag' input
 
@@ -76,6 +108,9 @@ class PageNotebook {
 
         // Empty the array
         this.browser_list = new Array();
+
+        // Add the action buttons
+        this.set_action_buttons(this.tag != null);
     }
 
     set_title(foldername = null) {
@@ -112,6 +147,8 @@ class PageNotebook {
                     t.load_folder_folders(folder, tag_info['parent'], tag_info['parent_name'], function() {
                         // Execute the success-callback
                         cb_success();
+
+                        t.parent_tag = tag_info['parent'];
 
                         // Set the title
                         t.set_title(tag_info['name']);
@@ -267,6 +304,37 @@ class PageNotebook {
         });
     }
 
+    set_action_buttons(show_remove_delete_note = true) {
+        // Method to set the correct action buttons
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        // Define the needed action buttons
+        var actionbuttons = [
+            {
+                'icon': 'note_add',
+                'click': function(){},
+                'show': true
+            },
+            {
+                'icon': 'delete_sweep',
+                'click': function() { t.remove_tag(); },
+                'show': show_remove_delete_note
+            }
+        ]
+
+        // Add them to the UI
+        $.each(actionbuttons.reverse(), function(index, actionbutton) {
+            if (actionbutton['show']) {
+                UI.add_action_button(actionbutton);
+            }
+        });
+
+        // Set them
+        UI.set_action_buttons();
+    }
+
     start() {
         // Set the page to loading
         UI.start_loading('Retrieving templates');
@@ -367,7 +435,6 @@ class PageNotebook {
             // Load the requested folder and display the page
             t.load_folder(t.tag, function() {
                 UI.set_loading_text('Setting content');
-                UI.set_action_buttons();
                 UI.replace_content(templates['notebook']);
             },
             function() {

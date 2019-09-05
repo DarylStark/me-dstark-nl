@@ -276,6 +276,12 @@ class UI {
                 // Add the click method
                 html_button.click(button['click']);
 
+                // If an id is set, give it to the button
+                if (button['id']) {
+                    console.log(button['id']);
+                    html_button.attr('id', button['id']);
+                }
+
                 // Upgrade the element for MDL
                 UI.upgrade_elements(html_button);
 
