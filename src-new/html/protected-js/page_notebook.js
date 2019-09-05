@@ -10,6 +10,7 @@ class PageNotebook {
 
         // Set a 'confirm' button to the action button
         $('#ab-remove-tag').find('i').html('thumb_up');
+        $('#ab-remove-tag').removeClass('mdl-button--colored');
 
         UI.upgrade_elements($('#ab-remove-tag'));
 
