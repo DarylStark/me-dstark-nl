@@ -8,8 +8,6 @@ class PageNotebook {
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
-        console.log(t);
-
         // Remove the tag (if needed)
         if (this.tag) {
             UI.start_loading('Removing tag');
