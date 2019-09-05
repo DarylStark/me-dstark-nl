@@ -120,7 +120,7 @@ class PageSettings {
                                 var entry = UI.to_jquery(template, false);
 
                                 // Hide the 'new-session' block
-                                entry.find('#rename-' + element['id']).hide();
+                                $(entry[2]).hide();
 
                                 // Set the name
                                 if (element['name']) {
