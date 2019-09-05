@@ -12,6 +12,8 @@ from me import MeJSONEncoder
 from me import Me
 from me.exceptions import *
 from me_database import NoteTag, DatabaseSession
+from sqlalchemy import and_
+import flask
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('notes')
 class PageAPINotes(APIPage):
@@ -24,7 +26,8 @@ class PageAPINotes(APIPage):
         
         self._api_endpoints = {
             'get_tags': self.get_tags,
-            'get_tag': self.get_tag
+            'get_tag': self.get_tag,
+            'add_tag': self.add_tag
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -95,4 +98,43 @@ class PageAPINotes(APIPage):
                         tag['parent_name'] = parent_tag.name
         
         return ([ tag ], 1)
+
+    @PageAPI.api_endpoint(endpoint_name = 'add_tag', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def add_tag(self, *args, **kwargs):
+        """ API endpoint to add tags """
+        
+        # Get the variables for the request
+        parent_tag = flask.request.form.get('parent_tag')
+        tag_name = flask.request.form.get('tag_name')
+
+        # Flask treats variables it gets without a value as an empty string. SQLalchemy can't add
+        # this, so we have to make it a None object when this happends
+        if parent_tag == '':
+            parent_tag = None
+
+        # Start a session
+        with DatabaseSession(commit_on_end = True) as session:
+            # Check if a tag like this already exists
+            tags = session.query(NoteTag).filter(
+                and_(
+                    NoteTag.parent == parent_tag,
+                    NoteTag.name == tag_name
+                )
+            )
+
+            # If the tag already exists, we give an error
+            if tags.count() > 0:
+                # TODO: Custom Error
+                raise ValueError('A tag with the name "{name}" already exists within parent tag {tag}'.format(name = tag_name, tag = parent_tag))
+            
+            # Create a new NoteTag object with the new details
+            new_entry = NoteTag(
+                parent = parent_tag,
+                name = tag_name
+            )
+
+            # Add the new entry
+            session.add(new_entry)
+        
+        return ([ 'added' ], 1)
 #---------------------------------------------------------------------------------------------------

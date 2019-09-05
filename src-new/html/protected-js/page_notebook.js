@@ -20,8 +20,47 @@ class PageNotebook {
     add_tag() {
         // Method to add a new tag
 
-        var tag_name = $('#new_name').val()
-        console.log('Adding tag: ' + tag_name)
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        var tag_name = $('#new_name').val();
+        UI.start_loading('Saving tag');
+
+        // Get information for the tag
+        UI.api_call(
+            'POST',
+            'notes', 'add_tag',
+            function() {
+                // Reload the folder
+                t.load_folder(t.tag, function() {
+                    // Remove the name and hide the element
+                    $('#tag-input').slideUp(100);
+                    $('#new_name').val('');
+
+                    // Stop loading
+                    UI.stop_loading();
+                },
+                function() {
+                    // Remove the name and hide the element
+                    $('#tag-input').slideUp(100);
+                    $('#new_name').val('');
+
+                    // Something went wrong while requesting the data
+                    UI.notification('Couldn\'t load the notes and tags in this tag', 'Refresh', function() { t.start(); } );
+                    UI.stop_loading();
+                });
+            },
+            function() {
+                // Something went wrong while requesting the data
+                UI.notification('Couldn\'t save tag', 'Refresh', function() { t.start(); } );
+                UI.stop_loading();
+            },
+            null,
+            {
+                'parent_tag': t.tag,
+                'tag_name': tag_name
+            }
+        );
     }
 
     display_browser() {

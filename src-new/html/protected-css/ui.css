@@ -258,6 +258,10 @@ html, body
     top: 8px;
 }
 
+.me-card-filelist .mdl-textfield {
+    width: 100%;
+}
+
 /* Inputs */
 
 .mdl-textfield {
