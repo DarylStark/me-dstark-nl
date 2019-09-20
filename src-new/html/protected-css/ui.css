@@ -262,6 +262,10 @@ html, body
     width: 100%;
 }
 
+.me-card-confirm p {
+    padding-top: 9px;
+}
+
 /* Inputs */
 
 .mdl-textfield {

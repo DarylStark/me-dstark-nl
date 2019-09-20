@@ -110,6 +110,10 @@ class PageNotebook {
         // Remove all current items
         $('#entries').find('.mdl-card__supporting-text').remove();
 
+        // Hide the 'add' and 'remove' lines
+        $('#tag-remove-confirm').hide();
+        $('#tag-input').hide();
+
         // Add the items
         $.each(this.browser_list, function(index, item) {
             $('#entries').append(item);
