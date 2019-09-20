@@ -124,6 +124,13 @@ class PageNotebook {
 
         // Add the action buttons
         this.set_action_buttons();
+
+        // Remove the 'remove tag' button if we are not in a tag
+        if (this.tag) {
+            $('#delete-tag').show();
+        } else {
+            $('#delete-tag').hide();
+        }
     }
 
     set_title(foldername = null) {
