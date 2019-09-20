@@ -1,20 +1,30 @@
 <div class='mdl-grid'>
     <div class='mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet'>
+        
         <div class='me-card-wide mdl-card mdl-shadow--4dp me-card-filelist' id='browser'>
             <div class='mdl-card__title me-card__title-small' id='browser_title'>
                 Browser
             </div>
             <div class='mdl-card__menu'>
-                <button class='mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect' id='add_tag'>
-                    <i class='material-icons'>library_add</i>
+                <button class='mdl-button mdl-button--icon mdl-js-button' id='browser-menu-button'>
+                    <i class='material-icons'>more_vert</i>
                 </button>
+                <ul class='mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect' for='browser-menu-button'>
+                    <li class='mdl-menu__item' id='add-tag'>Add tag</li>
+                    <li class='mdl-menu__item' id='delete-tag'>Delete tag</li>
+                </ul>
             </div>
-            <div class="mdl-card__supporting-text me-card-form" id='tag-input'>
+            <div class='mdl-card__supporting-text me-card-form' id='tag-input'>
                 <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>create_new_folder</i>
-                <div class="mdl-textfield mdl-js-textfield">
-                    <input class="mdl-textfield__input" type="text" id="new_name">
-                    <label class="mdl-textfield__label" for="profile_email">New tag name</label>
+                <div class='mdl-textfield mdl-js-textfield'>
+                    <input class='mdl-textfield__input' type='text' id='new_name'>
+                    <label class='mdl-textfield__label' for='profile_email'>New tag name</label>
                 </div>
+            </div>
+            <div class='mdl-card__supporting-text me-card-form' id='tag-remove-confirm'>
+                <button class='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent' id='confirm-remove-button'>
+                    Remove
+                </button>
             </div>
             <div id='entries'></div>
         </div>

@@ -8,13 +8,13 @@ class PageNotebook {
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
-        // Set a 'confirm' button to the action button
-        $('#ab-remove-tag').find('i').html('thumb_up');
-        $('#ab-remove-tag').removeClass('mdl-button--colored');
+        // Change the menuitem to a confirmation button
+        $('#tag-remove-confirm').slideDown(100);
 
-        UI.upgrade_elements($('#ab-remove-tag'));
-
-        $('#ab-remove-tag').click(function() {
+        // When add a click handler to a button, jQuery actually adds it to the existing handler. So
+        // if we do it for a button that already has a handler, it ends up double. For this resaon,
+        // we first have to remove the click handler
+        $('#confirm-remove-button').unbind('click').bind('click',function() {
             // Remove the tag (if needed)
             if (t.tag) {
                 UI.start_loading('Removing tag');
@@ -23,8 +23,11 @@ class PageNotebook {
                     'POST',
                     'notes', 'delete_tag',
                     function() {
-                        // Navigate back to the parent
-                        t.navigate_to_tag(t.parent_tag);
+                        // Hide the remove button
+                        $('#tag-remove-confirm').slideUp(100, function() {
+                            // Navigate back to the parent
+                            t.navigate_to_tag(t.parent_tag);
+                        });
                     },
                     function() {
                         // Something went wrong while requesting the data
@@ -116,7 +119,7 @@ class PageNotebook {
         this.browser_list = new Array();
 
         // Add the action buttons
-        this.set_action_buttons(this.tag != null);
+        this.set_action_buttons();
     }
 
     set_title(foldername = null) {
@@ -310,7 +313,7 @@ class PageNotebook {
         });
     }
 
-    set_action_buttons(show_remove_delete_note = true) {
+    set_action_buttons() {
         // Method to set the correct action buttons
 
         // Set a local var for 'this' that we can re-use in the callbacks
@@ -322,12 +325,6 @@ class PageNotebook {
                 'icon': 'note_add',
                 'click': function(){},
                 'show': true
-            },
-            {
-                'icon': 'delete_sweep',
-                'click': function() { t.remove_tag(); },
-                'show': show_remove_delete_note,
-                'id': 'ab-remove-tag'
             }
         ]
 
@@ -426,8 +423,12 @@ class PageNotebook {
             templates['notebook'] = UI.to_jquery(templates['notebook'], true);
 
             // Add the handler to the button for adding tags and hide the input
-            templates['notebook'].find('#add_tag').click(t.toggle_add_tag);
+            templates['notebook'].find('#add-tag').click(t.toggle_add_tag);
             templates['notebook'].find('#tag-input').hide();
+
+            // Add the handler to the remove tag button
+            templates['notebook'].find('#delete-tag').click(function() { t.remove_tag(); });
+            templates['notebook'].find('#tag-remove-confirm').hide();
 
             // Add a handler to the input field for new tags when pressing the ENTER key
             templates['notebook'].find('#new_name').on('keyup', function (e) {

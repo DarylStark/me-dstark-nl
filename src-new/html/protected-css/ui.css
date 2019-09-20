@@ -166,8 +166,7 @@ html, body
     border-bottom: 1px solid #37474f;
 }
 
-.me-menu-section button.rotated
-{
+.me-menu-section button.rotated {
     transform: rotate(270deg);
 }
 
@@ -177,6 +176,7 @@ html, body
     width: auto;
     height: auto;
     min-height: auto;
+    overflow: visible;
 }
 
 .me-card-table .mdl-card__supporting-text {

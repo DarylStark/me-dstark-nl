@@ -243,11 +243,12 @@ class UI {
         // Remove the old one
         $('#content').remove();
 
-        // Upgrade the elements in the new content container
-        UI.upgrade_elements(new_content_obj);
-
         // Add the new one
         $('#scroller').append(new_content_obj);
+
+        // We upgrade the DOM to make sure all elements are upgraded for MDL. If we don't do this,
+        // menuitems wont work
+        componentHandler.upgradeDom();
     }
 
     static add_action_button(button) {
@@ -278,7 +279,6 @@ class UI {
 
                 // If an id is set, give it to the button
                 if (button['id']) {
-                    console.log(button['id']);
                     html_button.attr('id', button['id']);
                 }
 
