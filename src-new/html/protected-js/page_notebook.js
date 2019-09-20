@@ -23,11 +23,8 @@ class PageNotebook {
                     'POST',
                     'notes', 'delete_tag',
                     function() {
-                        // Hide the remove button
-                        $('#tag-remove-confirm').slideUp(100, function() {
-                            // Navigate back to the parent
-                            t.navigate_to_tag(t.parent_tag);
-                        });
+                        // Navigate to the parent tag
+                        t.navigate_to_tag(t.parent_tag);
                     },
                     function() {
                         // Something went wrong while requesting the data
