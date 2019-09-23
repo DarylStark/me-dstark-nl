@@ -40,6 +40,72 @@ class PageNotebook {
         });
     }
 
+    toggle_rename_tag() {
+        // Method to toggle the 'rename_tag' input
+
+        var display = $('#tag-rename').css('display');
+
+        if (display == 'none') {
+            // We have to add the 'is-dirty' class to the outer div to make sure the label gets
+            // hidden.
+            $('#rename_new_name').val(this.tag_name);
+            $('#rename_new_name_div').addClass('is-dirty');
+
+            // Tag input is not visible; show it and give the input the name of the tag
+            $('#tag-rename').slideDown(100);
+
+            // Select all text in it, so the user can immidiatly start typing a new name
+            $('#rename_new_name').select();
+        } else {
+            // Tag input is visible; hide it again
+            $('#tag-rename').slideUp(100);
+        }
+    }
+
+    rename_tag() {
+        // Method to rename a new tag
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        var tag_name = $('#rename_new_name').val();
+        UI.start_loading('Renaming tag');
+
+        // Get information for the tag
+        UI.api_call(
+            'POST',
+            'notes', 'rename_tag',
+            function() {
+                // Reload the folder
+                t.load_folder(t.tag, function() {
+                    // Hide the element
+                    $('#tag-rename').slideUp(100);
+
+                    // Stop loading
+                    UI.stop_loading();
+                },
+                function() {
+                    // Hide the element
+                    $('#tag-rename').slideUp(100);
+
+                    // Something went wrong while requesting the data
+                    UI.notification('Couldn\'t rename tag', 'Refresh', function() { t.start(); } );
+                    UI.stop_loading();
+                });
+            },
+            function() {
+                // Something went wrong while requesting the data
+                UI.notification('Couldn\'t rename tag', 'Refresh', function() { t.start(); } );
+                UI.stop_loading();
+            },
+            null,
+            {
+                'tag': t.tag,
+                'tag_name': tag_name
+            }
+        );
+    }
+
     toggle_add_tag() {
         // Method to toggle the 'add_tag' input
 
@@ -84,7 +150,7 @@ class PageNotebook {
                     $('#new_name').val('');
 
                     // Something went wrong while requesting the data
-                    UI.notification('Couldn\'t load the notes and tags in this tag', 'Refresh', function() { t.start(); } );
+                    UI.notification('Couldn\'t save tag', 'Refresh', function() { t.start(); } );
                     UI.stop_loading();
                 });
             },
@@ -110,6 +176,7 @@ class PageNotebook {
         // Hide the 'add' and 'remove' lines
         $('#tag-remove-confirm').hide();
         $('#tag-input').hide();
+        $('#tag-rename').hide();
 
         // Add the items
         $.each(this.browser_list, function(index, item) {
@@ -125,8 +192,10 @@ class PageNotebook {
         // Remove the 'remove tag' button if we are not in a tag
         if (this.tag) {
             $('#delete-tag').show();
+            $('#rename-tag').show();
         } else {
             $('#delete-tag').hide();
+            $('#rename-tag').hide();
         }
     }
 
@@ -166,6 +235,7 @@ class PageNotebook {
                         cb_success();
 
                         t.parent_tag = tag_info['parent'];
+                        t.tag_name = tag_info['name'];
 
                         // Set the title
                         t.set_title(tag_info['name']);
@@ -438,10 +508,21 @@ class PageNotebook {
             templates['notebook'].find('#delete-tag').click(function() { t.remove_tag(); });
             templates['notebook'].find('#tag-remove-confirm').hide();
 
+            // Add the handler to the button for renaming tags and hide the input
+            templates['notebook'].find('#rename-tag').click(function() { t.toggle_rename_tag(); });
+            templates['notebook'].find('#tag-rename').hide();
+
             // Add a handler to the input field for new tags when pressing the ENTER key
             templates['notebook'].find('#new_name').on('keyup', function (e) {
                 if (e.keyCode === 13) {
                     t.add_tag();
+                }
+            });
+
+            // Add a handler to the input field for renaming tags when pressing the ENTER key
+            templates['notebook'].find('#rename_new_name').on('keyup', function (e) {
+                if (e.keyCode === 13) {
+                    t.rename_tag();
                 }
             });
 

@@ -28,7 +28,8 @@ class PageAPINotes(APIPage):
             'get_tags': self.get_tags,
             'get_tag': self.get_tag,
             'add_tag': self.add_tag,
-            'delete_tag': self.delete_tag
+            'delete_tag': self.delete_tag,
+            'rename_tag': self.rename_tag
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -143,10 +144,10 @@ class PageAPINotes(APIPage):
     def delete_tag(self, *args, **kwargs):
         """ API endpoint to remove a NoteTag """
 
-        # Get the UserSession the user wants to change and the new name for the session
+        # Get the tag id the user wants to delete
         tag_id = flask.request.form.get('tag')
 
-        # Find the user tag
+        # Find the tag
         with DatabaseSession(commit_on_end = True) as session:
             # Get the session
             tags = session.query(NoteTag).filter(
@@ -167,4 +168,30 @@ class PageAPINotes(APIPage):
             session.delete(tags.first())
 
         return([ 'removed' ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'rename_tag', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def rename_tag(self, *args, **kwargs):
+        """ API endpoint to rename a NoteTag """
+
+        # Get the tag ID the user wants to change and the new name for the tag
+        tag_id = flask.request.form.get('tag')
+        tag_name = flask.request.form.get('tag_name')
+
+        # Find the tag
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the session
+            tags = session.query(NoteTag).filter(
+                NoteTag.id == tag_id
+            )
+
+            # Check if we have a tag. If we don't give an error
+            if tags.count() != 1:
+                # TODO: Custom Exception
+                raise ValueError('Tag with id {id} is not found'.format(id = tag_id))
+            
+            # Rename the tag from all notes
+            tag = tags.first()
+            tag.name = tag_name
+
+        return([ 'renamed' ], 1)
 #---------------------------------------------------------------------------------------------------
