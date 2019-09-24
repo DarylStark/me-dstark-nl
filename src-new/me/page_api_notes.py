@@ -11,7 +11,7 @@ from me import PageAPI
 from me import MeJSONEncoder
 from me import Me
 from me.exceptions import *
-from me_database import NoteTag, NotesTags, DatabaseSession
+from me_database import NoteTag, NotesTags, DatabaseSession, Note
 from sqlalchemy import and_
 import flask
 #---------------------------------------------------------------------------------------------------
@@ -29,7 +29,8 @@ class PageAPINotes(APIPage):
             'get_tag': self.get_tag,
             'add_tag': self.add_tag,
             'delete_tag': self.delete_tag,
-            'rename_tag': self.rename_tag
+            'rename_tag': self.rename_tag,
+            'get_notes': self.get_notes
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -48,7 +49,6 @@ class PageAPINotes(APIPage):
             with DatabaseSession() as session:
                 tags = session.query(NoteTag).filter(NoteTag.id == parent)
                 if tags.count() != 1:
-                    # TODO: Custom Error
                     raise MeAPINotesParentTagNotValidException('The tag {tag} is not a valid parent tag'.format(tag = parent))
         
         # Get the tags
@@ -194,4 +194,41 @@ class PageAPINotes(APIPage):
             tag.name = tag_name
 
         return([ 'renamed' ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'get_notes', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_notes(self, *args, **kwargs):
+        """ The 'get_notes' API endpoint returns notes. If no tag is given, it returns all notes
+            that don't have a tag"""
+        
+        # Check if we got a tag
+        tag = None
+        if 'tag' in kwargs.keys():
+            # Tag given
+            tag = kwargs['tag']
+
+            # Check if the tag is valid
+            with DatabaseSession() as session:
+                tags = session.query(NoteTag).filter(NoteTag.id == tag)
+                if tags.count() != 1:
+                    raise MeAPIGetNotesTagNotValidException('The tag {tag} is not a valid tag'.format(tag = parent))
+        
+        # Get the notes
+        all_note_ids = list()
+        with DatabaseSession() as session:
+            if tag:
+                # Get all IDs for the notes that are in this filter
+                all_tagged_notes = session.query(NotesTags.note).filter(NotesTags.tag == tag)
+                note_ids = session.query(Note).filter(Note.id.in_(all_tagged_notes))
+            else:
+                # Get all notes with no tag
+                all_tagged_notes = session.query(NotesTags.note)
+                note_ids = session.query(Note).filter(Note.id.notin_(all_tagged_notes))
+
+            # Get all the note objects
+            all_note_ids = note_ids.all()
+
+            # Get the notecount
+            note_count = note_ids.count()
+        
+        return (all_note_ids, note_count)
 #---------------------------------------------------------------------------------------------------

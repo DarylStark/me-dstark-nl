@@ -18,6 +18,7 @@ from me_database.feed_item_event_change import FeedItemEventChange
 from me_database.feed_item import FeedItem
 from me_database.filter import Filter
 from me_database.log_entry import LogEntry
+from me_database.note_revision import NoteRevision
 from me_database.note_tag import NoteTag
 from me_database.note import Note
 from me_database.notes_tags import NotesTags

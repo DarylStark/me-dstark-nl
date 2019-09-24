@@ -125,3 +125,7 @@ class MeAPINotesNoTagException(MeException):
     """ Exception for when a user tries to request a non-existing tag """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIGetNotesTagNotValidException(MeException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------

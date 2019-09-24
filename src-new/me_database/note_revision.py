@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """,
-    me_database - note.py
+    me_database - note_revision.py
     Author: Daryl Stark
 
-    Table for notes
+    Table for note-revisions
 """
 #---------------------------------------------------------------------------------------------------
 # Imports
@@ -11,17 +11,15 @@ from sqlalchemy import Column, Integer, DateTime, String, Boolean, UniqueConstra
 from sqlalchemy.orm import relationship
 from me_database import Database
 #---------------------------------------------------------------------------------------------------
-class Note(Database.base_class):
-    """ Table for notes """
+class NoteRevision(Database.base_class):
+    """ Table for note-revisions """
 
     # Mandatory argument for Database objects within SQLAlchemy
-    __tablename__ = 'notes'
+    __tablename__ = 'note_revisions'
 
     # Database columns for this table
     id =            Column(Integer, primary_key = True)
     created =       Column(DateTime, nullable = False)
-    title =         Column(String(256), nullable = False)
-
-    # Many-to-one relationship mappings
-    revisions = relationship("NoteRevision")
+    note =          Column(ForeignKey("notes.id"), nullable = False)
+    text =          Column(String(16777216), nullable = False)
 #---------------------------------------------------------------------------------------------------

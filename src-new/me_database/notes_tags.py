@@ -26,4 +26,8 @@ class NotesTags(Database.base_class):
     id =            Column(Integer, primary_key = True)
     tag =           Column(ForeignKey("note_tags.id"), nullable = False)
     note =          Column(ForeignKey("notes.id"), nullable = False)
+
+    # Connected objects
+    tag_object = relationship("NoteTag")
+    note_object = relationship("Note")
 #---------------------------------------------------------------------------------------------------
