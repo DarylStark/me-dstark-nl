@@ -170,6 +170,8 @@ class PageNotebook {
     display_browser() {
         // Method to set the items for the browser and empty the browser list again
 
+        UI.start_loading('Formatting browser');
+
         // Remove all current items
         $('#entries').find('.mdl-card__supporting-text').remove();
 
@@ -231,20 +233,23 @@ class PageNotebook {
 
                     // Load the folders for this folder
                     t.load_folder_folders(folder, tag_info['parent'], tag_info['parent_name'], function() {
-                        // Execute the success-callback
-                        cb_success();
+                        t.load_folder_notes(folder, function() {
+                            // Execute the success-callback
+                            cb_success();
 
-                        t.parent_tag = tag_info['parent'];
-                        t.tag_name = tag_info['name'];
+                            t.parent_tag = tag_info['parent'];
+                            t.tag_name = tag_info['name'];
 
-                        // Set the title
-                        t.set_title(tag_info['name']);
+                            // Set the title
+                            t.set_title(tag_info['name']);
 
-                        // Display the browser
-                        t.display_browser();
+                            // Display the browser
+                            t.display_browser();
 
-                        // Stop loading
-                        UI.stop_loading();
+                            // Stop loading
+                            UI.stop_loading();
+                        },
+                        cb_error);
                     }, cb_error);
                 },
                 function() {
@@ -254,17 +259,20 @@ class PageNotebook {
             );
         } else {
             this.load_folder_folders(folder, null, null, function() {
-                // Execute the success-callback
-                cb_success();
+                t.load_folder_notes(folder, function() {
+                    // Execute the success-callback
+                    cb_success();
 
-                // Set the title
-                t.set_title();
+                    // Set the title
+                    t.set_title();
 
-                // Display the browser
-                t.display_browser();
+                    // Display the browser
+                    t.display_browser();
 
-                // Stop loading
-                UI.stop_loading();
+                    // Stop loading
+                    UI.stop_loading();
+                },
+                cb_error);
             }, cb_error);
         }
     }
@@ -309,10 +317,10 @@ class PageNotebook {
                 'notes', 'get_tags',
                 function(data, status, xhr) {
                     // Display the folders in the browser
-                    t.add_folders(data['result']['data']);
-                    
-                    // Execute the users callback
-                    cb_success(data);
+                    t.add_folders(data['result']['data'], function() {
+                        // Execute the users callback
+                        cb_success(data);
+                    });
                 },
                 function() {
                     cb_error();
@@ -325,7 +333,38 @@ class PageNotebook {
         });
     };
 
-    navigate_to_tag(tag) {
+    load_folder_notes(folder, cb_success, cb_error) {
+        // Method to load notes from the database and display them
+
+        UI.start_loading('Retrieving notes for this tag');
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        // Check if we have a folder to show
+        if (folder && folder != 0) {
+            var data = { 'tag': folder }
+        }
+
+        // Get the notes within this tag
+        UI.api_call(
+            'GET',
+            'notes', 'get_notes',
+            function(data, status, xhr) {
+                // Display the folders in the browser
+                t.add_notes(data['result']['data'], function() {
+                    // Execute the users callback
+                    cb_success();
+                });
+            },
+            function() {
+                cb_error();
+            },
+            data
+        );
+    }
+
+    navigate_to_tag(tag, update_url = true, cb_success = null) {
         // Method to navigate to a specific tag. Usuable after a user clicks on a folder in the
         // browser
 
@@ -338,18 +377,25 @@ class PageNotebook {
         // Load the folder
         this.load_folder(this.tag, function(data) {
             // Change the URL, if needed
-            var newurl = null;
-            if (tag) {
-                newurl = '/ui/notebook/list/' + t.tag;
-            } else {
-                newurl = '/ui/notebook/'
-            }
-            if (newurl) {
-                history.pushState(newurl, '', newurl);
+            if (update_url) {
+                var newurl = null;
+                if (tag) {
+                    newurl = '/ui/notebook/list/' + t.tag;
+                } else {
+                    newurl = '/ui/notebook/'
+                }
+                if (newurl) {
+                    history.pushState(newurl, '', newurl);
+                }
             }
 
-            // Stop loading
-            UI.stop_loading();
+            // If a callback is given, execute it
+            if (cb_success) {
+                cb_success();
+            } else {
+                // Stop loading
+                UI.stop_loading();
+            }
         },
         function() {
             // Something went wrong while requesting the data
@@ -358,7 +404,7 @@ class PageNotebook {
         });
     };
 
-    add_folders(folders) {
+    add_folders(folders, cb_success) {
         // Method to add the folders to the browser list
 
         // Set a local var for 'this' that we can re-use in the callbacks
@@ -383,6 +429,45 @@ class PageNotebook {
                 // Add the entry to the list
                 t.browser_list.push(entry);
             });
+
+            // Run the callback
+            cb_success();
+        },
+        function() {
+            // Something went wrong while requesting the template data
+            UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
+            UI.stop_loading();
+        });
+    }
+
+    add_notes(notes, cb_success) {
+        // Method to add the notes to the browser list
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        UI.start_loading('Retrieving template for notebook notes');
+        
+        Templates.get_templates(['notebook_note'], function(templates) {
+            $.each(notes, function(index, note) {
+                // Create a new object from the template
+                var tpl = templates['notebook_note'];
+                var entry = UI.to_jquery(tpl, false);
+
+                // Append the title
+                entry.find('#title').html(note['title']);
+
+                // Add a handler when the user clicks the note
+                entry.click(function() {
+                    console.log('Note clicked');
+                });
+
+                // Add the entry to the list
+                t.browser_list.push(entry);
+            });
+
+            // Run the callback
+            cb_success();
         },
         function() {
             // Something went wrong while requesting the template data
@@ -400,7 +485,7 @@ class PageNotebook {
         // Define the needed action buttons
         var actionbuttons = [
             {
-                'icon': 'note_add',
+                'icon': 'add',
                 'click': function(){},
                 'show': true
             }
@@ -530,15 +615,11 @@ class PageNotebook {
             templates['notebook'].find('#note').hide();
 
             // Load the requested folder and display the page
-            t.load_folder(t.tag, function() {
-                UI.set_loading_text('Setting content');
-                UI.replace_content(templates['notebook']);
-            },
-            function() {
-                // Something went wrong while requesting the data
-                UI.notification('Couldn\'t retrieve tags', 'Refresh', function() { t.start(); } );
-                UI.stop_loading();
-            });
+            t.navigate_to_tag(t.tag, false, function() {
+                    UI.set_loading_text('Setting content');
+                    UI.replace_content(templates['notebook']);
+                }
+            );
         },
         function() {
             // Something went wrong while requesting the template data
