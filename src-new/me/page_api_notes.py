@@ -126,8 +126,7 @@ class PageAPINotes(APIPage):
 
             # If the tag already exists, we give an error
             if tags.count() > 0:
-                # TODO: Custom Exception
-                raise ValueError('A tag with the name "{name}" already exists within parent tag {tag}'.format(name = tag_name, tag = parent_tag))
+                raise MeAPIAddNotesTagDuplicateNameException('A tag with the name "{name}" already exists within parent tag {tag}'.format(name = tag_name, tag = parent_tag))
             
             # Create a new NoteTag object with the new details
             new_entry = NoteTag(
@@ -156,8 +155,7 @@ class PageAPINotes(APIPage):
 
             # Check if we have a tag. If we don't give an error
             if tags.count() != 1:
-                # TODO: Custom Exception
-                raise ValueError('Tag with id {id} is not found'.format(id = tag_id))
+                raise MeAPIDeleteNotesTagInvalidTagException('Tag with id {id} is not found'.format(id = tag_id))
             
             # Remove all tags from all notes
             notes_tags = session.query(NotesTags).filter(
@@ -186,8 +184,7 @@ class PageAPINotes(APIPage):
 
             # Check if we have a tag. If we don't give an error
             if tags.count() != 1:
-                # TODO: Custom Exception
-                raise ValueError('Tag with id {id} is not found'.format(id = tag_id))
+                raise MeAPIRenameNotesTagInvalidTagExceptionalueError('Tag with id {id} is not found'.format(id = tag_id))
             
             # Rename the tag from all notes
             tag = tags.first()

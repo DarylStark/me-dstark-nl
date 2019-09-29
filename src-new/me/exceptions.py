@@ -129,3 +129,15 @@ class MeAPIGetNotesTagNotValidException(MeException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIAddNotesTagDuplicateNameException(MeException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIDeleteNotesTagInvalidTagException(MeException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIRenameNotesTagInvalidTagExceptionalueError(MeException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
