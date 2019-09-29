@@ -10,40 +10,52 @@ class MeException(Exception):
     """ Base exception for Me exceptions """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAmbigiousPathException(MeException):
+class MeExceptionPermissionDeniedException(MeException):
+    """ Base exception for 403-errors """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeExceptionPageNotFoundException(MeException):
+    """ Base exception for 404-errors """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeExceptionServerErrorException(MeException):
+    """ Base exception for 500-errors """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAmbigiousPathException(MeExceptionPageNotFoundException):
     """ Exception for when the user tries to open a Flask page, but the Me-class find two ore more
         regexes that can be used for this page """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeRegexException(MeException):
+class MeRegexException(MeExceptionServerErrorException):
     """ Exception for when a regex is not compilable """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAbigiousURLNameException(MeException):
+class MeAbigiousURLNameException(MeExceptionServerErrorException):
     """ Exception for when a regex is not compilable """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeConfigFileException(MeException):
+class MeConfigFileException(MeExceptionServerErrorException):
     """ Exception for when the configfile can't be found or is not valid JSON """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeConfigException(MeException):
+class MeConfigException(MeExceptionServerErrorException):
     """ Exception for a configuration item is requested that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeEnvironmentException(MeException):
+class MeEnvironmentException(MeExceptionServerErrorException):
     """ Exception for when a environment gets set that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIGroupNotRegisteredException(MeException):
+class MeAPIGroupNotRegisteredException(MeExceptionPageNotFoundException):
     """ Exception for when a API group gets requested that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPINoAPIGroupException(MeException):
+class MeAPINoAPIGroupException(MeExceptionPageNotFoundException):
     """ Exception for when a no API group gets specified """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeValueException(MeException):
+class MeValueException(MeExceptionPageNotFoundException):
     """ Exception for when a API value gets set to a wrong value """
     pass
 #---------------------------------------------------------------------------------------------------
@@ -51,93 +63,93 @@ class MeAPIUnsupportedFormatException(MeException):
     """ Exception for when a API format gets requested that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIEndPointInvalidException(MeException):
+class MeAPIEndPointInvalidException(MeExceptionPageNotFoundException):
     """ Exception for when a invalid API endcall get's called    """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPINoEndPointException(MeException):
+class MeAPINoEndPointException(MeExceptionPageNotFoundException):
     """ Exception for when a no API endcall is specified """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIInvalidReturnException(MeException):
+class MeAPIInvalidReturnException(MeExceptionServerErrorException):
     """ Exception for when a API endpoints returns the wrong format """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIInvalidMethodException(MeException):
+class MeAPIInvalidMethodException(MeExceptionPermissionDeniedException):
     """ Exception for when a API endpoints gets requested with the wrong HTTP method """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeNoUserSessionException(MeException):
+class MeNoUserSessionException(MeExceptionPermissionDeniedException):
     """ Exception for when a user tries to open a protected page but a session doesn't exists """
     pass
 #---------------------------------------------------------------------------------------------------
-class MePermissionDeniedException(MeException):
+class MePermissionDeniedException(MeExceptionPermissionDeniedException):
     """ Exception for when a user with not permission tries to open a protected page """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAuthenticationFailedException(MeException):
+class MeAuthenticationFailedException(MeExceptionPermissionDeniedException):
     """ Exception for when a unauthenticated user tries to login """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeNoLogoutKeyException(MeException):
+class MeNoLogoutKeyException(MeExceptionPermissionDeniedException):
     """ Exception for when a user tries to logout without a secret key """
     pass
 #---------------------------------------------------------------------------------------------------
-class MePageNotFoundException(MeException):
+class MePageNotFoundException(MeExceptionPageNotFoundException):
     """ Exception for when a user tries to open a page that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeNoFileProvidedException(MeException):
+class MeNoFileProvidedException(MeExceptionPermissionDeniedException):
     """ Exception for when a user tries to open a static file directory """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeSessionNotForUserException(MeException):
+class MeSessionNotForUserException(MeExceptionPermissionDeniedException):
     """ Exception for when a user tries to update a UserSession name that isn't his """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeActiveSessionCannotBeRemovedException(MeException):
+class MeActiveSessionCannotBeRemovedException(MeExceptionPermissionDeniedException):
     """ Exception for when a user tries to remove the currently active session """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeUIConfigFileException(MeException):
+class MeUIConfigFileException(MeExceptionServerErrorException):
     """ Exception for when the UI configuration file cannot be found or openend """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPITemplatesNoTemplatesGivenException(MeException):
+class MeAPITemplatesNoTemplatesGivenException(MeExceptionPermissionDeniedException):
     """ Exception for when the the user starts a template request without giving templates to
         retrieve """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPITemplatesTemplateNotFoundException(MeException):
+class MeAPITemplatesTemplateNotFoundException(MeExceptionPageNotFoundException):
     """ Exception for when the the user starts a template request for a template that doesn't
         exsist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeEMailAddressInvalidException(MeException):
+class MeEMailAddressInvalidException(MeExceptionPermissionDeniedException):
     """ Exception for when the user tries to enter a invalid e-mail address """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPINotesParentTagNotValidException(MeException):
+class MeAPINotesParentTagNotValidException(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a parent tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPINotesNoTagException(MeException):
+class MeAPINotesNoTagException(MeExceptionPageNotFoundException):
     """ Exception for when a user tries to request a non-existing tag """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIGetNotesTagNotValidException(MeException):
+class MeAPIGetNotesTagNotValidException(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIAddNotesTagDuplicateNameException(MeException):
-    """ Exception for when a user specifies a tag that doesn't exist """
+class MeAPIAddNotesTagDuplicateNameException(MeExceptionPermissionDeniedException):
+    """ Exception for when a user adds a tag that already exists """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIDeleteNotesTagInvalidTagException(MeException):
-    """ Exception for when a user specifies a tag that doesn't exist """
+class MeAPIDeleteNotesTagInvalidTagException(MeExceptionPermissionDeniedException):
+    """ Exception for when a user tries to delete a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIRenameNotesTagInvalidTagExceptionalueError(MeException):
+class MeAPIRenameNotesTagInvalidTagExceptionalueError(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------

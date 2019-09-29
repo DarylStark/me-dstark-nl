@@ -132,7 +132,8 @@ class TestClassTypes:
         # Return the errors to the decorator
         return errors
     
-    @classes(classes = [ MeException, MeAmbigiousPathException, MeRegexException, MeAbigiousURLNameException,
+    @classes(classes = [ MeException, MeExceptionPermissionDeniedException, MeExceptionPageNotFoundException, MeExceptionServerErrorException,
+                         MeAmbigiousPathException, MeRegexException, MeAbigiousURLNameException,
                          MeConfigFileException, MeConfigException, MeEnvironmentException, MeAPIGroupNotRegisteredException,
                          MeAPINoAPIGroupException, MeValueException, MeAPIUnsupportedFormatException, MeAPIEndPointInvalidException,
                          MeAPINoEndPointException, MeAPIInvalidReturnException, TemplateLoaderException, TemplateNotFoundException,

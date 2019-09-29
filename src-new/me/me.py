@@ -97,10 +97,12 @@ class Me:
 
             # No results; raise an error
             raise MePageNotFoundException
-        except (MePermissionDeniedException, MeAPIInvalidMethodException, MeNoUserSessionException, MeAuthenticationFailedException, MeNoFileProvidedException, MeSessionNotForUserException, MeActiveSessionCannotBeRemovedException) as error:
+        except MeExceptionPermissionDeniedException as error:
             return ErrorPage.show_error(403, error)
-        except (MeAPIGroupNotRegisteredException, MeAPINoAPIGroupException, MeAPIEndPointInvalidException, MeAPINoEndPointException, MePageNotFoundException, MeAPITemplatesTemplateNotFoundException, MeAPINotesParentTagNotValidException, MeAPINotesNoTagException, MeAPIGetNotesTagNotValidException) as error:
+        except MeExceptionPageNotFoundException as error:
             return ErrorPage.show_error(404, error)
+        except MeExceptionServerErrorException as error:
+            return ErrorPage.show_error(500, error)
     
     @classmethod
     def register_url(cls, regex, name):
