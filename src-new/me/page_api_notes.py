@@ -14,6 +14,7 @@ from me.exceptions import *
 from me_database import NoteTag, NotesTags, DatabaseSession, Note, NoteRevision
 from sqlalchemy import and_
 import flask
+import markdown
 #---------------------------------------------------------------------------------------------------
 @PageAPI.register_api_group('notes')
 class PageAPINotes(APIPage):
@@ -267,15 +268,29 @@ class PageAPINotes(APIPage):
                     # Check if we have results. If we don't, we give an error
                     if revision_count > 0:
                         # Order the revisions in the correct order
-                        revision_object = revision_object.order_by(NoteRevision.id.desc())
+                        revision_object = revision_object.order_by(NoteRevision.id.desc()).first()
+
+                        # In addition to the 'normal' note, we also return the parsed HTML for the
+                        # note. We assume the note is written in Markdown. We use the 'markdown'
+                        # package for this. We use a few extensions to this;
+                        # - extra
+                        #   Adds extra Markdown functions, like tables and fenced code blocks
+                        # - toc
+                        #   Returns as Table of Contents along with the parsed HTML
+                        md = markdown.Markdown(extensions = [ 'extra', 'toc' ])
+                        note_markdown = md.convert(revision_object.text)
 
                         # We create a object to return with the note, the revision and the metadata
                         # for the note.
                         return_object = {
                             'note': note_object.first(),
-                            'revision': revision_object.first(),
+                            'revision': revision_object,
                             'metadata': {
                                 'revision_count': revision_count
+                            },
+                            'markdown': {
+                                'text': note_markdown,
+                                'toc': md.toc_tokens
                             }
                         }
 

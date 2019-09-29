@@ -14,5 +14,8 @@ pymysql
 google-api-python-client
 requests
 
+# Requirements for Markdown
+markdown
+
 # Misc requirements
 psutil
