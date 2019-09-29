@@ -11,7 +11,7 @@ from me import PageAPI
 from me import MeJSONEncoder
 from me import Me
 from me.exceptions import *
-from me_database import NoteTag, NotesTags, DatabaseSession, Note
+from me_database import NoteTag, NotesTags, DatabaseSession, Note, NoteRevision
 from sqlalchemy import and_
 import flask
 #---------------------------------------------------------------------------------------------------
@@ -30,7 +30,8 @@ class PageAPINotes(APIPage):
             'add_tag': self.add_tag,
             'delete_tag': self.delete_tag,
             'rename_tag': self.rename_tag,
-            'get_notes': self.get_notes
+            'get_notes': self.get_notes,
+            'get_note': self.get_note
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -184,7 +185,7 @@ class PageAPINotes(APIPage):
 
             # Check if we have a tag. If we don't give an error
             if tags.count() != 1:
-                raise MeAPIRenameNotesTagInvalidTagExceptionalueError('Tag with id {id} is not found'.format(id = tag_id))
+                raise MeAPIRenameNotesTagInvalidTagExceptionalueException('Tag with id {id} is not found'.format(id = tag_id))
             
             # Rename the tag from all notes
             tag = tags.first()
@@ -195,7 +196,7 @@ class PageAPINotes(APIPage):
     @PageAPI.api_endpoint(endpoint_name = 'get_notes', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
     def get_notes(self, *args, **kwargs):
         """ The 'get_notes' API endpoint returns notes. If no tag is given, it returns all notes
-            that don't have a tag"""
+            that don't have a tag """
         
         # Check if we got a tag
         tag = None
@@ -228,4 +229,65 @@ class PageAPINotes(APIPage):
             note_count = note_ids.count()
         
         return (all_note_ids, note_count)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'get_note', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_note(self, *args, **kwargs):
+        """ The 'get_note' API endpoint returns a specific note and all it's details. """
+
+        # Check if the user gave us a note and give an error when he didn't
+        note = None
+        if 'note' in kwargs.keys():
+            # Note is given
+            note = kwargs['note']
+
+            # Retrieve the note from the database
+            with DatabaseSession() as session:
+                # Get the note from the database
+                note_object = session.query(Note).filter(Note.id == note)
+
+                # Check if we have a note. If we don't, give an error
+                if note_object.count() == 1:
+                    # We found one note; exactly what we needed. We now need to search for the
+                    # revision the user requests. If he doesn't request a specific revision, we take
+                    # the last revision.
+
+                    revision_object = session.query(NoteRevision).filter(NoteRevision.note == note)
+
+                    # Check if the user requested a specific revision
+                    revision = None
+                    if 'revision' in kwargs.keys():
+                        # Get the revision ID
+                        revision = kwargs['revision']
+                        # User gave a revision. Create a new query object
+                        revision_object = revision_object.filter(NoteRevision.id == revision)
+                    
+                    # Get the revision count. We need it later
+                    revision_count = revision_object.count()
+
+                    # Check if we have results. If we don't, we give an error
+                    if revision_count > 0:
+                        # Order the revisions in the correct order
+                        revision_object = revision_object.order_by(NoteRevision.id.desc())
+
+                        # We create a object to return with the note, the revision and the metadata
+                        # for the note.
+                        return_object = {
+                            'note': note_object.first(),
+                            'revision': revision_object.first(),
+                            'metadata': {
+                                'revision_count': revision_count
+                            }
+                        }
+
+                        # Return the note object to the client
+                        return([ return_object ], 1)
+                    else:
+                        if revision:
+                            raise MeAPIGetNoteInvalidRevisionExeption('Revision {rev_id} not found for note with ID {id}'.format(rev_id = revision, id = note))
+                        else:
+                            raise MeAPIGetNoteInvalidRevisionExeption('No revisions found for note with ID {id}'.format(id = note))
+                else:
+                    raise MeAPIGetNoteInvalidNoteExeption('Note with id {id} is not found'.format(id = note))
+        else:
+            raise MeAPIGetNoteNoNoteExeption('No note id given')
 #---------------------------------------------------------------------------------------------------

@@ -149,7 +149,19 @@ class MeAPIDeleteNotesTagInvalidTagException(MeExceptionPermissionDeniedExceptio
     """ Exception for when a user tries to delete a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
-class MeAPIRenameNotesTagInvalidTagExceptionalueError(MeExceptionPageNotFoundException):
+class MeAPIRenameNotesTagInvalidTagExceptionalueException(MeExceptionPageNotFoundException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIGetNoteNoNoteExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIGetNoteInvalidNoteExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user specifies a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIGetNoteInvalidRevisionExeption(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------

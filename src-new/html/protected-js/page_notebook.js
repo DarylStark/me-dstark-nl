@@ -454,12 +454,14 @@ class PageNotebook {
                 var tpl = templates['notebook_note'];
                 var entry = UI.to_jquery(tpl, false);
 
+                console.log(note);
+
                 // Append the title
                 entry.find('#title').html(note['title']);
 
                 // Add a handler when the user clicks the note
                 entry.click(function() {
-                    console.log('Note clicked');
+                    t.get_note(note['id']);
                 });
 
                 // Add the entry to the list
@@ -474,6 +476,12 @@ class PageNotebook {
             UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
             UI.stop_loading();
         });
+    }
+
+    get_note(note_id) {
+        // Method to retrieve a note and all it's details from the API
+
+        console.log('getting note id: ' + note_id);
     }
 
     set_action_buttons() {
