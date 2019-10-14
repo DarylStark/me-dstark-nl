@@ -298,3 +298,16 @@ div.mdl-textfield input {
 button.me-button-confirm {
     background-color: red;
 }
+
+/* Page Notebook */
+
+#note-preview .material-icons
+{
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.56);
+    margin-right: 16px;
+}
+
+#note-preview .mdl-card__menu {
+    top: 8px;
+}

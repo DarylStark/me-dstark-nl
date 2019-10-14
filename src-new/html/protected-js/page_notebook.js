@@ -379,10 +379,19 @@ class PageNotebook {
             // Change the URL, if needed
             if (update_url) {
                 var newurl = null;
-                if (tag) {
-                    newurl = '/ui/notebook/list/' + t.tag;
+
+                if (t.note) {
+                    if (tag) {
+                        newurl = '/ui/notebook/show/' + t.tag + '/' + t.note;
+                    } else {
+                        newurl = '/ui/notebook/show/0/' + t.note;
+                    }
                 } else {
-                    newurl = '/ui/notebook/'
+                    if (tag) {
+                        newurl = '/ui/notebook/list/' + t.tag;
+                    } else {
+                        newurl = '/ui/notebook/'
+                    }
                 }
                 if (newurl) {
                     history.pushState(newurl, '', newurl);
@@ -454,8 +463,6 @@ class PageNotebook {
                 var tpl = templates['notebook_note'];
                 var entry = UI.to_jquery(tpl, false);
 
-                console.log(note);
-
                 // Append the title
                 entry.find('#title').html(note['title']);
 
@@ -478,10 +485,68 @@ class PageNotebook {
         });
     }
 
-    get_note(note_id) {
+    get_note(note_id, revision = null, jquery_object = null, cb) {
         // Method to retrieve a note and all it's details from the API
 
-        console.log('getting note id: ' + note_id);
+        // Start the loading
+        UI.start_loading('Loading note');
+
+        // Set for the callbacks
+        var t = this;
+
+        // Get the note from the API
+        UI.api_call(
+            'GET',
+            'notes', 'get_note',
+            function(data, status, xhr) {
+                UI.start_loading('Displaying note');
+
+                // Get the correct object
+                var obj = null;
+                if (jquery_object) {
+                    obj = jquery_object;
+                } else {
+                    obj = $(document);
+                }
+
+                // Update the URL. We only do this if needed
+                if (!cb) {
+                    var url_tag = 0;
+                    if (t.tag) { url_tag = t.tag; }
+                    var url_note = note_id;
+                    var newurl = '/ui/notebook/show/' + url_tag + '/' + url_note;
+                    history.pushState(newurl, '', newurl);
+                }
+
+                // Set the note in the object
+                t.note = note_id;
+
+                // Get the note
+                var note = data['result']['data'][0];
+
+                // Set the correct objects for the note
+                obj.find('#note-preview-title').html(note['note']['title']);
+                obj.find('#note-preview-note').html(note['markdown']['text']);
+                obj.find('#note-notification').hide();
+                obj.find('#note-preview').show();
+
+                // If we have a callback, process it now
+                if (cb) {
+                    cb();
+                } else {
+                    UI.stop_loading();
+                }
+            },
+            function() {
+                // Something went wrong while requesting the data
+                UI.notification('Couldn\'t open note', 'Refresh', function() { t.start(); } );
+                UI.stop_loading();
+            },
+            null,
+            {
+                'note': note_id
+            }
+        );
     }
 
     set_action_buttons() {
@@ -578,6 +643,9 @@ class PageNotebook {
                 
                 if (object['tag']) {
                     t.tag = groups[object['tag']];
+                    if (t.tag == '0' || t.tag == 0) {
+                        t.tag = undefined;
+                    }
                 }
 
                 if (object['note']) {
@@ -605,6 +673,31 @@ class PageNotebook {
             templates['notebook'].find('#rename-tag').click(function() { t.toggle_rename_tag(); });
             templates['notebook'].find('#tag-rename').hide();
 
+            // Hide the 'note preview'. We will show this again when the user opens a note
+            templates['notebook'].find('#note-preview').hide();
+
+            // Add a handler to the 'close-note' button
+            templates['notebook'].find('#close-note').click(function() {
+                // If the user presses the 'X' on top of a note-preview, the note has to be closed
+
+                // Set the note to undefined
+                t.note = undefined;
+
+                // Remove the note-preview
+                $('#note-preview').hide();
+
+                // Show the note-notification
+                $('#note-notification').show();
+
+                // Update the URL
+                if (t.tag) {
+                    var newurl = '/ui/notebook/list/' + t.tag;
+                } else {
+                    var newurl = '/ui/notebook/'
+                }
+                history.pushState(newurl, '', newurl);
+            });
+
             // Add a handler to the input field for new tags when pressing the ENTER key
             templates['notebook'].find('#new_name').on('keyup', function (e) {
                 if (e.keyCode === 13) {
@@ -622,12 +715,22 @@ class PageNotebook {
             // Hide the 'note'
             templates['notebook'].find('#note').hide();
 
-            // Load the requested folder and display the page
-            t.navigate_to_tag(t.tag, false, function() {
+            // If a note is given, display it
+            if (t.note) {
+                t.get_note(t.note, null, templates['notebook'], function() {
+                    // Load the requested folder and display the page
+                    t.navigate_to_tag(t.tag, false, function() {
+                        UI.set_loading_text('Setting content');
+                        UI.replace_content(templates['notebook']);
+                    });
+                });
+            } else {
+                // Load the requested folder and display the page
+                t.navigate_to_tag(t.tag, false, function() {
                     UI.set_loading_text('Setting content');
                     UI.replace_content(templates['notebook']);
-                }
-            );
+                });
+            }
         },
         function() {
             // Something went wrong while requesting the template data

@@ -103,7 +103,7 @@ class UI {
         // Handler for when the user enters a page via the back button
         $(window).on('popstate', function(event){
             // We start the page as we would normally do; via the URL
-            UI.start_page_from_url();
+            UI.start_page_from_url(true);
         });
 
         // TODO: Preload templates; the template for the ui_action_button, for example
@@ -112,7 +112,7 @@ class UI {
         UI.start_page_from_url();
     }
 
-    static start_page_from_id(page_id, update_history = true) {
+    static start_page_from_id(page_id, update_history = true, frompop = false) {
         // Method to start a specific page from the page_classes dictionary. The 'page_id' will be
         // the key from the dict. In the menus, this will be the 'id' value for the link that is
         // clicked.
@@ -120,7 +120,7 @@ class UI {
         // If the page the user wants to open is the same as the page that already is open, we skip
         // this method. This way, we can make sure not reloads happen that shouldn't happen
 
-        if (UI.current_page_id != page_id) {
+        if (UI.current_page_id != page_id || frompop) {
             // Get the requested page
             var page = UI.page_classes[page_id];
 
@@ -154,7 +154,7 @@ class UI {
         }
     }
 
-    static start_page_from_url() {
+    static start_page_from_url(frompop = false) {
         // Method to start a specific page from the page_classes dictionary based on the URL that is
         // given. Will search in the page_classes for a matching URL using regex and start that
         // specific page.
@@ -174,7 +174,7 @@ class UI {
             // Check if the regex matches the pathname
             if (regex.test(pathname)) {
                 // It matches! Start the correct page
-                UI.start_page_from_id(page_id, false);
+                UI.start_page_from_id(page_id, false, frompop);
                 found = true;
             }
         });
