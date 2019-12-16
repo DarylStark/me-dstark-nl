@@ -277,7 +277,7 @@ class PageAPINotes(APIPage):
                         #   Adds extra Markdown functions, like tables and fenced code blocks
                         # - toc
                         #   Returns as Table of Contents along with the parsed HTML
-                        md = markdown.Markdown(extensions = [ 'extra', 'toc' ])
+                        md = markdown.Markdown(extensions = [ 'extra', 'toc', 'codehilite' ])
                         note_markdown = md.convert(revision_object.text)
 
                         # We create a object to return with the note, the revision and the metadata
