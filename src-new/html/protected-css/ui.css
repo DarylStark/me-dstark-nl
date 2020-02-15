@@ -334,6 +334,10 @@ button.me-button-confirm {
     text-align: justify;
 }
 
+#note-preview ul, or {
+    padding-left: 17px;
+}
+
 /* CSS styles for CodeHighlite */
 
 .codehilite .hll { background-color: #073642 }
