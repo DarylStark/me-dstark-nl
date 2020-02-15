@@ -165,3 +165,11 @@ class MeAPIGetNoteInvalidRevisionExeption(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIGetNoteRevisionsNoNoteExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user doesn't specifiy a not when requesting revisions """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIGetNoteRevisionsNonExistingNoteExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user specifies a non-existing note when requesting revisions """
+    pass
+#---------------------------------------------------------------------------------------------------

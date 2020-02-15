@@ -42,6 +42,17 @@
             </div>
             <div id='entries'></div>
         </div>
+
+        <div class='me-card-wide mdl-card mdl-shadow--4dp me-card-filelist' id='revision-browser'>
+            <div class='mdl-card__title me-card__title-small' id='revision-browser_title'>
+                Revisions
+            </div>
+            <div class='mdl-card__menu'>
+                <button class='mdl-button mdl-button--icon mdl-js-button' id='browser-menu-button'>
+                    <i class='material-icons'>clear</i>
+                </button>
+            </div>
+        </div>
     </div>
     <div class='mdl-cell mdl-cell--8-col'>
         <div class='me-card-wide me-card-form mdl-card mdl-shadow--4dp' id='note'>
@@ -60,6 +71,11 @@
                 <button class='mdl-button mdl-button--icon mdl-js-button' id='close-note'>
                     <i class='material-icons'>clear</i>
                 </button>
+            </div>
+            <div class='mdl-card__supporting-text me-note-revisions'>
+                <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>notes</i><span id='revision-count'></span>
+                <div class='mdl-layout-spacer'></div>
+                <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>calendar_today</i><span id='revision-date'></span>
             </div>
             <div class='mdl-card__supporting-text me-text' id='note-preview-note'></div>
         </div>

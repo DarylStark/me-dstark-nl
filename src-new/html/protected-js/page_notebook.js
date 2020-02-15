@@ -524,11 +524,53 @@ class PageNotebook {
                 // Get the note
                 var note = data['result']['data'][0];
 
+                // Get the correct word for 'revisions'
+                var revision_word = 'revision'
+                if (note['metadata']['revision_count'] > 1) { revision_word = 'revisions';}
+
+                // Split the datetime field
+                var revision_date = new Date(note['revision']['created']);
+
                 // Set the correct objects for the note
                 obj.find('#note-preview-title').html(note['note']['title']);
                 obj.find('#note-preview-note').html(note['markdown']['text']);
                 obj.find('#note-notification').hide();
                 obj.find('#note-preview').show();
+                obj.find('#revision-count').html(note['metadata']['revision_count'] + ' ' + revision_word);
+                obj.find('#revision-date').html(UI.format_datetime(revision_date));
+                obj.find('#revision-time').html(note['revision']['created']);
+
+                // Add a handler to the 'revisions' button so we can switch revisions if needed. We
+                // remove the handler first to make sure there is nothing attached; otherwise it'll
+                // do it twice for the second note, three times for the third, etc.
+                obj.find('#revision-count').unbind('click');
+                obj.find('#revision-count').click(function () {
+                    // Get the revision from the API
+                    UI.start_loading('Retrieving revisions for this note');
+
+                    UI.api_call(
+                        'GET',
+                        'notes', 'get_revisions',
+                        function() {
+                            // TODO: Add the revisions to the browser
+
+                            // Show the revision browser
+                            obj.find('#revision-browser').show();
+
+                            // Stop the loading screen
+                            UI.stop_loading();
+                        },
+                        function() {
+                            // Something went wrong while requesting the data
+                            UI.notification('Couldn\'t retrieve revisions', 'Refresh', function() { t.start(); } );
+                            UI.stop_loading();
+                        },
+                        null,
+                        {
+                            'note': t.note
+                        }
+                    );
+                })
 
                 // If we have a callback, process it now
                 if (cb) {
@@ -673,8 +715,10 @@ class PageNotebook {
             templates['notebook'].find('#rename-tag').click(function() { t.toggle_rename_tag(); });
             templates['notebook'].find('#tag-rename').hide();
 
-            // Hide the 'note preview'. We will show this again when the user opens a note
+            // Hide the 'note preview' and the 'revision-browser'. We will show this again when the
+            // user opens a note or opens the revision browser
             templates['notebook'].find('#note-preview').hide();
+            templates['notebook'].find('#revision-browser').hide();
 
             // Add a handler to the 'close-note' button
             templates['notebook'].find('#close-note').click(function() {

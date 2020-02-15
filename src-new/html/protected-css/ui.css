@@ -315,7 +315,7 @@ button.me-button-confirm {
 #note-preview-note h1 {
     font-size: 1.75em;
     font-weight: 600;
-    margin: 24px 0 16px;
+    margin: 16px 0 16px;
     padding-bottom: 0.3em;
     border-bottom: 1px solid #eaeaea;
     color: #2e2e2e;
@@ -334,8 +334,24 @@ button.me-button-confirm {
     text-align: justify;
 }
 
-#note-preview ul, or {
+#note-preview-note ul, or {
     padding-left: 17px;
+}
+
+.me-note-revisions {
+    border-bottom: 1px solid #cccccc;
+}
+
+.me-note-revisions span {
+    padding-top: 4px;
+}
+
+.me-note-revisions #revision-count {
+    cursor: pointer;
+}
+
+#revision-browser {
+    margin-top: 16px;
 }
 
 /* CSS styles for CodeHighlite */

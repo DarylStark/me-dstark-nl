@@ -32,7 +32,8 @@ class PageAPINotes(APIPage):
             'delete_tag': self.delete_tag,
             'rename_tag': self.rename_tag,
             'get_notes': self.get_notes,
-            'get_note': self.get_note
+            'get_note': self.get_note,
+            'get_revisions': self.get_revisions
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -305,4 +306,38 @@ class PageAPINotes(APIPage):
                     raise MeAPIGetNoteInvalidNoteExeption('Note with id {id} is not found'.format(id = note))
         else:
             raise MeAPIGetNoteNoNoteExeption('No note id given')
+
+    @PageAPI.api_endpoint(endpoint_name = 'get_revisions', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_revisions(self, *args, **kwargs):
+        """ The 'get_revisions' API endpoint returns revisions for a specific note """
+
+        # Check if the user gave us a note and give an error when he didn't
+        note = None
+        if 'note' in kwargs.keys():
+            note = kwargs['note']
+
+            # Check if the note is valid
+            with DatabaseSession() as session:
+                notes = session.query(Note).filter(Note.id == note)
+                if notes.count() != 1:
+                    raise MeAPIGetNoteRevisionsNonExistingNoteExeption('The note {note} is not a valid note'.format(note = note))
+            
+            # Get the revisions
+            all_revisions = list()
+            with DatabaseSession() as session:
+                # Get all revisions from the database
+                revisions = session.query(NoteRevision).with_entities(
+                    NoteRevision.id,
+                    NoteRevision.created
+                ).filter(NoteRevision.note == note).order_by(NoteRevision.id)
+                
+                # Get the tagcount
+                allrevisions = revisions.count()
+
+                # Get all the tag objects
+                all_revisions = revisions.all()
+            
+            return (all_revisions, allrevisions)
+        else:
+            raise MeAPIGetNoteRevisionsNoNoteExeption('No note id given')
 #---------------------------------------------------------------------------------------------------
