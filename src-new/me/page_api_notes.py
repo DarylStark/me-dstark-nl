@@ -256,16 +256,17 @@ class PageAPINotes(APIPage):
 
                     revision_object = session.query(NoteRevision).filter(NoteRevision.note == note)
 
+                    # Get the revision count. We need it later
+                    revision_count = revision_object.count()
+
                     # Check if the user requested a specific revision
                     revision = None
                     if 'revision' in kwargs.keys():
                         # Get the revision ID
                         revision = kwargs['revision']
+
                         # User gave a revision. Create a new query object
                         revision_object = revision_object.filter(NoteRevision.id == revision)
-                    
-                    # Get the revision count. We need it later
-                    revision_count = revision_object.count()
 
                     # Check if we have results. If we don't, we give an error
                     if revision_count > 0:
