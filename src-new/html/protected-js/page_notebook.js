@@ -495,6 +495,14 @@ class PageNotebook {
         var t = this;
 
         // Get the note from the API
+        var api_options = {
+            'note': note_id
+        }
+
+        // If a revision is given, we add it to the API options
+        if (revision) { api_options['revision'] = revision; }
+
+        // Do the API call
         UI.api_call(
             'GET',
             'notes', 'get_note',
@@ -540,6 +548,13 @@ class PageNotebook {
                 obj.find('#revision-date').html(UI.format_datetime(revision_date));
                 obj.find('#revision-time').html(note['revision']['created']);
 
+                // Remove the revision browser, but only if no revision is given. If a revision is given,
+            // the user probably wants the revision browser to stay in screen since he is picking one
+            // from the revision browser
+            if (revision == null) {
+                t.hide_revision_browser();
+            }
+
                 // Add a handler to the 'revisions' button so we can switch revisions if needed. We
                 // remove the handler first to make sure there is nothing attached; otherwise it'll
                 // do it twice for the second note, three times for the third, etc.
@@ -551,14 +566,43 @@ class PageNotebook {
                     UI.api_call(
                         'GET',
                         'notes', 'get_revisions',
-                        function() {
+                        function(data, status, xhr) {
                             // TODO: Add the revisions to the browser
+                            Templates.get_templates(['notebook_revision'], function(templates) {
 
-                            // Show the revision browser
-                            obj.find('#revision-browser').show();
+                                // Remove all revisions from the list
+                                $('#revision-items').find('.mdl-card__supporting-text').remove();
 
-                            // Stop the loading screen
-                            UI.stop_loading();
+                                // Add all revisions to the list
+                                $.each(data['result']['data'], function(index, revision) {
+                                    // Create a new object from the template
+                                    var tpl = templates['notebook_revision'];
+                                    var entry = UI.to_jquery(tpl, false);
+
+                                    // Append the date
+                                    var revision_date = new Date(revision['created']);
+                                    entry.find('#date').html(UI.format_datetime(revision_date));
+
+                                    // Append a click event to the note
+                                    entry.click(function() {
+                                        t.get_note(t.note, revision['id']);
+                                    });
+
+                                    // Add the entry to the revision list
+                                    $('#revision-items').append(entry);
+                                });
+                                
+                                // Show the revision browser
+                                obj.find('#revision-browser').show();
+
+                                // Stop the loading screen
+                                UI.stop_loading();
+                            },
+                            function() {
+                                // Something went wrong while requesting the template data
+                                UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
+                                UI.stop_loading();
+                            });
                         },
                         function() {
                             // Something went wrong while requesting the data
@@ -585,9 +629,7 @@ class PageNotebook {
                 UI.stop_loading();
             },
             null,
-            {
-                'note': note_id
-            }
+            api_options
         );
     }
 
@@ -615,6 +657,15 @@ class PageNotebook {
 
         // Set them
         UI.set_action_buttons();
+    }
+
+    hide_revision_browser() {
+        // Method to hide the revision browser
+        // Hide the browser
+        $('#revision-browser').hide();
+                
+        // Remove all revisions from the list
+        $('#revision-items').find('.mdl-card__supporting-text').remove();
     }
 
     start() {
@@ -719,6 +770,11 @@ class PageNotebook {
             // user opens a note or opens the revision browser
             templates['notebook'].find('#note-preview').hide();
             templates['notebook'].find('#revision-browser').hide();
+
+            // Add a handler to the 'close-revision-browser' button
+            templates['notebook'].find('#close-revision-browser').click(function() {
+                t.hide_revision_browser();
+            });
 
             // Add a handler to the 'close-note' button
             templates['notebook'].find('#close-note').click(function() {

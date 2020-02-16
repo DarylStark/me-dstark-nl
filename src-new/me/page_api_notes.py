@@ -12,7 +12,8 @@ from me import MeJSONEncoder
 from me import Me
 from me.exceptions import *
 from me_database import NoteTag, NotesTags, DatabaseSession, Note, NoteRevision
-from sqlalchemy import and_
+from sqlalchemy import and_, desc
+from sqlalchemy.orm import load_only
 import flask
 import markdown
 #---------------------------------------------------------------------------------------------------
@@ -325,11 +326,12 @@ class PageAPINotes(APIPage):
             # Get the revisions
             all_revisions = list()
             with DatabaseSession() as session:
-                # Get all revisions from the database
-                revisions = session.query(NoteRevision).with_entities(
-                    NoteRevision.id,
-                    NoteRevision.created
-                ).filter(NoteRevision.note == note).order_by(NoteRevision.id)
+                # Get all revisions from the database. We only get the 'id' and the 'date' for this
+                # note since all other information is not needed. We do this user 'load_only' so
+                # SQLalchemy keeps it a object. If we would use the 'with_entities' method of the
+                # query, we would get a list as return.
+                fields = [ 'id', 'created' ]
+                revisions = session.query(NoteRevision).options(load_only(*fields)).filter(NoteRevision.note == note).order_by(desc(NoteRevision.id))
                 
                 # Get the tagcount
                 allrevisions = revisions.count()
