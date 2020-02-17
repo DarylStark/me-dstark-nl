@@ -386,6 +386,7 @@ class PageNotebook {
                     } else {
                         newurl = '/ui/notebook/show/0/' + t.note;
                     }
+                    if (t.revision) { newurl += '/' + t.revision; }
                 } else {
                     if (tag) {
                         newurl = '/ui/notebook/list/' + t.tag;
@@ -485,6 +486,68 @@ class PageNotebook {
         });
     }
 
+    show_revision_browser() {
+        // Method to show the revision browser
+
+        // Set for the callbacks
+        var t = this;
+
+        // Get the revision from the API
+        UI.start_loading('Retrieving revisions for this note');
+
+        UI.api_call(
+            'GET',
+            'notes', 'get_revisions',
+            function(data, status, xhr) {
+                Templates.get_templates(['notebook_revision'], function(templates) {
+
+                    // Remove all revisions from the list
+                    $('#revision-items').find('.mdl-card__supporting-text').remove();
+
+                    // Add all revisions to the list
+                    $.each(data['result']['data'], function(index, revision) {
+                        // Create a new object from the template
+                        var tpl = templates['notebook_revision'];
+                        var entry = UI.to_jquery(tpl, false);
+
+                        // Append the date
+                        var revision_date = new Date(revision['created']);
+                        entry.find('#date').html(UI.format_datetime(revision_date));
+
+                        // Append a click event to the note
+                        entry.click(function() {
+                            t.revision = revision['id'];
+                            t.get_note(t.note, revision['id']);
+                        });
+
+                        // Add the entry to the revision list
+                        $('#revision-items').append(entry);
+                    });
+                    
+                    // Show the revision browser
+                    $('#revision-browser').show();
+
+                    // Stop the loading screen
+                    UI.stop_loading();
+                },
+                function() {
+                    // Something went wrong while requesting the template data
+                    UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
+                    UI.stop_loading();
+                });
+            },
+            function() {
+                // Something went wrong while requesting the data
+                UI.notification('Couldn\'t retrieve revisions', 'Refresh', function() { t.start(); } );
+                UI.stop_loading();
+            },
+            null,
+            {
+                'note': t.note
+            }
+        );
+    }
+
     get_note(note_id, revision = null, jquery_object = null, cb) {
         // Method to retrieve a note and all it's details from the API
 
@@ -517,12 +580,21 @@ class PageNotebook {
                     obj = $(document);
                 }
 
+                // Remove the revision browser, but only if no revision is given. If a revision is given,
+                // the user probably wants the revision browser to stay in screen since he is picking one
+                // from the revision browser
+                if (revision == null) {
+                    t.hide_revision_browser();
+                    t.revision = null;
+                }
+
                 // Update the URL. We only do this if needed
                 if (!cb) {
                     var url_tag = 0;
                     if (t.tag) { url_tag = t.tag; }
                     var url_note = note_id;
                     var newurl = '/ui/notebook/show/' + url_tag + '/' + url_note;
+                    if (t.revision) { newurl += '/' + t.revision; }
                     history.pushState(newurl, '', newurl);
                 }
 
@@ -548,73 +620,11 @@ class PageNotebook {
                 obj.find('#revision-date').html(UI.format_datetime(revision_date));
                 obj.find('#revision-time').html(note['revision']['created']);
 
-                // Remove the revision browser, but only if no revision is given. If a revision is given,
-            // the user probably wants the revision browser to stay in screen since he is picking one
-            // from the revision browser
-            if (revision == null) {
-                t.hide_revision_browser();
-            }
-
                 // Add a handler to the 'revisions' button so we can switch revisions if needed. We
                 // remove the handler first to make sure there is nothing attached; otherwise it'll
                 // do it twice for the second note, three times for the third, etc.
                 obj.find('#revision-count').unbind('click');
-                obj.find('#revision-count').click(function () {
-                    // Get the revision from the API
-                    UI.start_loading('Retrieving revisions for this note');
-
-                    UI.api_call(
-                        'GET',
-                        'notes', 'get_revisions',
-                        function(data, status, xhr) {
-                            // TODO: Add the revisions to the browser
-                            Templates.get_templates(['notebook_revision'], function(templates) {
-
-                                // Remove all revisions from the list
-                                $('#revision-items').find('.mdl-card__supporting-text').remove();
-
-                                // Add all revisions to the list
-                                $.each(data['result']['data'], function(index, revision) {
-                                    // Create a new object from the template
-                                    var tpl = templates['notebook_revision'];
-                                    var entry = UI.to_jquery(tpl, false);
-
-                                    // Append the date
-                                    var revision_date = new Date(revision['created']);
-                                    entry.find('#date').html(UI.format_datetime(revision_date));
-
-                                    // Append a click event to the note
-                                    entry.click(function() {
-                                        t.get_note(t.note, revision['id']);
-                                    });
-
-                                    // Add the entry to the revision list
-                                    $('#revision-items').append(entry);
-                                });
-                                
-                                // Show the revision browser
-                                obj.find('#revision-browser').show();
-
-                                // Stop the loading screen
-                                UI.stop_loading();
-                            },
-                            function() {
-                                // Something went wrong while requesting the template data
-                                UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
-                                UI.stop_loading();
-                            });
-                        },
-                        function() {
-                            // Something went wrong while requesting the data
-                            UI.notification('Couldn\'t retrieve revisions', 'Refresh', function() { t.start(); } );
-                            UI.stop_loading();
-                        },
-                        null,
-                        {
-                            'note': t.note
-                        }
-                    );
-                })
+                obj.find('#revision-count').click(function () { t.show_revision_browser(); });
 
                 // If we have a callback, process it now
                 if (cb) {
@@ -687,7 +697,7 @@ class PageNotebook {
         //   Show the overview of the folder '86' without showing a note
         //
         // - /ui/notebook/show/86/120
-        //   Show the overfiew of folder '86' and show note '120'
+        //   Show the overview of folder '86' and show note '120'
         //
         // - /ui/notebook/edit/86/120
         //   Edit the note with the ID 120. The 86 is the ID of the folder in which the note was
@@ -702,24 +712,28 @@ class PageNotebook {
                 'regex': /^\/ui\/notebook\/?$/,
                 'tag': null,
                 'note': null,
+                'revision': null,
                 'action': 'list'
             },
             'list': {
                 'regex': /^\/ui\/notebook\/list\/([0-9]+)\/?$/,
                 'tag': 1,
                 'note': null,
+                'revision': null,
                 'action': 'list'
             },
             'show': {
-                'regex': /^\/ui\/notebook\/show\/([0-9]+)\/([0-9]+)\/?$/,
+                'regex': /^\/ui\/notebook\/show\/([0-9]+)\/([0-9]+)(\/([0-9]+))?\/?$/,
                 'tag': 1,
                 'note': 2,
+                'revision': 4,
                 'action': 'show'
             },
             'edit': {
                 'regex': /^\/ui\/notebook\/edit\/([0-9]+)\/([0-9]+)\/?$/,
                 'tag': 1,
                 'note': 2,
+                'revision': null,
                 'action': 'edit'
             }
         }
@@ -727,13 +741,15 @@ class PageNotebook {
         // Set the values for the class to empty so we can overwrite them
         t.tag = null;
         t.note = null;
-        
+
         // Loop through the objects to find the correct action
         $.each(regexes, function(key, object) {
             if (object['regex'].test(url)) {
-                // Found the correct regex. Let's get the groups
-                var groups = Array.from(url.matchAll(object['regex']))[0]
-                
+                // Found the correct regex. Let's get the groups. For some weird reason i cannot
+                // explain, we have to make the RegExp object global with the 'g' flag for Chrome
+                // on Android.
+                var groups = Array.from(url.matchAll(RegExp(object['regex'], 'g')))[0]
+              
                 if (object['tag']) {
                     t.tag = groups[object['tag']];
                     if (t.tag == '0' || t.tag == 0) {
@@ -743,6 +759,10 @@ class PageNotebook {
 
                 if (object['note']) {
                     t.note = groups[object['note']];
+                }
+
+                if (object['revision']) {
+                    t.revision = groups[object['revision']];
                 }
             }
         });
@@ -767,7 +787,8 @@ class PageNotebook {
             templates['notebook'].find('#tag-rename').hide();
 
             // Hide the 'note preview' and the 'revision-browser'. We will show this again when the
-            // user opens a note or opens the revision browser
+            // user opens a note or opens the revision browser. If the user tries to open a revision
+            // from the URL, we do not hide the 'revision-browser'.
             templates['notebook'].find('#note-preview').hide();
             templates['notebook'].find('#revision-browser').hide();
 
@@ -817,11 +838,16 @@ class PageNotebook {
 
             // If a note is given, display it
             if (t.note) {
-                t.get_note(t.note, null, templates['notebook'], function() {
+                var revision = null;
+                if (t.revision) {
+                    revision = t.revision;
+                }
+                t.get_note(t.note, revision, templates['notebook'], function() {
                     // Load the requested folder and display the page
                     t.navigate_to_tag(t.tag, false, function() {
                         UI.set_loading_text('Setting content');
                         UI.replace_content(templates['notebook']);
+                        if (t.revision) { t.show_revision_browser(); }
                     });
                 });
             } else {
