@@ -626,6 +626,9 @@ class PageNotebook {
                 obj.find('#revision-count').unbind('click');
                 obj.find('#revision-count').click(function () { t.show_revision_browser(); });
 
+                // Update the action buttons
+                t.set_action_buttons();
+
                 // If we have a callback, process it now
                 if (cb) {
                     cb();
@@ -657,6 +660,22 @@ class PageNotebook {
                 'show': true
             }
         ]
+
+        // If we are on a 'note', we have to add the 'edit' button
+        if (t.note) {
+            actionbuttons.push({
+                'icon': 'delete',
+                'click': function(){},
+                'show': true
+            },
+            {
+                'icon': 'edit',
+                'click': function(){
+                    console.log("About to edit this note :-)");
+                },
+                'show': true
+            });
+        }
 
         // Add them to the UI
         $.each(actionbuttons.reverse(), function(index, actionbutton) {
@@ -806,6 +825,12 @@ class PageNotebook {
 
                 // Remove the note-preview
                 $('#note-preview').hide();
+
+                // Update the actions buttons
+                t.set_action_buttons();
+
+                // Remove the revision browser
+                t.hide_revision_browser();
 
                 // Show the note-notification
                 $('#note-notification').show();
