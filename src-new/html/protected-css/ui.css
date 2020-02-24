@@ -354,6 +354,16 @@ button.me-button-confirm {
     margin-top: 16px;
 }
 
+#note-edit-note textarea {
+    outline: none;
+    resize: none;
+    width: 100%;
+    min-height: 5px;
+    overflow: hidden;
+    font-family: 'Roboto Mono';
+    font-size: 12px;
+}
+
 /* CSS styles for CodeHighlite */
 
 .codehilite .hll { background-color: #073642 }

@@ -646,6 +646,52 @@ class PageNotebook {
         );
     }
 
+    edit_note(note_id, revision_id) {
+        // Method to start editing a note
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        UI.start_loading('Loading note');
+
+        // Get the note from the API
+        var api_options = {
+            'note': note_id
+        }
+
+        // If a revision is given, we add it to the API options
+        if (revision_id) { api_options['revision'] = revision_id; }
+
+        // Do the API call
+        UI.api_call(
+            'GET',
+            'notes', 'get_note',
+            function(data, status, xhr) {
+                UI.start_loading('Displaying note');
+
+                // Set the text of the note into the text-area
+                $('#edit-note-textarea').val(data['result']['data'][0]['revision']['text']);
+
+                // Remove the divs that are in place now
+                $('#note').hide();
+                $('#note-notification').hide();
+                $('#note-preview').hide();
+
+                // Set our own div
+                $('#note-edit').show();
+
+                UI.stop_loading();
+            },
+            function() {
+                // Something went wrong while requesting the data
+                UI.notification('Couldn\'t open note', 'Refresh', function() { t.start(); } );
+                UI.stop_loading();
+            },
+            null,
+            api_options
+        );
+    }
+
     set_action_buttons() {
         // Method to set the correct action buttons
 
@@ -671,7 +717,7 @@ class PageNotebook {
             {
                 'icon': 'edit',
                 'click': function(){
-                    console.log("About to edit this note :-)");
+                    t.edit_note(t.note, t.revision);
                 },
                 'show': true
             });
@@ -810,6 +856,13 @@ class PageNotebook {
             // from the URL, we do not hide the 'revision-browser'.
             templates['notebook'].find('#note-preview').hide();
             templates['notebook'].find('#revision-browser').hide();
+            templates['notebook'].find('#note-edit').hide();
+
+            // Add a resize handler on the edit-note text-area
+            templates['notebook'].find('#edit-note-textarea').on('input', function() {
+                $('#edit-note-textarea').css('height', '5px');
+                $('#edit-note-textarea').css('height', $('#edit-note-textarea')[0].scrollHeight);
+            });
 
             // Add a handler to the 'close-revision-browser' button
             templates['notebook'].find('#close-revision-browser').click(function() {
