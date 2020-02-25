@@ -646,7 +646,7 @@ class PageNotebook {
         );
     }
 
-    edit_note(note_id, revision_id) {
+    edit_note(note_id, revision_id, update_url = true, callback = undefined) {
         // Method to start editing a note
 
         // Set a local var for 'this' that we can re-use in the callbacks
@@ -673,7 +673,6 @@ class PageNotebook {
                 $('#edit-note-textarea').val(data['result']['data'][0]['revision']['text']);
                 $('#edit-note-title').val(data['result']['data'][0]['note']['title']);
                 
-                console.log(data['result']['data'][0]['metadata']['last_revision']);
                 if (data['result']['data'][0]['metadata']['last_revision']) {
                     $('#me-note-edit-revision-warning').hide()
                 } else {
@@ -689,7 +688,28 @@ class PageNotebook {
                 $('#note-edit').show();
                 t.resize_textarea();
 
-                UI.stop_loading();
+                // Update the URL
+                if (update_url) {
+                    var url_tag = '0';
+                    var note = '/' + t.note;
+                    var url_revision = '';
+
+                    // Add portions that are not always needed
+                    if (t.tag) { url_tag = t.tag; }
+                    if (t.revision) { url_revision = '/' + t.revision; }
+
+                    // Compile the new url
+                    var newurl = '/ui/notebook/edit/' + url_tag + note + url_revision;
+
+                    // Update the browser history
+                    history.pushState(newurl, '', newurl);
+                }
+
+                if (callback) {
+                    callback();
+                } else {
+                    UI.stop_loading();
+                }
             },
             function() {
                 // Something went wrong while requesting the data
@@ -810,10 +830,10 @@ class PageNotebook {
                 'action': 'show'
             },
             'edit': {
-                'regex': /^\/ui\/notebook\/edit\/([0-9]+)\/([0-9]+)\/?$/,
+                'regex': /^\/ui\/notebook\/edit\/([0-9]+)\/([0-9]+)(\/([0-9]+))?\/?$/,
                 'tag': 1,
                 'note': 2,
-                'revision': null,
+                'revision': 4,
                 'action': 'edit'
             }
         }
@@ -829,6 +849,8 @@ class PageNotebook {
                 // explain, we have to make the RegExp object global with the 'g' flag for Chrome
                 // on Android.
                 var groups = Array.from(url.matchAll(RegExp(object['regex'], 'g')))[0]
+
+                t.action = object['action'];
               
                 if (object['tag']) {
                     t.tag = groups[object['tag']];
@@ -934,14 +956,24 @@ class PageNotebook {
                 if (t.revision) {
                     revision = t.revision;
                 }
-                t.get_note(t.note, revision, templates['notebook'], function() {
-                    // Load the requested folder and display the page
-                    t.navigate_to_tag(t.tag, false, function() {
-                        UI.set_loading_text('Setting content');
-                        UI.replace_content(templates['notebook']);
-                        if (t.revision) { t.show_revision_browser(); }
+                if (t.action == 'show') {
+                    t.get_note(t.note, revision, templates['notebook'], function() {
+                        // Load the requested folder and display the page
+                        t.navigate_to_tag(t.tag, false, function() {
+                            UI.set_loading_text('Setting content');
+                            UI.replace_content(templates['notebook']);
+                            if (t.revision) { t.show_revision_browser(); }
+                        });
                     });
-                });
+                } else if (t.action == 'edit') {
+                    UI.set_loading_text('Setting content');
+                    UI.replace_content(templates['notebook']);
+                    t.edit_note(t.note, t.revision, false, function() {
+                        t.navigate_to_tag(t.tag, false, function() {
+                            if (t.revision) { t.show_revision_browser(); }
+                        });
+                    });
+                }
             } else {
                 // Load the requested folder and display the page
                 t.navigate_to_tag(t.tag, false, function() {
