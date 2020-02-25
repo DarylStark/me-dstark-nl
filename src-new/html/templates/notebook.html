@@ -57,6 +57,7 @@
         </div>
     </div>
     <div class='mdl-cell mdl-cell--8-col'>
+        <!-- No selected note -->
         <div class='me-card-wide me-card-form mdl-card mdl-shadow--4dp' id='note'>
             <div class='mdl-card__title me-card__title-small' id='note-title'></div>
             <div class='mdl-card__supporting-text me-text' id='note-text'></div>
@@ -67,6 +68,7 @@
                 <p>Open a note in the browser to display it here or press the button in the action menu to create a new note or tag</p>
             </div>
         </div>
+        <!-- Note preview -->
         <div class='me-card-wide me-card-form mdl-card mdl-shadow--4dp' id='note-preview'>
             <div class='mdl-card__title me-card__title-small' id='note-preview-title'></div>
             <div class='mdl-card__menu'>
@@ -81,12 +83,16 @@
             </div>
             <div class='mdl-card__supporting-text me-text' id='note-preview-note'></div>
         </div>
+        <!-- Note editor -->
         <div class='me-card-wide me-card-form mdl-card mdl-shadow--4dp' id='note-edit'>
             <div class='mdl-card__title me-card__title-small' id='note-edit-title'>Edit this note</div>
             <div class='mdl-card__menu'>
                 <button class='mdl-button mdl-button--icon mdl-js-button' id='close-note'>
                     <i class='material-icons'>clear</i>
                 </button>
+            </div>
+            <div class='mdl-card__supporting-text me-note-edit-title'>
+                <i class='mdl-color-text--blue-grey-400 material-icons' role='presentation'>code</i><input type='text' id='edit-note-title' />
             </div>
             <div class='mdl-card__supporting-text me-text' id='note-edit-note'>
                 <textarea id='edit-note-textarea'></textarea>

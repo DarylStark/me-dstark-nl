@@ -338,7 +338,7 @@ button.me-button-confirm {
     padding-left: 17px;
 }
 
-.me-note-revisions {
+.me-note-revisions, .me-note-edit-title {
     border-bottom: 1px solid #cccccc;
 }
 
@@ -362,6 +362,19 @@ button.me-button-confirm {
     overflow: hidden;
     font-family: 'Roboto Mono';
     font-size: 12px;
+    border: none;
+}
+
+.me-note-edit-title input {
+    outline: none;
+    resize: none;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Roboto Mono';
+    font-size: 12px;
+    border: none;
+    margin-left: 16px;
+    margin-top: -2px;
 }
 
 /* CSS styles for CodeHighlite */

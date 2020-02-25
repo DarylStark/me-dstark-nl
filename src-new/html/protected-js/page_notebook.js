@@ -671,6 +671,8 @@ class PageNotebook {
 
                 // Set the text of the note into the text-area
                 $('#edit-note-textarea').val(data['result']['data'][0]['revision']['text']);
+                $('#edit-note-title').val(data['result']['data'][0]['note']['title']);
+                
 
                 // Remove the divs that are in place now
                 $('#note').hide();
@@ -679,6 +681,7 @@ class PageNotebook {
 
                 // Set our own div
                 $('#note-edit').show();
+                t.resize_textarea();
 
                 UI.stop_loading();
             },
@@ -741,6 +744,12 @@ class PageNotebook {
                 
         // Remove all revisions from the list
         $('#revision-items').find('.mdl-card__supporting-text').remove();
+    }
+
+    resize_textarea() {
+        // Method to resize the textarea to the lenght of the text inside of it
+        $('#edit-note-textarea').css('height', '5px');
+        $('#edit-note-textarea').css('height', $('#edit-note-textarea')[0].scrollHeight);
     }
 
     start() {
@@ -860,8 +869,7 @@ class PageNotebook {
 
             // Add a resize handler on the edit-note text-area
             templates['notebook'].find('#edit-note-textarea').on('input', function() {
-                $('#edit-note-textarea').css('height', '5px');
-                $('#edit-note-textarea').css('height', $('#edit-note-textarea')[0].scrollHeight);
+                t.resize_textarea();
             });
 
             // Add a handler to the 'close-revision-browser' button
