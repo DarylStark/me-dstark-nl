@@ -377,6 +377,11 @@ button.me-button-confirm {
     margin-top: -2px;
 }
 
+#me-note-edit-revision-warning {
+    border-bottom: 1px solid #cccccc;
+    background-color: #ffa07a;
+}
+
 /* CSS styles for CodeHighlite */
 
 .codehilite .hll { background-color: #073642 }

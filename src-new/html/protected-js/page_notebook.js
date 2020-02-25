@@ -673,6 +673,12 @@ class PageNotebook {
                 $('#edit-note-textarea').val(data['result']['data'][0]['revision']['text']);
                 $('#edit-note-title').val(data['result']['data'][0]['note']['title']);
                 
+                console.log(data['result']['data'][0]['metadata']['last_revision']);
+                if (data['result']['data'][0]['metadata']['last_revision']) {
+                    $('#me-note-edit-revision-warning').hide()
+                } else {
+                    $('#me-note-edit-revision-warning').show()
+                }
 
                 // Remove the divs that are in place now
                 $('#note').hide();
