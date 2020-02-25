@@ -259,11 +259,21 @@ class PageAPINotes(APIPage):
                     # Get the revision count. We need it later
                     revision_count = revision_object.count()
 
+                    # We set 'last_revision' to True and we remember the ID of this revision. If the
+                    # user specifies a revision to load, we check if that ID is the same so we can
+                    # determine if he is asking for the last revision.
+                    last_revision = True
+                    last_revision_id = revision_object.order_by(NoteRevision.id.desc()).first().id
+
                     # Check if the user requested a specific revision
                     revision = None
                     if 'revision' in kwargs.keys():
                         # Get the revision ID
                         revision = kwargs['revision']
+
+                        # Check if this is the last revision
+                        if revision != str(last_revision_id):
+                            last_revision = False
 
                         # User gave a revision. Create a new query object
                         revision_object = revision_object.filter(NoteRevision.id == revision)
@@ -289,7 +299,8 @@ class PageAPINotes(APIPage):
                             'note': note_object.first(),
                             'revision': revision_object,
                             'metadata': {
-                                'revision_count': revision_count
+                                'revision_count': revision_count,
+                                'last_revision': last_revision
                             },
                             'markdown': {
                                 'text': note_markdown,
