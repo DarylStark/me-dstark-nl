@@ -615,6 +615,7 @@ class PageNotebook {
                 obj.find('#note-preview-title').html(note['note']['title']);
                 obj.find('#note-preview-note').html(note['markdown']['text']);
                 obj.find('#note-notification').hide();
+                obj.find('#note-edit').hide();
                 obj.find('#note-preview').show();
                 obj.find('#revision-count').html(note['metadata']['revision_count'] + ' ' + revision_word);
                 obj.find('#revision-date').html(UI.format_datetime(revision_date));

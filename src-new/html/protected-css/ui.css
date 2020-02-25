@@ -301,14 +301,14 @@ button.me-button-confirm {
 
 /* Page Notebook */
 
-#note-preview .material-icons
+#note-preview .material-icons, #note-edit .material-icons
 {
     font-size: 24px;
     color: rgba(255, 255, 255, 0.56);
     margin-right: 16px;
 }
 
-#note-preview .mdl-card__menu {
+#note-preview .mdl-card__menu, #note-edit .mdl-card__menu {
     top: 8px;
 }
 
