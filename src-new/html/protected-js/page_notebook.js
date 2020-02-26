@@ -396,6 +396,7 @@ class PageNotebook {
                 }
                 if (newurl) {
                     history.pushState(newurl, '', newurl);
+                    t.action = 'show';
                 }
             }
 
@@ -596,6 +597,7 @@ class PageNotebook {
                     var newurl = '/ui/notebook/show/' + url_tag + '/' + url_note;
                     if (t.revision) { newurl += '/' + t.revision; }
                     history.pushState(newurl, '', newurl);
+                    t.action = 'show';
                 }
 
                 // Set the note in the object
@@ -704,7 +706,11 @@ class PageNotebook {
 
                     // Update the browser history
                     history.pushState(newurl, '', newurl);
+                    t.action = 'edit';
                 }
+
+                // Update the action buttons
+                t.set_action_buttons();
 
                 if (callback) {
                     callback();
@@ -722,23 +728,61 @@ class PageNotebook {
         );
     }
 
+    save_note() {
+        // Method to save a note after editing
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        if (t.action == 'edit') {
+            UI.start_loading('Saving note');
+
+            // Gather the data
+            var data = {
+                'note_id': t.note,
+                'text': $('#edit-note-textarea').val(),
+                'title': $('#edit-note-title').val()
+            }
+
+            // Save the note
+            UI.api_call(
+                'POST',
+                'notes', 'save_note',
+                function(data, status, xhr) {
+                    // Done! Go back to the note
+                    t.get_note(t.note);
+                },
+                function() {
+                    // Something went wrong while requesting the data
+                    UI.notification('Couldn\'t save note', 'Refresh', function() { t.start(); } );
+                    UI.stop_loading();
+                },
+                null,
+                null,
+                data
+            );
+        }
+    }
+
     set_action_buttons() {
         // Method to set the correct action buttons
 
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
+        var actionbuttons = new Array();
+
         // Define the needed action buttons
-        var actionbuttons = [
-            {
+        if (t.action == 'show' || t.action == 'list') {
+            actionbuttons.push({
                 'icon': 'add',
                 'click': function(){},
                 'show': true
-            }
-        ]
+            });
+        }
 
-        // If we are on a 'note', we have to add the 'edit' button
-        if (t.note) {
+        // If we are on a 'note', we have to add the 'edit' and 'delete' button
+        if (t.action == 'show') {
             actionbuttons.push({
                 'icon': 'delete',
                 'click': function(){},
@@ -748,6 +792,17 @@ class PageNotebook {
                 'icon': 'edit',
                 'click': function(){
                     t.edit_note(t.note, t.revision);
+                },
+                'show': true
+            });
+        }
+
+        // If we are on a edit mode, we show a save button
+        if (t.action == 'edit') {
+            actionbuttons.push({
+                'icon': 'save',
+                'click': function(){
+                    t.save_note();
                 },
                 'show': true
             });
@@ -912,6 +967,7 @@ class PageNotebook {
 
                 // Set the note to undefined
                 t.note = undefined;
+                t.action = 'list';
 
                 // Remove the note-preview
                 $('#note-preview').hide();
@@ -932,6 +988,7 @@ class PageNotebook {
                     var newurl = '/ui/notebook/'
                 }
                 history.pushState(newurl, '', newurl);
+                t.action = 'list';
             });
 
             // Add a handler to the input field for new tags when pressing the ENTER key

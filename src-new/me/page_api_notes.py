@@ -354,4 +354,12 @@ class PageAPINotes(APIPage):
             return (all_revisions, allrevisions)
         else:
             raise MeAPIGetNoteRevisionsNoNoteExeption('No note id given')
+    
+    @PageAPI.api_endpoint(endpoint_name = 'save_note', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def save_note(self, *args, **kwargs):
+        """ API endpoint to save a (new) note """
+
+        # TODO: Implement
+
+        return([ 'saved' ], 1)
 #---------------------------------------------------------------------------------------------------
