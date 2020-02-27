@@ -46,7 +46,8 @@ class PageAPIAAA(APIPage):
         """ Method to login the credentials of a logging in users """
         
         # Get the token from the request
-        token = flask.request.form.get('token')
+        json_data = flask.request.json
+        token = json_data['token']
 
         # Get the idinfo for this session
         # TODO: Get the client_id from the settings
@@ -146,8 +147,9 @@ class PageAPIAAA(APIPage):
         user = Me.logged_in_user()
 
         # Get the UserSession the user wants to change and the new name for the session
-        session_id = flask.request.form.get('session')
-        new_name = flask.request.form.get('new_name').strip()
+        json_data = flask.request.json
+        session_id = json_data['session']
+        new_name = json_data['new_name'].strip()
 
         # If we don't give a new name, we set the name to None so it will end up as NULL in the
         # database
@@ -186,7 +188,8 @@ class PageAPIAAA(APIPage):
         user = Me.logged_in_user()
 
         # Get the UserSession the user wants to change and the new name for the session
-        session_id = flask.request.form.get('session')
+        json_data = flask.request.json
+        session_id = json_data['session']
 
         # We cannot remove the currently active session. We raise an error is the user tries this
         if int(session_id) == user[0].id:
@@ -270,8 +273,9 @@ class PageAPIAAA(APIPage):
         user = Me.logged_in_user()
 
         # Get the new details for the user
-        name = flask.request.form.get('name')
-        email = flask.request.form.get('email')
+        json_data = flask.request.json
+        name = json_data['name']
+        email = json_data['email']
 
         # Check if the emailaddress is valid
         if email:

@@ -19,9 +19,11 @@ function onSuccess(googleUser) {
     $.ajax({
         type: 'POST',
         url: '/api/aaa/login',
-        data: { token: token },
+        data: JSON.stringify({ token: token }),
         success: successLogin,
-        error: errorLogin
+        error: errorLogin,
+        contentType: "application/json",
+        dataType: "json"
     });
 }
 

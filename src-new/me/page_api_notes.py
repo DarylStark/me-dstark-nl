@@ -34,7 +34,8 @@ class PageAPINotes(APIPage):
             'rename_tag': self.rename_tag,
             'get_notes': self.get_notes,
             'get_note': self.get_note,
-            'get_revisions': self.get_revisions
+            'get_revisions': self.get_revisions,
+            'save_note': self.save_note
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -110,8 +111,9 @@ class PageAPINotes(APIPage):
         """ API endpoint to add tags """
         
         # Get the variables for the request
-        parent_tag = flask.request.form.get('parent_tag')
-        tag_name = flask.request.form.get('tag_name')
+        json_data = flask.request.json
+        parent_tag = json_data['parent_tag']
+        tag_name = json_data['tag_name']
 
         # Flask treats variables it gets without a value as an empty string. SQLalchemy can't add
         # this, so we have to make it a None object when this happends
@@ -148,7 +150,8 @@ class PageAPINotes(APIPage):
         """ API endpoint to remove a NoteTag """
 
         # Get the tag id the user wants to delete
-        tag_id = flask.request.form.get('tag')
+        json_data = flask.request.json
+        tag_id = json_data['tag']
 
         # Find the tag
         with DatabaseSession(commit_on_end = True) as session:
@@ -176,8 +179,9 @@ class PageAPINotes(APIPage):
         """ API endpoint to rename a NoteTag """
 
         # Get the tag ID the user wants to change and the new name for the tag
-        tag_id = flask.request.form.get('tag')
-        tag_name = flask.request.form.get('tag_name')
+        json_data = flask.request.json
+        tag_id = json_data['tag']
+        tag_name = json_data['tag_name']
 
         # Find the tag
         with DatabaseSession(commit_on_end = True) as session:
@@ -360,6 +364,7 @@ class PageAPINotes(APIPage):
         """ API endpoint to save a (new) note """
 
         # TODO: Implement
+        json_data = flask.request.json
 
         return([ 'saved' ], 1)
 #---------------------------------------------------------------------------------------------------

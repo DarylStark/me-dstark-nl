@@ -230,7 +230,9 @@ class UI {
 
         // If we have data, add it
         if (data) {
-            jquery_ajax_options['data'] = data
+            jquery_ajax_options['data'] = JSON.stringify(data);
+            jquery_ajax_options['contentType'] = "application/json";
+            jquery_ajax_options['dataType'] = "json";
         }
 
         // Do the API call
