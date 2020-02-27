@@ -361,10 +361,47 @@ class PageAPINotes(APIPage):
     
     @PageAPI.api_endpoint(endpoint_name = 'save_note', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
     def save_note(self, *args, **kwargs):
-        """ API endpoint to save a (new) note """
-
-        # TODO: Implement
+        """ API endpoint to save notes. This can be either adding notes, or adding a new revision to
+            a existing note """
+        
+        # Get the variables for the request
         json_data = flask.request.json
+        text = json_data['text']
+        title = json_data['title']
 
-        return([ 'saved' ], 1)
+        # Create a new revision
+        revision = NoteRevision(
+            text = text
+        )
+        
+        # Check if we are editing a note, or creating a new one
+        if 'note_id' in json_data.keys():
+            # We are editing a note.
+            note_id = json_data['note_id']
+
+            with DatabaseSession(commit_on_end = True) as session:
+                notes = session.query(Note).filter(Note.id == note_id)
+
+                if notes.count() == 1:
+                    # Get the note
+                    note = notes.first()
+
+                    # Add the note_id to the revision
+                    revision.note = json_data['note_id']
+
+                    # Update the title of the note
+                    if note.title != title:
+                        note.title = title
+
+                    # Add the new revision
+                    session.add(revision)
+                else:
+                    # Note doesn't exist
+                    raise MeAPIEditNonExistingNoteExeption('Note with id {id} does not exist'.format(id = note_id))
+
+            # Return that we saved the new revision
+            return (['saved'], 1)
+        else:
+            # We are create a new note
+            return (['not implemented yet'], 1)
 #---------------------------------------------------------------------------------------------------

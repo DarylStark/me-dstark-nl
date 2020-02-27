@@ -742,8 +742,6 @@ class PageNotebook {
                 'title': $('#edit-note-title').val()
             }
 
-            //api_call(method, group, endpoint, cb_success, cb_error, variables = null, data = null) {
-
             // Save the note
             UI.api_call(
                 'POST',

@@ -173,3 +173,7 @@ class MeAPIGetNoteRevisionsNonExistingNoteExeption(MeExceptionPageNotFoundExcept
     """ Exception for when a user specifies a non-existing note when requesting revisions """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIEditNonExistingNoteExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user tries to edit a note that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
