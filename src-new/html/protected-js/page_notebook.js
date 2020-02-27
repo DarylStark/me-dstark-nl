@@ -542,7 +542,6 @@ class PageNotebook {
                 UI.notification('Couldn\'t retrieve revisions', 'Refresh', function() { t.start(); } );
                 UI.stop_loading();
             },
-            null,
             {
                 'note': t.note
             }
