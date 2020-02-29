@@ -647,6 +647,16 @@ class PageNotebook {
         );
     }
 
+    confirm_close_editor(callback) {
+        // When the user presses the close editor button before saving the note
+        $('#close-note-confirm').unbind('click');
+        $('#close-note-confirm').click(function () {
+            // Done! Run the callback
+            callback();
+        });
+        $('#me-note-edit-close-warning').show();
+    }
+
     edit_note(note_id, revision_id, update_url = true, callback = undefined) {
         // Method to start editing a note
 
@@ -680,10 +690,22 @@ class PageNotebook {
                     $('#me-note-edit-revision-warning').show()
                 }
 
+                $('#me-note-edit-close-warning').hide()
+
                 // Remove the divs that are in place now
                 $('#note').hide();
                 $('#note-notification').hide();
                 $('#note-preview').hide();
+
+                // Add a handler to the onclick-button
+                $('#close-edit-note').unbind('click');
+                $('#close-edit-note').click(function() {
+                    t.confirm_close_editor(function() {
+                        // When the user presses the confirm button, we close the note and open
+                        // the note itself.
+                        t.get_note(t.note, t.revision);
+                    })
+                });
 
                 // Set our own div
                 $('#note-edit').show();
