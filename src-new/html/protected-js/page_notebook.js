@@ -470,7 +470,9 @@ class PageNotebook {
 
                 // Add a handler when the user clicks the note
                 entry.click(function() {
-                    t.get_note(note['id']);
+                    t.confirm_close_editor(function () {
+                        t.get_note(note['id']);
+                    });
                 });
 
                 // Add the entry to the list
@@ -517,8 +519,10 @@ class PageNotebook {
 
                         // Append a click event to the note
                         entry.click(function() {
-                            t.revision = revision['id'];
-                            t.get_note(t.note, revision['id']);
+                            t.confirm_close_editor(function() {
+                                t.revision = revision['id'];
+                                t.get_note(t.note, revision['id']);
+                            });
                         });
 
                         // Add the entry to the revision list
@@ -649,12 +653,17 @@ class PageNotebook {
 
     confirm_close_editor(callback) {
         // When the user presses the close editor button before saving the note
-        $('#close-note-confirm').unbind('click');
-        $('#close-note-confirm').click(function () {
-            // Done! Run the callback
+        if (this.changed_note) {
+            $('#close-note-confirm').unbind('click');
+            $('#close-note-confirm').click(function () {
+                // Done! Run the callback
+                callback();
+            });
+            $('#me-note-edit-close-warning').show();
+        } else {
+            // If the note isn't changed, we can execute the callback immidiatly
             callback();
-        });
-        $('#me-note-edit-close-warning').show();
+        }
     }
 
     edit_note(note_id, revision_id, update_url = true, callback = undefined) {
@@ -706,6 +715,9 @@ class PageNotebook {
                         t.get_note(t.note, t.revision);
                     })
                 });
+
+                // Set changed to false so we can keep track of changes
+                t.changed_note = false;
 
                 // Set our own div
                 $('#note-edit').show();
@@ -971,6 +983,7 @@ class PageNotebook {
 
             // Add a resize handler on the edit-note text-area
             templates['notebook'].find('#edit-note-textarea').on('input', function() {
+                t.changed_note = true;
                 t.resize_textarea();
             });
 
