@@ -396,7 +396,6 @@ class PageNotebook {
                 }
                 if (newurl) {
                     history.pushState(newurl, '', newurl);
-                    t.action = 'show';
                 }
             }
 
