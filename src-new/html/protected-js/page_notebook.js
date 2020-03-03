@@ -383,15 +383,19 @@ class PageNotebook {
                 if (t.note) {
                     if (tag) {
                         newurl = '/ui/notebook/show/' + t.tag + '/' + t.note;
+                        t.action = 'show';
                     } else {
                         newurl = '/ui/notebook/show/0/' + t.note;
+                        t.action = 'show';
                     }
                     if (t.revision) { newurl += '/' + t.revision; }
                 } else {
                     if (tag) {
                         newurl = '/ui/notebook/list/' + t.tag;
+                        t.action = 'list';
                     } else {
                         newurl = '/ui/notebook/'
+                        t.action = 'list';
                     }
                 }
                 if (newurl) {
@@ -764,14 +768,30 @@ class PageNotebook {
         // Set a local var for 'this' that we can re-use in the callbacks
         var t = this;
 
-        if (t.action == 'edit') {
+        UI.start_loading('Validating note');
+
+        // Check if the needed fields are filled in
+        var title = $('#edit-note-title').val().trim();
+        var text = $('#edit-note-textarea').val().trim();
+
+        if (title == '') {
+            UI.notification('Title cannot be empty');
+            UI.stop_loading();
+        } else if (text == '') {
+            UI.notification('Note cannot be empty');
+            UI.stop_loading();
+        } else {
             UI.start_loading('Saving note');
 
-            // Gather the data
+            // Create the dict with data that we can send to the Me-API
             var data = {
-                'note_id': t.note,
-                'text': $('#edit-note-textarea').val(),
-                'title': $('#edit-note-title').val()
+                'text': text,
+                'title': title
+            }
+
+            if (t.action == 'edit') {
+                // Add the note ID to the data
+                data['note_id'] = t.note;
             }
 
             // Save the note
@@ -779,8 +799,14 @@ class PageNotebook {
                 'POST',
                 'notes', 'save_note',
                 function(data, status, xhr) {
-                    // Done! Go back to the note
-                    t.get_note(t.note);
+                    if (t.action == 'edit') {
+                        // Done! Go back to the note
+                        t.get_note(t.note);
+                        t.navigate_to_tag(t.tag, true);
+                    } else {
+                        t.get_note(data['result']['data'][0]);
+                        t.navigate_to_tag(t.tag, true);
+                    }
                 },
                 function() {
                     // Something went wrong while requesting the data
@@ -791,6 +817,69 @@ class PageNotebook {
                 data
             );
         }
+    }
+
+    new_note(update_url = true) {
+        // Method to open a new empty editor
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        UI.start_loading('Opening new note');
+
+        // Make sure the text-fields are empty and the not needed fields are hidden
+        $('#edit-note-textarea').val('');
+        $('#edit-note-title').val('');        
+        $('#me-note-edit-revision-warning').hide()
+        $('#me-note-edit-close-warning').hide()
+
+        // Remove the divs that are in place now
+        $('#note').hide();
+        $('#note-notification').hide();
+        $('#note-preview').hide();
+
+        // Add a handler to the onclick-button
+        $('#close-edit-note').unbind('click');
+        $('#close-edit-note').click(function() {
+            t.confirm_close_editor(function() {
+                // When the user presses the confirm button, we close the note and open
+                // the note itself.
+                if (t.note) {
+                    t.get_note(t.note, t.revision);
+                } else if (t.tag) {
+                    $('#note-edit').hide();
+                    $('#note-notification').show();
+                    t.navigate_to_tag(t.tag);
+                } else {
+                    $('#note-edit').hide();
+                    $('#note-notification').show();
+                    t.navigate_to_tag(0);
+                }
+            })
+        });
+
+        // Show the editor
+        $('#note-edit').show();
+        $('#edit-note-title').focus();
+        t.resize_textarea();
+
+        // Update the URL
+        if (update_url) {
+            // Set the new url
+            if (t.tag) {
+                var newurl = '/ui/notebook/new/' + t.tag;
+            } else {
+                var newurl = '/ui/notebook/new/0'
+            }
+            history.pushState(newurl, '', newurl);
+
+            // Update the action buttons
+            t.action = 'new';
+            t.set_action_buttons();
+        }
+
+        // And done!
+        UI.stop_loading();
     }
 
     set_action_buttons() {
@@ -805,7 +894,9 @@ class PageNotebook {
         if (t.action == 'show' || t.action == 'list') {
             actionbuttons.push({
                 'icon': 'add',
-                'click': function(){},
+                'click': function(){
+                    t.new_note();
+                },
                 'show': true
             });
         }
@@ -827,7 +918,7 @@ class PageNotebook {
         }
 
         // If we are on a edit mode, we show a save button
-        if (t.action == 'edit') {
+        if (t.action == 'edit' || t.action == 'new') {
             actionbuttons.push({
                 'icon': 'save',
                 'click': function(){
@@ -920,6 +1011,13 @@ class PageNotebook {
                 'note': 2,
                 'revision': 4,
                 'action': 'edit'
+            },
+            'new': {
+                'regex': /^\/ui\/notebook\/new\/([0-9]+)\/?$/,
+                'tag': 1,
+                'note': null,
+                'revision': null,
+                'action': 'new'
             }
         }
 
@@ -980,10 +1078,14 @@ class PageNotebook {
             templates['notebook'].find('#revision-browser').hide();
             templates['notebook'].find('#note-edit').hide();
 
-            // Add a resize handler on the edit-note text-area
+            // Add a resize handler on the edit-note text-area and note editor title
             templates['notebook'].find('#edit-note-textarea').on('input', function() {
                 t.changed_note = true;
                 t.resize_textarea();
+            });
+
+            templates['notebook'].find('#edit-note-title').on('input', function() {
+                t.changed_note = true;
             });
 
             // Add a handler to the 'close-revision-browser' button
@@ -1067,6 +1169,10 @@ class PageNotebook {
                 t.navigate_to_tag(t.tag, false, function() {
                     UI.set_loading_text('Setting content');
                     UI.replace_content(templates['notebook']);
+
+                    if (t.action == 'new') {
+                        t.new_note(false);
+                    }
                 });
             }
         },

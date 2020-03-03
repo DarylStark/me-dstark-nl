@@ -366,8 +366,8 @@ class PageAPINotes(APIPage):
         
         # Get the variables for the request
         json_data = flask.request.json
-        text = json_data['text']
-        title = json_data['title']
+        text = json_data['text'].strip()
+        title = json_data['title'].strip()
 
         # Create a new revision
         revision = NoteRevision(
@@ -402,6 +402,22 @@ class PageAPINotes(APIPage):
             # Return that we saved the new revision
             return (['saved'], 1)
         else:
-            # We are create a new note
-            return (['not implemented yet'], 1)
+            # We are create a new note.
+            with DatabaseSession(commit_on_end = True) as session:
+                # First, we create the Note object and add it to the database
+                new_note = Note(title = title)
+                session.add(new_note)
+
+                # Push it to the database
+                session.flush()
+           
+                # Next, we add the Note ID to the revision and add the new revision
+                revision.note = new_note.id
+                session.add(revision)
+
+                # Save the ID for later user
+                note_id = new_note.id
+
+            # Done! We can return the new ID for the note
+            return ([ note_id ], 1)
 #---------------------------------------------------------------------------------------------------
