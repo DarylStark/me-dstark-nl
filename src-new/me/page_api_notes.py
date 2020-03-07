@@ -374,8 +374,6 @@ class PageAPINotes(APIPage):
             text = text
         )
 
-        # TODO: Check if a note isn't double
-        
         # Check if we are editing a note, or creating a new one
         if 'note_id' in json_data.keys():
             # We are editing a note.
