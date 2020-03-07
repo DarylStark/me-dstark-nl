@@ -373,6 +373,8 @@ class PageAPINotes(APIPage):
         revision = NoteRevision(
             text = text
         )
+
+        # TODO: Check if a note isn't double
         
         # Check if we are editing a note, or creating a new one
         if 'note_id' in json_data.keys():
@@ -417,6 +419,23 @@ class PageAPINotes(APIPage):
 
                 # Save the ID for later user
                 note_id = new_note.id
+
+                # If we got a tag, we have to add the note to that tag immidiatly
+                if 'tag' in json_data:
+                    # Check if the tag exists
+                    tags = session.query(NoteTag).filter(NoteTag.id == json_data['tag'])
+
+                    # Create a NotesTag with the correct details so we cana dd the note to the tag
+                    if tags.count() == 1:
+                        note_tag = NotesTags(
+                            tag = json_data['tag'],
+                            note = note_id
+                        )
+
+                        # Add the NotesTag
+                        session.add(note_tag)
+                    else:
+                        raise MeAPIAddNoteInvalidTagExeption('Tag {tag} doesn\'t exist'.format(tag = json_data['tag']))
 
             # Done! We can return the new ID for the note
             return ([ note_id ], 1)

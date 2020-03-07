@@ -177,3 +177,7 @@ class MeAPIEditNonExistingNoteExeption(MeExceptionPageNotFoundException):
     """ Exception for when a user tries to edit a note that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIAddNoteInvalidTagExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user tries to add a note with a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------

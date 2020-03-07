@@ -794,6 +794,12 @@ class PageNotebook {
                 data['note_id'] = t.note;
             }
 
+            if (t.action == 'new') {
+                if (t.tag) {
+                    data['tag'] = parseInt(t.tag);
+                }
+            }
+
             // Save the note
             UI.api_call(
                 'POST',
