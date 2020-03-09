@@ -157,6 +157,10 @@ class MeAPIGetNoteNoNoteExeption(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------
+class MeAPIGetNoteNoRevisionsExeption(MeExceptionPageNotFoundException):
+    """ Exception for when a user tries to get a note with no revisions """
+    pass
+#---------------------------------------------------------------------------------------------------
 class MeAPIGetNoteInvalidNoteExeption(MeExceptionPageNotFoundException):
     """ Exception for when a user specifies a tag that doesn't exist """
     pass
@@ -179,5 +183,9 @@ class MeAPIEditNonExistingNoteExeption(MeExceptionPageNotFoundException):
 #---------------------------------------------------------------------------------------------------
 class MeAPIAddNoteInvalidTagExeption(MeExceptionPageNotFoundException):
     """ Exception for when a user tries to add a note with a tag that doesn't exist """
+    pass
+#---------------------------------------------------------------------------------------------------
+class MeAPIDeleteNoteInvalidNoteException(MeExceptionPermissionDeniedException):
+    """ Exception for when a user tries to delete a note that doesn't exist """
     pass
 #---------------------------------------------------------------------------------------------------

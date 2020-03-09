@@ -888,6 +888,52 @@ class PageNotebook {
         UI.stop_loading();
     }
 
+    remove_note(note) {
+        // Method to remove a note
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        // Check what the current icon is
+        var current_icon = $('#ab_remove_note').find('i').html();
+
+        if (current_icon == 'delete') {
+            // When the user presses the 'remove note' button, we change the icon of it to a
+            // confirm button
+            $('#ab_remove_note').find('i').html('check');
+            $('#ab_remove_note').removeClass('mdl-button--colored');
+        } else if (current_icon == 'check') {
+            // When it is already a confirm button, we have to remeve the note
+            UI.start_loading('Removing note');
+
+            var data = {
+                'note': note
+            }
+            UI.api_call(
+                'POST',
+                'notes', 'delete_note',
+                function(data, status, xhr) {
+                    // Reset the button
+                    $('#ab_remove_note').find('i').html('delete');
+                    $('#ab_remove_note').addClass('mdl-button--colored');
+
+                    // Close the note
+                    t.close_note();
+
+                    // Navigate to the tag again
+                    t.navigate_to_tag(t.tag);
+                },
+                function() {
+                    // Something went wrong while requesting the data
+                    UI.notification('Couldn\'t delete note', 'Refresh', function() { t.start(); } );
+                    UI.stop_loading();
+                },
+                null,
+                data
+            );
+        }
+    }
+
     set_action_buttons() {
         // Method to set the correct action buttons
 
@@ -911,8 +957,9 @@ class PageNotebook {
         if (t.action == 'show') {
             actionbuttons.push({
                 'icon': 'delete',
-                'click': function(){},
-                'show': true
+                'click': function(){ t.remove_note(t.note); },
+                'show': true,
+                'id': 'ab_remove_note'
             },
             {
                 'icon': 'edit',
@@ -958,6 +1005,38 @@ class PageNotebook {
         // Method to resize the textarea to the lenght of the text inside of it
         $('#edit-note-textarea').css('height', '5px');
         $('#edit-note-textarea').css('height', $('#edit-note-textarea')[0].scrollHeight);
+    }
+
+    close_note() {
+        // If the user presses the 'X' on top of a note-preview, the note has to be closed
+
+        // Set a local var for 'this' that we can re-use in the callbacks
+        var t = this;
+
+        // Set the note to undefined
+        t.note = undefined;
+        t.action = 'list';
+
+        // Remove the note-preview
+        $('#note-preview').hide();
+
+        // Update the actions buttons
+        t.set_action_buttons();
+
+        // Remove the revision browser
+        t.hide_revision_browser();
+
+        // Show the note-notification
+        $('#note-notification').show();
+
+        // Update the URL
+        if (t.tag) {
+            var newurl = '/ui/notebook/list/' + t.tag;
+        } else {
+            var newurl = '/ui/notebook/'
+        }
+        history.pushState(newurl, '', newurl);
+        t.action = 'list';
     }
 
     start() {
@@ -1102,31 +1181,7 @@ class PageNotebook {
             // Add a handler to the 'close-note' button
             templates['notebook'].find('#close-note').click(function() {
                 // If the user presses the 'X' on top of a note-preview, the note has to be closed
-
-                // Set the note to undefined
-                t.note = undefined;
-                t.action = 'list';
-
-                // Remove the note-preview
-                $('#note-preview').hide();
-
-                // Update the actions buttons
-                t.set_action_buttons();
-
-                // Remove the revision browser
-                t.hide_revision_browser();
-
-                // Show the note-notification
-                $('#note-notification').show();
-
-                // Update the URL
-                if (t.tag) {
-                    var newurl = '/ui/notebook/list/' + t.tag;
-                } else {
-                    var newurl = '/ui/notebook/'
-                }
-                history.pushState(newurl, '', newurl);
-                t.action = 'list';
+                t.close_note();
             });
 
             // Add a handler to the input field for new tags when pressing the ENTER key

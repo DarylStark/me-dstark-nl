@@ -35,7 +35,8 @@ class PageAPINotes(APIPage):
             'get_notes': self.get_notes,
             'get_note': self.get_note,
             'get_revisions': self.get_revisions,
-            'save_note': self.save_note
+            'save_note': self.save_note,
+            'delete_note': self.delete_note
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -164,7 +165,7 @@ class PageAPINotes(APIPage):
             if tags.count() != 1:
                 raise MeAPIDeleteNotesTagInvalidTagException('Tag with id {id} is not found'.format(id = tag_id))
             
-            # Remove all tags from all notes
+            # Remove the tag from all notes
             notes_tags = session.query(NotesTags).filter(
                 NotesTags.tag == tag_id
             ).delete()
@@ -266,8 +267,11 @@ class PageAPINotes(APIPage):
                     # We set 'last_revision' to True and we remember the ID of this revision. If the
                     # user specifies a revision to load, we check if that ID is the same so we can
                     # determine if he is asking for the last revision.
-                    last_revision = True
-                    last_revision_id = revision_object.order_by(NoteRevision.id.desc()).first().id
+                    if revision_count > 0:
+                        last_revision = True
+                        last_revision_id = revision_object.order_by(NoteRevision.id.desc()).first().id
+                    else:
+                        raise MeAPIGetNoteNoRevisionsExeption('Note {id} has no revisions'.format(id = note))
 
                     # Check if the user requested a specific revision
                     revision = None
@@ -437,4 +441,38 @@ class PageAPINotes(APIPage):
 
             # Done! We can return the new ID for the note
             return ([ note_id ], 1)
+    
+    @PageAPI.api_endpoint(endpoint_name = 'delete_note', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def delete_note(self, *args, **kwargs):
+        """ API endpoint to remove a Note """
+
+        # Get the note id the user wants to delete
+        json_data = flask.request.json
+        note_id = json_data['note']
+
+        # Find the note
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the session
+            notes = session.query(Note).filter(
+                Note.id == note_id
+            )
+
+            # Check if we have a note. If we don't give an error
+            if notes.count() != 1:
+                raise MeAPIDeleteNoteInvalidNoteException('Note with id {id} is not found'.format(id = note_id))
+            
+            # Remove all revisions for this note
+            note_revisions = session.query(NoteRevision).filter(
+                NoteRevision.note == note_id
+            ).delete()
+
+            # Remove all tags for this note
+            notes_tags = session.query(NotesTags).filter(
+                NotesTags.note == note_id
+            ).delete()
+
+            # Delete the session
+            session.delete(notes.first())
+
+        return([ 'removed' ], 1)
 #---------------------------------------------------------------------------------------------------
