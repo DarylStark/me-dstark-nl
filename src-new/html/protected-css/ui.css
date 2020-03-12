@@ -338,7 +338,7 @@ button.me-button-confirm {
     padding-left: 17px;
 }
 
-.me-note-revisions, .me-note-edit-title {
+.me-note-revisions, .me-note-edit-title, #note-preview-note {
     border-bottom: 1px solid #cccccc;
 }
 
@@ -384,6 +384,10 @@ button.me-button-confirm {
 #me-note-edit-close-warning {
     border-bottom: 1px solid #cccccc;
     background-color: #ffa07a;
+}
+
+.me-note-tags .mdl-chip {
+    margin-right: 3px;
 }
 
 /* CSS styles for CodeHighlite */

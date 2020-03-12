@@ -291,6 +291,11 @@ class PageAPINotes(APIPage):
                         # Order the revisions in the correct order
                         revision_object = revision_object.order_by(NoteRevision.id.desc()).first()
 
+                        # We want to return the tags for the note, so we have to retrieve them and
+                        # put them in a list of dicts that we can return
+                        tags_query = session.query(NotesTags).filter(NotesTags.note == note)
+                        tags = [ { 'id': tag.tag, 'name': tag.tag_object.name } for tag in tags_query.all() ]
+
                         # In addition to the 'normal' note, we also return the parsed HTML for the
                         # note. We assume the note is written in Markdown. We use the 'markdown'
                         # package for this. We use a few extensions to this;
@@ -298,6 +303,8 @@ class PageAPINotes(APIPage):
                         #   Adds extra Markdown functions, like tables and fenced code blocks
                         # - toc
                         #   Returns as Table of Contents along with the parsed HTML
+                        # - codehilite
+                        #   Make sure code gets highlighted
                         md = markdown.Markdown(extensions = [ 'extra', 'toc', 'codehilite' ])
                         note_markdown = md.convert(revision_object.text)
 
@@ -308,7 +315,8 @@ class PageAPINotes(APIPage):
                             'revision': revision_object,
                             'metadata': {
                                 'revision_count': revision_count,
-                                'last_revision': last_revision
+                                'last_revision': last_revision,
+                                'tags': tags
                             },
                             'markdown': {
                                 'text': note_markdown,

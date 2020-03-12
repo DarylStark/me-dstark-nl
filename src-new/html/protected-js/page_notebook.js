@@ -558,100 +558,128 @@ class PageNotebook {
     get_note(note_id, revision = null, jquery_object = null, cb) {
         // Method to retrieve a note and all it's details from the API
 
-        // Start the loading
-        UI.start_loading('Loading note');
-
         // Set for the callbacks
         var t = this;
 
-        // Get the note from the API
-        var api_options = {
-            'note': note_id
-        }
+        // Start the loading
+        UI.start_loading('Getting template');
 
-        // If a revision is given, we add it to the API options
-        if (revision) { api_options['revision'] = revision; }
+        Templates.get_templates(['notebook_tag'], function(templates) {
+            // Start the loading
+            UI.start_loading('Loading note');
 
-        // Do the API call
-        UI.api_call(
-            'GET',
-            'notes', 'get_note',
-            function(data, status, xhr) {
-                UI.start_loading('Displaying note');
+            // Get the note from the API
+            var api_options = {
+                'note': note_id
+            }
 
-                // Get the correct object
-                var obj = null;
-                if (jquery_object) {
-                    obj = jquery_object;
-                } else {
-                    obj = $(document);
-                }
+            // If a revision is given, we add it to the API options
+            if (revision) { api_options['revision'] = revision; }
 
-                // Remove the revision browser, but only if no revision is given. If a revision is given,
-                // the user probably wants the revision browser to stay in screen since he is picking one
-                // from the revision browser
-                if (revision == null) {
-                    t.hide_revision_browser();
-                    t.revision = null;
-                }
+            // Do the API call
+            UI.api_call(
+                'GET',
+                'notes', 'get_note',
+                function(data, status, xhr) {
+                    UI.start_loading('Displaying note');
 
-                // Update the URL. We only do this if needed
-                if (!cb) {
-                    var url_tag = 0;
-                    if (t.tag) { url_tag = t.tag; }
-                    var url_note = note_id;
-                    var newurl = '/ui/notebook/show/' + url_tag + '/' + url_note;
-                    if (t.revision) { newurl += '/' + t.revision; }
-                    history.pushState(newurl, '', newurl);
-                    t.action = 'show';
-                }
+                    // Get the correct object
+                    var obj = null;
+                    if (jquery_object) {
+                        obj = jquery_object;
+                    } else {
+                        obj = $(document);
+                    }
 
-                // Set the note in the object
-                t.note = note_id;
+                    // Remove the revision browser, but only if no revision is given. If a revision is given,
+                    // the user probably wants the revision browser to stay in screen since he is picking one
+                    // from the revision browser
+                    if (revision == null) {
+                        t.hide_revision_browser();
+                        t.revision = null;
+                    }
 
-                // Get the note
-                var note = data['result']['data'][0];
+                    // Update the URL. We only do this if needed
+                    if (!cb) {
+                        var url_tag = 0;
+                        if (t.tag) { url_tag = t.tag; }
+                        var url_note = note_id;
+                        var newurl = '/ui/notebook/show/' + url_tag + '/' + url_note;
+                        if (t.revision) { newurl += '/' + t.revision; }
+                        history.pushState(newurl, '', newurl);
+                        t.action = 'show';
+                    }
 
-                // Get the correct word for 'revisions'
-                var revision_word = 'revision'
-                if (note['metadata']['revision_count'] > 1) { revision_word = 'revisions';}
+                    // Set the note in the object
+                    t.note = note_id;
 
-                // Split the datetime field
-                var revision_date = new Date(note['revision']['created']);
+                    // Get the note
+                    var note = data['result']['data'][0];
 
-                // Set the correct objects for the note
-                obj.find('#note-preview-title').html(note['note']['title']);
-                obj.find('#note-preview-note').html(note['markdown']['text']);
-                obj.find('#note-notification').hide();
-                obj.find('#note-edit').hide();
-                obj.find('#note-preview').show();
-                obj.find('#revision-count').html(note['metadata']['revision_count'] + ' ' + revision_word);
-                obj.find('#revision-date').html(UI.format_datetime(revision_date));
-                obj.find('#revision-time').html(note['revision']['created']);
+                    // Get the correct word for 'revisions'
+                    var revision_word = 'revision'
+                    if (note['metadata']['revision_count'] > 1) { revision_word = 'revisions';}
 
-                // Add a handler to the 'revisions' button so we can switch revisions if needed. We
-                // remove the handler first to make sure there is nothing attached; otherwise it'll
-                // do it twice for the second note, three times for the third, etc.
-                obj.find('#revision-count').unbind('click');
-                obj.find('#revision-count').click(function () { t.show_revision_browser(); });
+                    // Split the datetime field
+                    var revision_date = new Date(note['revision']['created']);
 
-                // Update the action buttons
-                t.set_action_buttons();
+                    // Set the correct objects for the note
+                    obj.find('#note-preview-title').html(note['note']['title']);
+                    obj.find('#note-preview-note').html(note['markdown']['text']);
+                    obj.find('#note-notification').hide();
+                    obj.find('#note-edit').hide();
+                    obj.find('#note-preview').show();
+                    obj.find('#revision-count').html(note['metadata']['revision_count'] + ' ' + revision_word);
+                    obj.find('#revision-date').html(UI.format_datetime(revision_date));
+                    obj.find('#revision-time').html(note['revision']['created']);
 
-                // If we have a callback, process it now
-                if (cb) {
-                    cb();
-                } else {
+                    // Add a handler to the 'revisions' button so we can switch revisions if needed. We
+                    // remove the handler first to make sure there is nothing attached; otherwise it'll
+                    // do it twice for the second note, three times for the third, etc.
+                    obj.find('#revision-count').unbind('click');
+                    obj.find('#revision-count').click(function () { t.show_revision_browser(); });
+
+                    // Remove old tags and add the new tags
+                    obj.find('#me-note-tags').html('');
+                    $.each(note['metadata']['tags'], function(index, value) {
+                        // Get the template
+                        var tag_object = UI.to_jquery(templates['notebook_tag'], false);
+
+                        // Change the name of the tag
+                        tag_object.find('#tag-name').html(value['name']);
+
+                        // Add a handler to the remove button
+                        tag_object.find('#tag-remove-button').click(function() {
+                            console.log('Remove this tag!');
+                        });
+
+                        // Append the tags to the container with tags
+                        obj.find('#me-note-tags').append(tag_object);
+                    });
+
+                    // Update the action buttons
+                    t.set_action_buttons();
+
+                    // If we have a callback, process it now
+                    if (cb) {
+                        cb();
+                    } else {
+                        UI.stop_loading();
+                    }
+                },
+                function() {
+                    // Something went wrong while requesting the data
+                    UI.notification('Couldn\'t open note', 'Refresh', function() { t.start(); } );
                     UI.stop_loading();
-                }
-            },
-            function() {
-                // Something went wrong while requesting the data
-                UI.notification('Couldn\'t open note', 'Refresh', function() { t.start(); } );
-                UI.stop_loading();
-            },
-            api_options
-        );
+                },
+                api_options
+            );
+        },
+        function() {
+            // Something went wrong while requesting the template data
+            UI.notification('Couldn\'t retrieve templates', 'Refresh', function() { t.start(); } );
+            UI.stop_loading();
+        });
     }
 
     confirm_close_editor(callback) {
