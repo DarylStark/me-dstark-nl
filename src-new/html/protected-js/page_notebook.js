@@ -650,7 +650,34 @@ class PageNotebook {
 
                         // Add a handler to the remove button
                         tag_object.find('#tag-remove-button').click(function() {
-                            console.log('Remove this tag!');
+                            UI.start_loading('Removing tag from note');
+
+                            // Save the context for the button for the API Call callback
+                            var this_button = $(this);
+
+                            // Create a object with the data that we want to remove
+                            var api_data = {
+                                'tag': value['id'],
+                                'note': parseInt(t.note)
+                            }
+                            
+                            // Call the API to remove this note from this tag
+                            UI.api_call(
+                                'POST',
+                                'notes', 'remove_tag_from_note',
+                                function(data, status, xhr) {
+                                    // Done! Remove the tag from the view
+                                    this_button.parents()[0].remove();
+                                    t.navigate_to_tag(t.tag, true);
+                                },
+                                function() {
+                                    // Something went wrong while requesting the data
+                                    UI.notification('Couldn\'t remove tag from note', 'Refresh', function() { t.start(); } );
+                                    UI.stop_loading();
+                                },
+                                null,
+                                api_data
+                            );
                         });
 
                         // Append the tags to the container with tags

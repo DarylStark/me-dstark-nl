@@ -36,7 +36,8 @@ class PageAPINotes(APIPage):
             'get_note': self.get_note,
             'get_revisions': self.get_revisions,
             'save_note': self.save_note,
-            'delete_note': self.delete_note
+            'delete_note': self.delete_note,
+            'remove_tag_from_note': self.remove_tag_from_note
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -481,6 +482,35 @@ class PageAPINotes(APIPage):
 
             # Delete the session
             session.delete(notes.first())
+
+        return([ 'removed' ], 1)
+
+    @PageAPI.api_endpoint(endpoint_name = 'remove_tag_from_note', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def remove_tag_from_note(self, *args, **kwargs):
+        """ API endpoint to remove a Tag from a Note """
+
+        # Get the note id the user wants to delete
+        json_data = flask.request.json
+        note_id = json_data['note']
+        tag_id = json_data['tag']
+
+        # Find the NoteTag
+        with DatabaseSession(commit_on_end = True) as session:
+            # Get the session
+            notestags = session.query(NotesTags).filter(
+                NotesTags.note == note_id,
+                NotesTags.tag == tag_id
+            )
+
+            # Check if we have a note. If we don't give an error
+            if notestags.count() != 1:
+                raise MeAPIDeleteNoteTagInvalidNoteException('NotesTag with note {note_id} and tag {tag_id} is not found'.format(
+                    note_id = note_id,
+                    tag_id = tag_id
+                ))
+            
+            # Remove the NotesTags
+            notestags.delete()
 
         return([ 'removed' ], 1)
 #---------------------------------------------------------------------------------------------------
