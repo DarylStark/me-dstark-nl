@@ -37,7 +37,9 @@ class PageAPINotes(APIPage):
             'get_revisions': self.get_revisions,
             'save_note': self.save_note,
             'delete_note': self.delete_note,
-            'remove_tag_from_note': self.remove_tag_from_note
+            'remove_tag_from_note': self.remove_tag_from_note,
+            'get_tag_tree': self.get_tag_tree,
+            'add_tag_to_note': self.add_tag_to_note
         }
     
     @PageAPI.api_endpoint(endpoint_name = 'get_tags', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
@@ -513,4 +515,59 @@ class PageAPINotes(APIPage):
             notestags.delete()
 
         return([ 'removed' ], 1)
+
+    @PageAPI.api_endpoint(endpoint_name = 'get_tag_tree', allowed_methods = [ 'get' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def get_tag_tree(self, *args, **kwargs):
+        """ API endpoint to get all tags in a tree """
+
+        # Get the tags
+        all_tags = list()
+        with DatabaseSession() as session:
+            # Get all tag from the database
+            tags = session.query(NoteTag).order_by(NoteTag.parent)
+
+            # Get all the tag objects
+            all_tags = tags.all()
+        
+        # We have all the tags. We can now create a tree of it. To do this, we create a lambda,
+        # which is basically a one-statement method, that gets the children for a specific parent.
+        # Withing this lambda, we call the lambda itself to get the childeren for the tag we are
+        # now in. This is called 'recursion'.
+        get_children = lambda parent: [
+            { 'id': x.id, 'name': x.name, 'children': get_children(x.id) }
+            for x in all_tags
+            if x.parent == parent 
+        ]
+
+        # For the tree, we create a root node in which we call the created lambda.
+        tree = {
+            'name': 'root',
+            'id': None,
+            'children': get_children(None)
+        }
+        
+        # Return the tree
+        return (tree, len(tree))
+    
+    @PageAPI.api_endpoint(endpoint_name = 'add_tag_to_note', allowed_methods = [ 'post' ], allowed_users = { Me.INTERACTIVE_USERS })
+    def add_tag_to_note(self, *args, **kwargs):
+        """ API endpoint to add a Tag to a Note """
+
+        # Get the note id the user wants to delete
+        json_data = flask.request.json
+        note_id = json_data['note']
+        tag_id = json_data['tag']
+
+        # Create a Database-session
+        with DatabaseSession(commit_on_end = True) as session:
+            # Create the NotesTags
+            new_notestag = NotesTags(
+                tag = tag_id,
+                note = note_id
+            )
+            
+            # Add the NotesTags
+            session.add(new_notestag)
+
+        return([ 'added' ], 1)
 #---------------------------------------------------------------------------------------------------

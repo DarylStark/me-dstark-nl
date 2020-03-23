@@ -390,6 +390,10 @@ button.me-button-confirm {
     margin-right: 3px;
 }
 
+.me-note-add-tag {
+    border-top: 1px solid #cccccc;
+}
+
 /* CSS styles for CodeHighlite */
 
 .codehilite .hll { background-color: #073642 }

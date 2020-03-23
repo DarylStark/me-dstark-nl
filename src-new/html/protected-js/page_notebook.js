@@ -555,6 +555,27 @@ class PageNotebook {
         );
     }
 
+    add_tag_tree(tree, object, level = 0) {
+        // Method to add tags to the 'tag-tree' dropdown
+
+        // Set for the callbacks
+        var t = this;
+
+        // Determine the amount of spaces for this level
+        var spaces = level * 4;
+        
+        $.each(tree['children'], function(index, value) {
+            // Create an option and add it to the dropdown
+            var new_option = $('<option></option>');
+            new_option.html('&nbsp;'.repeat(spaces) + value['name']);
+            new_option.attr('value', value['id']);
+            object.find('#tag-tree').append(new_option);
+
+            // Add the children for this tag too
+            t.add_tag_tree(value, object, level + 1);
+        });
+    }
+
     get_note(note_id, revision = null, jquery_object = null, cb) {
         // Method to retrieve a note and all it's details from the API
 
@@ -687,12 +708,56 @@ class PageNotebook {
                     // Update the action buttons
                     t.set_action_buttons();
 
-                    // If we have a callback, process it now
-                    if (cb) {
-                        cb();
-                    } else {
-                        UI.stop_loading();
-                    }
+                    UI.start_loading('Getting tag tree');
+
+                    // Add the tag-tree
+                    UI.api_call(
+                        'GET',
+                        'notes', 'get_tag_tree',
+                        function(data, status, xhr) {
+                            // Get the tag-tree
+                            var tag_root = data['result']['data'];
+                            obj.find('#tag-tree').html('');
+                            t.add_tag_tree(tag_root, obj);
+
+                            // Add a callback to the 'Add tag' button
+                            obj.find('#add-tag-button').unbind('click');
+                            obj.find('#add-tag-button').click(function() {
+                                var api_options = {
+                                    'tag': $('#tag-tree').val(),
+                                    'note': t.note
+                                }
+
+                                UI.api_call(
+                                    'POST',
+                                    'notes', 'add_tag_to_note',
+                                    function(data, status, xhr) {
+                                        // TODO: Add the chip
+                                        console.log('done');
+                                    },
+                                    function() {
+                                        // Something went wrong while requesting the data
+                                        UI.notification('Couldn\'t add tag to note', 'Refresh', function() { t.start(); } );
+                                        UI.stop_loading();
+                                    },
+                                    null,
+                                    api_options
+                                )
+                            });
+
+                            // If we have a callback, process it now
+                            if (cb) {
+                                cb();
+                            } else {
+                                UI.stop_loading();
+                            }
+                        },
+                        function() {
+                            // Something went wrong while requesting the data
+                            UI.notification('Couldn\'t open tag tree', 'Refresh', function() { t.start(); } );
+                            UI.stop_loading();
+                        }
+                    );
                 },
                 function() {
                     // Something went wrong while requesting the data
